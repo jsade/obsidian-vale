@@ -1,17 +1,29 @@
-import CodeMirror from "codemirror";
 import { EventBus } from "EventBus";
 import {
   FileSystemAdapter,
   MarkdownView,
   normalizePath,
   Plugin,
+  EditorView as ObsidianEditorView,
 } from "obsidian";
 import * as path from "path";
+import { EditorView } from "@codemirror/view";
 import { ValeSettingTab } from "./settings/ValeSettingTab";
 import { DEFAULT_SETTINGS, ValeAlert, ValeSettings } from "./types";
 import { ValeConfigManager } from "./vale/ValeConfigManager";
 import { ValeRunner } from "./vale/ValeRunner";
 import { ValeView, VIEW_TYPE_VALE } from "./ValeView";
+import {
+  valeExtension,
+  addValeMarks,
+  clearAllValeMarks,
+  selectValeAlert,
+  generateAlertId,
+  getAlertIdFromDecoration,
+  valeAlertMap,
+  valeStateField,
+  lineColToOffset,
+} from "./editor/index";
 
 export default class ValePlugin extends Plugin {
   public settings: ValeSettings;
@@ -22,13 +34,6 @@ export default class ValePlugin extends Plugin {
 
   private alerts: ValeAlert[] = [];
 
-  // We need to keep the association between marker and alert, in the case
-  // where the user edits the text and the spans no longer match.
-  private markers: Map<CodeMirror.TextMarker, ValeAlert> = new Map<
-    CodeMirror.TextMarker,
-    ValeAlert
-  >();
-
   private eventBus: EventBus = new EventBus();
   private unregisterAlerts: () => void = () => {
     return;
@@ -37,6 +42,9 @@ export default class ValePlugin extends Plugin {
   // onload runs when plugin becomes enabled.
   async onload(): Promise<void> {
     await this.loadSettings();
+
+    // Register CM6 extension for Vale decorations
+    this.registerEditorExtension(valeExtension());
 
     this.addSettingTab(new ValeSettingTab(this.app, this));
 
@@ -92,14 +100,10 @@ export default class ValePlugin extends Plugin {
     // Remove all open Vale leaves.
     this.app.workspace.detachLeavesOfType(VIEW_TYPE_VALE);
 
-    // Remove all marks from the previous check.
-    this.app.workspace.iterateCodeMirrors((cm) => {
-      cm.getAllMarks()
-        .filter((mark) => !!mark.className?.contains("vale-underline"))
-        .forEach((mark) => mark.clear());
-    });
-
+    // Unregister event listeners
     this.unregisterAlerts();
+
+    // Note: CM6 extension decorations are automatically cleaned up when the extension is unregistered
   }
 
   // activateView triggers a check and reveals the Vale view, if isn't already
@@ -196,48 +200,71 @@ export default class ValePlugin extends Plugin {
   }
 
   clearAlertMarkers = (): void => {
-    this.withCodeMirrorEditor((editor) => {
-      editor.getAllMarks().forEach((mark) => mark.clear());
+    const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+    if (!view) {
+      return;
+    }
+
+    const editorView = view.editor.cm as EditorView;
+    if (!editorView) {
+      return;
+    }
+
+    // Dispatch effect to clear all Vale decorations
+    editorView.dispatch({
+      effects: clearAllValeMarks.of(undefined),
     });
   };
 
   markAlerts = (): void => {
-    this.withCodeMirrorEditor((editor) => {
-      this.alerts.forEach((alert: ValeAlert) => {
-        const marker = editor.markText(
-          { line: alert.Line - 1, ch: alert.Span[0] - 1 },
-          { line: alert.Line - 1, ch: alert.Span[1] },
-          {
-            className: `vale-underline vale-${alert.Severity}`,
-            clearOnEnter: false,
-          }
-        );
+    const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+    if (!view) {
+      return;
+    }
 
-        this.markers.set(marker, alert);
-      });
+    const editorView = view.editor.cm as EditorView;
+    if (!editorView) {
+      return;
+    }
+
+    // Dispatch effect to add Vale mark decorations for all alerts
+    editorView.dispatch({
+      effects: addValeMarks.of(this.alerts),
     });
   };
 
   // onAlertClick highlights an alert in the editor when the user clicks one of
   // the cards in the results view.
   onAlertClick(alert: ValeAlert): void {
-    this.withCodeMirrorEditor((editor, view) => {
-      if (view.getMode() === "source") {
-        const range: CodeMirror.MarkerRange = {
-          from: { line: alert.Line - 1, ch: alert.Span[0] - 1 },
-          to: { line: alert.Line - 1, ch: alert.Span[1] },
-        };
+    const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+    if (!view) {
+      return;
+    }
 
-        this.highlightRange(range);
+    const editorView = view.editor.cm as EditorView;
+    if (!editorView) {
+      return;
+    }
 
-        editor.scrollIntoView(
-          range.from,
-          editor.getScrollInfo().clientHeight / 2
-        );
-
-        this.eventBus.dispatch("select-alert", alert);
-      }
+    // Get the alert ID and dispatch selection effect
+    const alertId = generateAlertId(alert);
+    editorView.dispatch({
+      effects: selectValeAlert.of(alertId),
     });
+
+    // Calculate the position to scroll to
+    const line = alert.Line - 1;
+    const ch = alert.Span[0] - 1;
+    const offset = lineColToOffset(view.editor, line, ch);
+
+    // Scroll the alert into view
+    editorView.dispatch({
+      effects: EditorView.scrollIntoView(offset, {
+        y: "center",
+      }),
+    });
+
+    this.eventBus.dispatch("select-alert", alert);
   }
 
   // onMarkerClick determines whether the user clicks on an existing marker in
@@ -248,73 +275,57 @@ export default class ValePlugin extends Plugin {
       return;
     }
 
-    this.withCodeMirrorEditor((editor) => {
-      if (
-        e.target instanceof HTMLElement &&
-        !e.target.hasClass("vale-underline")
-      ) {
-        editor
-          .getAllMarks()
-          .filter(
-            (mark) => !!mark.className?.contains("vale-underline-highlight")
-          )
-          .forEach((mark) => mark.clear());
-
-        this.eventBus.dispatch("deselect-alert", {});
-
-        return;
-      }
-
-      if (!editor.getWrapperElement().contains(e.target as ChildNode)) {
-        return;
-      }
-
-      const lineCh = editor.coordsChar({ left: e.clientX, top: e.clientY });
-      const markers = editor.findMarksAt(lineCh);
-
-      if (markers.length === 0) {
-        return;
-      }
-
-      const marker = markers[0];
-
-      const range = marker.find() as CodeMirror.MarkerRange;
-
-      this.highlightRange(range);
-
-      editor.setCursor(range.to);
-
-      this.eventBus.dispatch("select-alert", this.markers.get(marker));
-    });
-  }
-
-  // highlightRange creates a highlight marker after clearing any previous
-  // highlight markers.
-  highlightRange(range: CodeMirror.MarkerRange): void {
-    this.withCodeMirrorEditor((editor) => {
-      editor
-        .getAllMarks()
-        .filter(
-          (mark) => !!mark.className?.contains("vale-underline-highlight")
-        )
-        .forEach((mark) => mark.clear());
-
-      editor.markText(range.from, range.to, {
-        className: "vale-underline-highlight",
-      });
-    });
-  }
-
-  // withCodeMirrorEditor is a convenience function for making sure that a
-  // function runs with a valid view and editor.
-  withCodeMirrorEditor(
-    callback: (editor: CodeMirror.Editor, view: MarkdownView) => void
-  ): void {
     const view = this.app.workspace.getActiveViewOfType(MarkdownView);
     if (!view) {
       return;
     }
 
-    callback(view.sourceMode.cmEditor, view);
+    const editorView = view.editor.cm as EditorView;
+    if (!editorView) {
+      return;
+    }
+
+    // Check if click is on a Vale underline element
+    if (
+      e.target instanceof HTMLElement &&
+      !e.target.classList.contains("vale-underline")
+    ) {
+      // Clicked outside of Vale underline - deselect
+      this.eventBus.dispatch("deselect-alert", {});
+      return;
+    }
+
+    // Check if the click is within the editor
+    if (!editorView.dom.contains(e.target as Node)) {
+      return;
+    }
+
+    // Get position at click coordinates
+    const pos = editorView.posAtCoords({ x: e.clientX, y: e.clientY });
+    if (pos === null) {
+      return;
+    }
+
+    // Find Vale decorations at this position
+    let foundAlert: ValeAlert | undefined;
+
+    editorView.state.field(valeStateField).between(pos, pos, (from, to, value) => {
+      const alertId = getAlertIdFromDecoration(value);
+      if (alertId) {
+        foundAlert = valeAlertMap.get(alertId);
+        return false; // Stop iteration
+      }
+    });
+
+    if (foundAlert) {
+      // Generate alert ID and dispatch selection
+      const alertId = generateAlertId(foundAlert);
+      editorView.dispatch({
+        effects: selectValeAlert.of(alertId),
+      });
+
+      this.eventBus.dispatch("select-alert", foundAlert);
+    }
   }
+
 }
