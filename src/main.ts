@@ -6,8 +6,8 @@ import {
   Plugin,
   EditorView as ObsidianEditorView,
 } from "obsidian";
-import * as path from "path";
 import { EditorView } from "@codemirror/view";
+import * as path from "path";
 import { ValeSettingTab } from "./settings/ValeSettingTab";
 import { DEFAULT_SETTINGS, ValeAlert, ValeSettings } from "./types";
 import { ValeConfigManager } from "./vale/ValeConfigManager";
@@ -15,15 +15,14 @@ import { ValeRunner } from "./vale/ValeRunner";
 import { ValeView, VIEW_TYPE_VALE } from "./ValeView";
 import {
   valeExtension,
+  registerValeEventListeners,
+  ValeAlertClickDetail,
+  selectValeAlert,
+  valeAlertMap,
   addValeMarks,
   clearAllValeMarks,
-  selectValeAlert,
-  generateAlertId,
-  getAlertIdFromDecoration,
-  valeAlertMap,
-  valeStateField,
-  lineColToOffset,
-} from "./editor/index";
+  scrollToAlert,
+} from "./editor";
 
 export default class ValePlugin extends Plugin {
   public settings: ValeSettings;
@@ -38,12 +37,15 @@ export default class ValePlugin extends Plugin {
   private unregisterAlerts: () => void = () => {
     return;
   };
+  private unregisterValeEvents: () => void = () => {
+    return;
+  };
 
   // onload runs when plugin becomes enabled.
   async onload(): Promise<void> {
     await this.loadSettings();
 
-    // Register CM6 extension for Vale decorations
+    // Register CM6 extension for Vale decorations and event handling
     this.registerEditorExtension(valeExtension());
 
     this.addSettingTab(new ValeSettingTab(this.app, this));
@@ -90,7 +92,12 @@ export default class ValePlugin extends Plugin {
         )
     );
 
-    this.registerDomEvent(document, "pointerup", this.onMarkerClick);
+    // Register Vale custom event listeners
+    this.unregisterValeEvents = registerValeEventListeners({
+      "vale-alert-click": (event: CustomEvent<ValeAlertClickDetail>) => {
+        this.onMarkerClick(event.detail);
+      },
+    });
 
     this.unregisterAlerts = this.eventBus.on("alerts", this.onResult);
   }
@@ -102,6 +109,14 @@ export default class ValePlugin extends Plugin {
 
     // Unregister event listeners
     this.unregisterAlerts();
+    this.unregisterValeEvents();
+
+    // Clear all decorations
+    this.withEditorView((view) => {
+      view.dispatch({
+        effects: clearAllValeMarks.of(),
+      });
+    });
 
     // Note: CM6 extension decorations are automatically cleaned up when the extension is unregistered
   }
@@ -200,36 +215,22 @@ export default class ValePlugin extends Plugin {
   }
 
   clearAlertMarkers = (): void => {
-    const view = this.app.workspace.getActiveViewOfType(MarkdownView);
-    if (!view) {
-      return;
-    }
-
-    const editorView = view.editor.cm as EditorView;
-    if (!editorView) {
-      return;
-    }
-
-    // Dispatch effect to clear all Vale decorations
-    editorView.dispatch({
-      effects: clearAllValeMarks.of(undefined),
+    this.withEditorView((view) => {
+      view.dispatch({
+        effects: clearAllValeMarks.of(),
+      });
     });
   };
 
   markAlerts = (): void => {
-    const view = this.app.workspace.getActiveViewOfType(MarkdownView);
-    if (!view) {
+    if (!this.showAlerts || this.alerts.length === 0) {
       return;
     }
 
-    const editorView = view.editor.cm as EditorView;
-    if (!editorView) {
-      return;
-    }
-
-    // Dispatch effect to add Vale mark decorations for all alerts
-    editorView.dispatch({
-      effects: addValeMarks.of(this.alerts),
+    this.withEditorView((view) => {
+      view.dispatch({
+        effects: addValeMarks.of(this.alerts),
+      });
     });
   };
 
@@ -241,92 +242,57 @@ export default class ValePlugin extends Plugin {
       return;
     }
 
-    const editorView = view.editor.cm as EditorView;
-    if (!editorView) {
-      return;
-    }
+    this.withEditorView((editorView) => {
+      // Use the scrollToAlert utility to handle scrolling and highlighting
+      scrollToAlert(editorView, view.editor, alert, true);
 
-    // Get the alert ID and dispatch selection effect
-    const alertId = generateAlertId(alert);
-    editorView.dispatch({
-      effects: selectValeAlert.of(alertId),
+      // Dispatch to EventBus for UI panel highlighting
+      this.eventBus.dispatch("select-alert", alert);
     });
-
-    // Calculate the position to scroll to
-    const line = alert.Line - 1;
-    const ch = alert.Span[0] - 1;
-    const offset = lineColToOffset(view.editor, line, ch);
-
-    // Scroll the alert into view
-    editorView.dispatch({
-      effects: EditorView.scrollIntoView(offset, {
-        y: "center",
-      }),
-    });
-
-    this.eventBus.dispatch("select-alert", alert);
   }
 
   // onMarkerClick determines whether the user clicks on an existing marker in
   // the editor and highlights the corresponding alert in the results view.
-  onMarkerClick(e: PointerEvent): void {
+  onMarkerClick(detail: ValeAlertClickDetail): void {
     // Ignore if there's no Vale view open.
     if (this.app.workspace.getLeavesOfType(VIEW_TYPE_VALE).length === 0) {
       return;
     }
 
-    const view = this.app.workspace.getActiveViewOfType(MarkdownView);
-    if (!view) {
+    // Get the alert from the map using the alert ID
+    const alert = valeAlertMap.get(detail.alertId);
+
+    if (!alert) {
       return;
     }
 
-    const editorView = view.editor.cm as EditorView;
+    // Dispatch selection effect
+    this.withEditorView((view) => {
+      view.dispatch({
+        effects: selectValeAlert.of(detail.alertId),
+      });
+    });
+
+    // Dispatch to EventBus for UI panel
+    this.eventBus.dispatch("select-alert", alert);
+  }
+
+  // withEditorView is a convenience function for making sure that a
+  // function runs with a valid CM6 EditorView.
+  withEditorView(callback: (view: EditorView) => void): void {
+    const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
+    if (!markdownView) {
+      return;
+    }
+
+    // Access CM6 EditorView through Obsidian's editor.cm property
+    // This property exists but may not be in official types
+    const editorView = (markdownView.editor as any)?.cm as EditorView;
+
     if (!editorView) {
       return;
     }
 
-    // Check if click is on a Vale underline element
-    if (
-      e.target instanceof HTMLElement &&
-      !e.target.classList.contains("vale-underline")
-    ) {
-      // Clicked outside of Vale underline - deselect
-      this.eventBus.dispatch("deselect-alert", {});
-      return;
-    }
-
-    // Check if the click is within the editor
-    if (!editorView.dom.contains(e.target as Node)) {
-      return;
-    }
-
-    // Get position at click coordinates
-    const pos = editorView.posAtCoords({ x: e.clientX, y: e.clientY });
-    if (pos === null) {
-      return;
-    }
-
-    // Find Vale decorations at this position
-    let foundAlert: ValeAlert | undefined;
-
-    editorView.state
-      .field(valeStateField)
-      .between(pos, pos, (from, to, value) => {
-        const alertId = getAlertIdFromDecoration(value);
-        if (alertId) {
-          foundAlert = valeAlertMap.get(alertId);
-          return false; // Stop iteration
-        }
-      });
-
-    if (foundAlert) {
-      // Generate alert ID and dispatch selection
-      const alertId = generateAlertId(foundAlert);
-      editorView.dispatch({
-        effects: selectValeAlert.of(alertId),
-      });
-
-      this.eventBus.dispatch("select-alert", foundAlert);
-    }
+    callback(editorView);
   }
 }

@@ -22,6 +22,8 @@
 
 import { EditorView } from "@codemirror/view";
 import { Extension } from "@codemirror/state";
+import { valeStateField } from "./stateField";
+import { getAlertIdFromDecoration } from "./decorations";
 
 /**
  * Alert click event detail structure
@@ -124,11 +126,34 @@ function dispatchValeEvent(type: string, detail: any): void {
  * return foundAlertId;
  * ```
  */
-function findAlertAtPosition(view: EditorView, pos: number): string | null {
-  // TODO: Will be connected to StateField in Wave 3
-  // For now, return null to allow compilation and testing
-  // The integration agent will connect this to the actual decoration state
-  return null;
+function findAlertAtPosition(
+  view: EditorView,
+  pos: number
+): { alertId: string; from: number; to: number } | null {
+  try {
+    const decorations = view.state.field(valeStateField);
+    let foundAlert: { alertId: string; from: number; to: number } | null = null;
+
+    decorations.between(pos, pos, (from, to, value) => {
+      // Extract alert ID from decoration attributes
+      const alertId = getAlertIdFromDecoration(value);
+
+      // Only consider decorations with alert IDs (i.e., mark decorations)
+      // Skip selection and highlight decorations
+      if (alertId) {
+        foundAlert = { alertId, from, to };
+        return false; // Stop iteration after first match
+      }
+    });
+
+    return foundAlert;
+  } catch (error) {
+    // StateField might not be initialized yet
+    if (process.env.DEBUG) {
+      console.debug("[Vale] Error finding alert at position:", error);
+    }
+    return null;
+  }
 }
 
 /**
@@ -177,22 +202,19 @@ export function clickHandler(): Extension {
       }
 
       // Check if there's an alert at this position
-      const alertId = findAlertAtPosition(view, pos);
+      const alertInfo = findAlertAtPosition(view, pos);
 
-      if (alertId !== null) {
+      if (alertInfo !== null) {
         // We found an alert! Dispatch custom event
-        // Note: We'll need to get alert bounds from the decoration
-        // For now, we dispatch with just the position and ID
         dispatchValeEvent("alert-click", {
-          alertId,
+          alertId: alertInfo.alertId,
           position: pos,
-          // from and to will be added when connected to StateField
-          from: pos,
-          to: pos,
+          from: alertInfo.from,
+          to: alertInfo.to,
         } as ValeAlertClickDetail);
 
         if (process.env.DEBUG) {
-          console.debug(`[Vale] Alert clicked: ${alertId}`);
+          console.debug(`[Vale] Alert clicked: ${alertInfo.alertId}`);
         }
       }
 
@@ -268,18 +290,18 @@ export function hoverHandler(hoverDelay = 300): Extension {
   let hoverTimeout: number | undefined;
 
   const debouncedHover = debounce((view: EditorView, pos: number) => {
-    const alertId = findAlertAtPosition(view, pos);
+    const alertInfo = findAlertAtPosition(view, pos);
 
-    if (alertId !== null) {
+    if (alertInfo !== null) {
       dispatchValeEvent("alert-hover", {
-        alertId,
+        alertId: alertInfo.alertId,
         position: pos,
-        from: pos,
-        to: pos,
+        from: alertInfo.from,
+        to: alertInfo.to,
       });
 
       if (process.env.DEBUG) {
-        console.debug(`[Vale] Alert hovered: ${alertId}`);
+        console.debug(`[Vale] Alert hovered: ${alertInfo.alertId}`);
       }
     }
   }, hoverDelay);
