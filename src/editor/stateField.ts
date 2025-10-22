@@ -167,7 +167,11 @@ export const valeStateField = StateField.define<DecorationSet>({
       // Add Vale mark decorations for new alerts
       if (effect.is(addValeMarks)) {
         const alerts = effect.value;
-        const newDecorations: Array<{ from: number; to: number; deco: Decoration }> = [];
+        const newDecorations: Array<{
+          from: number;
+          to: number;
+          deco: Decoration;
+        }> = [];
 
         for (const alert of alerts) {
           try {
@@ -288,13 +292,19 @@ export const valeStateField = StateField.define<DecorationSet>({
       decorations = decorations.update({
         filter: (from, to, value) => {
           // Keep selection and highlight decorations
-          const decorationType = value.spec.attributes?.["data-vale-decoration"];
-          if (decorationType === "selection" || decorationType === "highlight") {
+          const decorationType =
+            value.spec.attributes?.["data-vale-decoration"];
+          if (
+            decorationType === "selection" ||
+            decorationType === "highlight"
+          ) {
             return true;
           }
 
           // Remove Vale mark decorations overlapping with selection
-          const overlapsWithSelection = !(to <= selection.from || from >= selection.to);
+          const overlapsWithSelection = !(
+            to <= selection.from || from >= selection.to
+          );
 
           // If decoration is being removed, clean up the alert map
           if (overlapsWithSelection) {

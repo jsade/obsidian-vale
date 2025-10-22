@@ -70,7 +70,6 @@ export function createMockEditorView(
     setState: jest.fn((newState: EditorState) => {
       // In tests, you might want to manually update mockView.state
     }),
-
   } as unknown as EditorView;
 
   return mockView;

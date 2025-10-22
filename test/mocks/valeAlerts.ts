@@ -126,7 +126,8 @@ export const mockAlerts = {
     Check: "Vale.Redundancy",
     Message: "Remove redundant phrase.",
     Span: [0, 50],
-    Match: "This is a very long phrase that should be shortened for better readability",
+    Match:
+      "This is a very long phrase that should be shortened for better readability",
     Action: {
       Name: "replace",
       Params: ["This phrase should be shorter"],

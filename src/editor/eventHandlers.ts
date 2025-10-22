@@ -30,14 +30,14 @@ import { Extension } from "@codemirror/state";
  * when a user clicks on underlined text with an associated Vale alert.
  */
 export interface ValeAlertClickDetail {
-	/** Unique identifier of the clicked alert */
-	alertId: string;
-	/** Document position where the click occurred */
-	position: number;
-	/** Start position of the alert in the document */
-	from: number;
-	/** End position of the alert in the document */
-	to: number;
+  /** Unique identifier of the clicked alert */
+  alertId: string;
+  /** Document position where the click occurred */
+  position: number;
+  /** Start position of the alert in the document */
+  from: number;
+  /** End position of the alert in the document */
+  to: number;
 }
 
 /**
@@ -46,13 +46,19 @@ export interface ValeAlertClickDetail {
  * These events are dispatched to the document and can be listened to
  * by any component that needs to react to Vale-specific interactions.
  */
-export type ValeEventType = "vale-alert-click" | "vale-alert-hover" | "vale-alert-dismiss";
+export type ValeEventType =
+  | "vale-alert-click"
+  | "vale-alert-hover"
+  | "vale-alert-dismiss";
 
 /**
  * Type guard to check if an event is a Vale custom event
  */
-export function isValeEvent(event: Event, type: ValeEventType): event is CustomEvent {
-	return event.type === type && event instanceof CustomEvent;
+export function isValeEvent(
+  event: Event,
+  type: ValeEventType
+): event is CustomEvent {
+  return event.type === type && event instanceof CustomEvent;
 }
 
 /**
@@ -75,12 +81,12 @@ export function isValeEvent(event: Event, type: ValeEventType): event is CustomE
  * ```
  */
 function dispatchValeEvent(type: string, detail: any): void {
-	const event = new CustomEvent(`vale-${type}`, {
-		detail,
-		bubbles: true,
-		cancelable: true
-	});
-	document.dispatchEvent(event);
+  const event = new CustomEvent(`vale-${type}`, {
+    detail,
+    bubbles: true,
+    cancelable: true,
+  });
+  document.dispatchEvent(event);
 }
 
 /**
@@ -119,10 +125,10 @@ function dispatchValeEvent(type: string, detail: any): void {
  * ```
  */
 function findAlertAtPosition(view: EditorView, pos: number): string | null {
-	// TODO: Will be connected to StateField in Wave 3
-	// For now, return null to allow compilation and testing
-	// The integration agent will connect this to the actual decoration state
-	return null;
+  // TODO: Will be connected to StateField in Wave 3
+  // For now, return null to allow compilation and testing
+  // The integration agent will connect this to the actual decoration state
+  return null;
 }
 
 /**
@@ -152,49 +158,49 @@ function findAlertAtPosition(view: EditorView, pos: number): string | null {
  * ```
  */
 export function clickHandler(): Extension {
-	return EditorView.domEventHandlers({
-		mousedown: (event: MouseEvent, view: EditorView): boolean => {
-			// Get document position from click coordinates
-			const pos = view.posAtCoords({
-				x: event.clientX,
-				y: event.clientY
-			});
+  return EditorView.domEventHandlers({
+    mousedown: (event: MouseEvent, view: EditorView): boolean => {
+      // Get document position from click coordinates
+      const pos = view.posAtCoords({
+        x: event.clientX,
+        y: event.clientY,
+      });
 
-			// Handle clicks outside editor bounds
-			if (pos === null) {
-				return false; // Allow default behavior
-			}
+      // Handle clicks outside editor bounds
+      if (pos === null) {
+        return false; // Allow default behavior
+      }
 
-			// Debug logging (will be removed or controlled by DEBUG flag)
-			if (process.env.DEBUG) {
-				console.debug(`[Vale] Click detected at position ${pos}`);
-			}
+      // Debug logging (will be removed or controlled by DEBUG flag)
+      if (process.env.DEBUG) {
+        console.debug(`[Vale] Click detected at position ${pos}`);
+      }
 
-			// Check if there's an alert at this position
-			const alertId = findAlertAtPosition(view, pos);
+      // Check if there's an alert at this position
+      const alertId = findAlertAtPosition(view, pos);
 
-			if (alertId !== null) {
-				// We found an alert! Dispatch custom event
-				// Note: We'll need to get alert bounds from the decoration
-				// For now, we dispatch with just the position and ID
-				dispatchValeEvent("alert-click", {
-					alertId,
-					position: pos,
-					// from and to will be added when connected to StateField
-					from: pos,
-					to: pos
-				} as ValeAlertClickDetail);
+      if (alertId !== null) {
+        // We found an alert! Dispatch custom event
+        // Note: We'll need to get alert bounds from the decoration
+        // For now, we dispatch with just the position and ID
+        dispatchValeEvent("alert-click", {
+          alertId,
+          position: pos,
+          // from and to will be added when connected to StateField
+          from: pos,
+          to: pos,
+        } as ValeAlertClickDetail);
 
-				if (process.env.DEBUG) {
-					console.debug(`[Vale] Alert clicked: ${alertId}`);
-				}
-			}
+        if (process.env.DEBUG) {
+          console.debug(`[Vale] Alert clicked: ${alertId}`);
+        }
+      }
 
-			// Return false to allow default browser behavior
-			// (text selection, cursor positioning, etc.)
-			return false;
-		}
-	});
+      // Return false to allow default browser behavior
+      // (text selection, cursor positioning, etc.)
+      return false;
+    },
+  });
 }
 
 /**
@@ -215,21 +221,21 @@ export function clickHandler(): Extension {
  * ```
  */
 export function debounce<T extends (...args: any[]) => void>(
-	fn: T,
-	delay: number
+  fn: T,
+  delay: number
 ): (...args: Parameters<T>) => void {
-	let timeout: number | undefined;
+  let timeout: number | undefined;
 
-	return (...args: Parameters<T>) => {
-		if (timeout !== undefined) {
-			window.clearTimeout(timeout);
-		}
+  return (...args: Parameters<T>) => {
+    if (timeout !== undefined) {
+      window.clearTimeout(timeout);
+    }
 
-		timeout = window.setTimeout(() => {
-			fn(...args);
-			timeout = undefined;
-		}, delay);
-	};
+    timeout = window.setTimeout(() => {
+      fn(...args);
+      timeout = undefined;
+    }, delay);
+  };
 }
 
 /**
@@ -257,53 +263,53 @@ export function debounce<T extends (...args: any[]) => void>(
  * }
  * ```
  */
-export function hoverHandler(hoverDelay: number = 300): Extension {
-	let currentPos: number | null = null;
-	let hoverTimeout: number | undefined;
+export function hoverHandler(hoverDelay = 300): Extension {
+  let currentPos: number | null = null;
+  let hoverTimeout: number | undefined;
 
-	const debouncedHover = debounce((view: EditorView, pos: number) => {
-		const alertId = findAlertAtPosition(view, pos);
+  const debouncedHover = debounce((view: EditorView, pos: number) => {
+    const alertId = findAlertAtPosition(view, pos);
 
-		if (alertId !== null) {
-			dispatchValeEvent("alert-hover", {
-				alertId,
-				position: pos,
-				from: pos,
-				to: pos
-			});
+    if (alertId !== null) {
+      dispatchValeEvent("alert-hover", {
+        alertId,
+        position: pos,
+        from: pos,
+        to: pos,
+      });
 
-			if (process.env.DEBUG) {
-				console.debug(`[Vale] Alert hovered: ${alertId}`);
-			}
-		}
-	}, hoverDelay);
+      if (process.env.DEBUG) {
+        console.debug(`[Vale] Alert hovered: ${alertId}`);
+      }
+    }
+  }, hoverDelay);
 
-	return EditorView.domEventHandlers({
-		mousemove: (event: MouseEvent, view: EditorView): boolean => {
-			const pos = view.posAtCoords({
-				x: event.clientX,
-				y: event.clientY
-			});
+  return EditorView.domEventHandlers({
+    mousemove: (event: MouseEvent, view: EditorView): boolean => {
+      const pos = view.posAtCoords({
+        x: event.clientX,
+        y: event.clientY,
+      });
 
-			// Only trigger if position changed
-			if (pos !== null && pos !== currentPos) {
-				currentPos = pos;
-				debouncedHover(view, pos);
-			}
+      // Only trigger if position changed
+      if (pos !== null && pos !== currentPos) {
+        currentPos = pos;
+        debouncedHover(view, pos);
+      }
 
-			return false;
-		},
+      return false;
+    },
 
-		mouseleave: (): boolean => {
-			// Clear hover state when mouse leaves editor
-			currentPos = null;
-			if (hoverTimeout !== undefined) {
-				window.clearTimeout(hoverTimeout);
-				hoverTimeout = undefined;
-			}
-			return false;
-		}
-	});
+    mouseleave: (): boolean => {
+      // Clear hover state when mouse leaves editor
+      currentPos = null;
+      if (hoverTimeout !== undefined) {
+        window.clearTimeout(hoverTimeout);
+        hoverTimeout = undefined;
+      }
+      return false;
+    },
+  });
 }
 
 /**
@@ -331,26 +337,26 @@ export function hoverHandler(hoverDelay: number = 300): Extension {
  * ```
  */
 export function registerValeEventListeners(
-	handlers: Partial<Record<ValeEventType, (event: CustomEvent) => void>>
+  handlers: Partial<Record<ValeEventType, (event: CustomEvent) => void>>
 ): () => void {
-	const listeners: Array<[string, EventListener]> = [];
+  const listeners: Array<[string, EventListener]> = [];
 
-	for (const [type, handler] of Object.entries(handlers)) {
-		if (handler) {
-			const listener = (event: Event) => {
-				if (event instanceof CustomEvent) {
-					handler(event);
-				}
-			};
-			document.addEventListener(type, listener);
-			listeners.push([type, listener]);
-		}
-	}
+  for (const [type, handler] of Object.entries(handlers)) {
+    if (handler) {
+      const listener = (event: Event) => {
+        if (event instanceof CustomEvent) {
+          handler(event);
+        }
+      };
+      document.addEventListener(type, listener);
+      listeners.push([type, listener]);
+    }
+  }
 
-	// Return cleanup function
-	return () => {
-		for (const [type, listener] of listeners) {
-			document.removeEventListener(type, listener);
-		}
-	};
+  // Return cleanup function
+  return () => {
+    for (const [type, listener] of listeners) {
+      document.removeEventListener(type, listener);
+    }
+  };
 }
