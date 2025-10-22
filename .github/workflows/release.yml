@@ -19,6 +19,8 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: "20.x" # You might need to adjust this value to your own version
+      - name: Enable Corepack
+        run: corepack enable
       - name: Build
         id: build
         run: |
