@@ -309,13 +309,15 @@ export default class ValePlugin extends Plugin {
     // Find Vale decorations at this position
     let foundAlert: ValeAlert | undefined;
 
-    editorView.state.field(valeStateField).between(pos, pos, (from, to, value) => {
-      const alertId = getAlertIdFromDecoration(value);
-      if (alertId) {
-        foundAlert = valeAlertMap.get(alertId);
-        return false; // Stop iteration
-      }
-    });
+    editorView.state
+      .field(valeStateField)
+      .between(pos, pos, (from, to, value) => {
+        const alertId = getAlertIdFromDecoration(value);
+        if (alertId) {
+          foundAlert = valeAlertMap.get(alertId);
+          return false; // Stop iteration
+        }
+      });
 
     if (foundAlert) {
       // Generate alert ID and dispatch selection
@@ -327,5 +329,4 @@ export default class ValePlugin extends Plugin {
       this.eventBus.dispatch("select-alert", foundAlert);
     }
   }
-
 }
