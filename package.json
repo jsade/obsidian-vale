@@ -23,6 +23,7 @@
     "@types/unzipper": "^0.10.4",
     "@typescript-eslint/eslint-plugin": "^4.32.0",
     "@typescript-eslint/parser": "^4.32.0",
+    "esbuild": "^0.13.3",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
@@ -30,8 +31,7 @@
     "obsidian": "0.12.16",
     "prettier": "^2.4.1",
     "tslib": "^2.2.0",
-    "typescript": "^4.2.4",
-    "esbuild": "^0.13.3"
+    "typescript": "^4.2.4"
   },
   "dependencies": {
     "compressing": "^1.5.1",
@@ -40,5 +40,6 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "unzipper": "^0.10.11"
-  }
+  },
+  "packageManager": "yarn@4.10.3+sha512.c38cafb5c7bb273f3926d04e55e1d8c9dfa7d9c3ea1f36a4868fa028b9e5f72298f0b7f401ad5eb921749eb012eb1c3bb74bf7503df3ee43fd600d14a018266f"
 }
