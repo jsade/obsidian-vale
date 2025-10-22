@@ -11,6 +11,7 @@
 import { Extension } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { valeStateField } from "./stateField";
+import { clickHandler, hoverHandler } from "./eventHandlers";
 
 /**
  * Base theme for Vale decorations.
@@ -141,6 +142,10 @@ export function valeExtension(config: ValeExtensionConfig = {}): Extension {
   const extensions: Extension[] = [
     // Core state management for decorations
     valeStateField,
+
+    // Event handlers for click and hover interactions
+    clickHandler(),
+    hoverHandler(),
   ];
 
   // Add base theme if enabled
@@ -151,7 +156,6 @@ export function valeExtension(config: ValeExtensionConfig = {}): Extension {
   // Future extensions can be added here:
   // - autoCheckListener(plugin)
   // - buildHoverTooltip(plugin)
-  // - clickHandlerViewPlugin(plugin)
 
   return extensions;
 }

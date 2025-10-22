@@ -41,3 +41,17 @@ export {
   lineColToByteOffset,
   byteOffsetToLineCol,
 } from "./utils";
+
+// Event handling utilities
+export {
+  registerValeEventListeners,
+  ValeEventType,
+  ValeAlertClickDetail,
+} from "./eventHandlers";
+
+// Scroll utilities for alert navigation
+export {
+  scrollToAlert,
+  scrollToPosition,
+  getAlertPosition,
+} from "./scrollToAlert";

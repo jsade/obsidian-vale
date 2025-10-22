@@ -1,4 +1,3 @@
-import CodeMirror from "codemirror";
 import { EventBus } from "EventBus";
 import {
   FileSystemAdapter,
@@ -6,12 +5,23 @@ import {
   normalizePath,
   Plugin,
 } from "obsidian";
+import { EditorView } from "@codemirror/view";
 import * as path from "path";
 import { ValeSettingTab } from "./settings/ValeSettingTab";
 import { DEFAULT_SETTINGS, ValeAlert, ValeSettings } from "./types";
 import { ValeConfigManager } from "./vale/ValeConfigManager";
 import { ValeRunner } from "./vale/ValeRunner";
 import { ValeView, VIEW_TYPE_VALE } from "./ValeView";
+import {
+  valeExtension,
+  registerValeEventListeners,
+  ValeAlertClickDetail,
+  selectValeAlert,
+  valeAlertMap,
+  addValeMarks,
+  clearAllValeMarks,
+  scrollToAlert,
+} from "./editor";
 
 export default class ValePlugin extends Plugin {
   public settings: ValeSettings;
@@ -22,15 +32,11 @@ export default class ValePlugin extends Plugin {
 
   private alerts: ValeAlert[] = [];
 
-  // We need to keep the association between marker and alert, in the case
-  // where the user edits the text and the spans no longer match.
-  private markers: Map<CodeMirror.TextMarker, ValeAlert> = new Map<
-    CodeMirror.TextMarker,
-    ValeAlert
-  >();
-
   private eventBus: EventBus = new EventBus();
   private unregisterAlerts: () => void = () => {
+    return;
+  };
+  private unregisterValeEvents: () => void = () => {
     return;
   };
 
@@ -39,6 +45,9 @@ export default class ValePlugin extends Plugin {
     await this.loadSettings();
 
     this.addSettingTab(new ValeSettingTab(this.app, this));
+
+    // Register CM6 extension for Vale decorations and event handling
+    this.registerEditorExtension(valeExtension());
 
     this.addCommand({
       id: "vale-check-document",
@@ -82,7 +91,12 @@ export default class ValePlugin extends Plugin {
         )
     );
 
-    this.registerDomEvent(document, "pointerup", this.onMarkerClick);
+    // Register Vale custom event listeners
+    this.unregisterValeEvents = registerValeEventListeners({
+      "vale-alert-click": (event: CustomEvent<ValeAlertClickDetail>) => {
+        this.onMarkerClick(event.detail);
+      },
+    });
 
     this.unregisterAlerts = this.eventBus.on("alerts", this.onResult);
   }
@@ -92,14 +106,16 @@ export default class ValePlugin extends Plugin {
     // Remove all open Vale leaves.
     this.app.workspace.detachLeavesOfType(VIEW_TYPE_VALE);
 
-    // Remove all marks from the previous check.
-    this.app.workspace.iterateCodeMirrors((cm) => {
-      cm.getAllMarks()
-        .filter((mark) => !!mark.className?.contains("vale-underline"))
-        .forEach((mark) => mark.clear());
-    });
-
+    // Unregister event listeners
     this.unregisterAlerts();
+    this.unregisterValeEvents();
+
+    // Clear all decorations
+    this.withEditorView((view) => {
+      view.dispatch({
+        effects: clearAllValeMarks.of(),
+      });
+    });
   }
 
   // activateView triggers a check and reveals the Vale view, if isn't already
@@ -196,24 +212,21 @@ export default class ValePlugin extends Plugin {
   }
 
   clearAlertMarkers = (): void => {
-    this.withCodeMirrorEditor((editor) => {
-      editor.getAllMarks().forEach((mark) => mark.clear());
+    this.withEditorView((view) => {
+      view.dispatch({
+        effects: clearAllValeMarks.of(),
+      });
     });
   };
 
   markAlerts = (): void => {
-    this.withCodeMirrorEditor((editor) => {
-      this.alerts.forEach((alert: ValeAlert) => {
-        const marker = editor.markText(
-          { line: alert.Line - 1, ch: alert.Span[0] - 1 },
-          { line: alert.Line - 1, ch: alert.Span[1] },
-          {
-            className: `vale-underline vale-${alert.Severity}`,
-            clearOnEnter: false,
-          }
-        );
+    if (!this.showAlerts || this.alerts.length === 0) {
+      return;
+    }
 
-        this.markers.set(marker, alert);
+    this.withEditorView((view) => {
+      view.dispatch({
+        effects: addValeMarks.of(this.alerts),
       });
     });
   };
@@ -221,100 +234,62 @@ export default class ValePlugin extends Plugin {
   // onAlertClick highlights an alert in the editor when the user clicks one of
   // the cards in the results view.
   onAlertClick(alert: ValeAlert): void {
-    this.withCodeMirrorEditor((editor, view) => {
-      if (view.getMode() === "source") {
-        const range: CodeMirror.MarkerRange = {
-          from: { line: alert.Line - 1, ch: alert.Span[0] - 1 },
-          to: { line: alert.Line - 1, ch: alert.Span[1] },
-        };
-
-        this.highlightRange(range);
-
-        editor.scrollIntoView(
-          range.from,
-          editor.getScrollInfo().clientHeight / 2
-        );
-
-        this.eventBus.dispatch("select-alert", alert);
-      }
-    });
-  }
-
-  // onMarkerClick determines whether the user clicks on an existing marker in
-  // the editor and highlights the corresponding alert in the results view.
-  onMarkerClick(e: PointerEvent): void {
-    // Ignore if there's no Vale view open.
-    if (this.app.workspace.getLeavesOfType(VIEW_TYPE_VALE).length === 0) {
-      return;
-    }
-
-    this.withCodeMirrorEditor((editor) => {
-      if (
-        e.target instanceof HTMLElement &&
-        !e.target.hasClass("vale-underline")
-      ) {
-        editor
-          .getAllMarks()
-          .filter(
-            (mark) => !!mark.className?.contains("vale-underline-highlight")
-          )
-          .forEach((mark) => mark.clear());
-
-        this.eventBus.dispatch("deselect-alert", {});
-
-        return;
-      }
-
-      if (!editor.getWrapperElement().contains(e.target as ChildNode)) {
-        return;
-      }
-
-      const lineCh = editor.coordsChar({ left: e.clientX, top: e.clientY });
-      const markers = editor.findMarksAt(lineCh);
-
-      if (markers.length === 0) {
-        return;
-      }
-
-      const marker = markers[0];
-
-      const range = marker.find() as CodeMirror.MarkerRange;
-
-      this.highlightRange(range);
-
-      editor.setCursor(range.to);
-
-      this.eventBus.dispatch("select-alert", this.markers.get(marker));
-    });
-  }
-
-  // highlightRange creates a highlight marker after clearing any previous
-  // highlight markers.
-  highlightRange(range: CodeMirror.MarkerRange): void {
-    this.withCodeMirrorEditor((editor) => {
-      editor
-        .getAllMarks()
-        .filter(
-          (mark) => !!mark.className?.contains("vale-underline-highlight")
-        )
-        .forEach((mark) => mark.clear());
-
-      editor.markText(range.from, range.to, {
-        className: "vale-underline-highlight",
-      });
-    });
-  }
-
-  // withCodeMirrorEditor is a convenience function for making sure that a
-  // function runs with a valid view and editor.
-  withCodeMirrorEditor(
-    callback: (editor: CodeMirror.Editor, view: MarkdownView) => void
-  ): void {
     const view = this.app.workspace.getActiveViewOfType(MarkdownView);
     if (!view) {
       return;
     }
 
-    callback(view.sourceMode.cmEditor, view);
+    this.withEditorView((editorView) => {
+      // Use the scrollToAlert utility to handle scrolling and highlighting
+      scrollToAlert(editorView, view.editor, alert, true);
+
+      // Dispatch to EventBus for UI panel highlighting
+      this.eventBus.dispatch("select-alert", alert);
+    });
+  }
+
+  // onMarkerClick determines whether the user clicks on an existing marker in
+  // the editor and highlights the corresponding alert in the results view.
+  onMarkerClick(detail: ValeAlertClickDetail): void {
+    // Ignore if there's no Vale view open.
+    if (this.app.workspace.getLeavesOfType(VIEW_TYPE_VALE).length === 0) {
+      return;
+    }
+
+    // Get the alert from the map using the alert ID
+    const alert = valeAlertMap.get(detail.alertId);
+
+    if (!alert) {
+      return;
+    }
+
+    // Dispatch selection effect
+    this.withEditorView((view) => {
+      view.dispatch({
+        effects: selectValeAlert.of(detail.alertId),
+      });
+    });
+
+    // Dispatch to EventBus for UI panel
+    this.eventBus.dispatch("select-alert", alert);
+  }
+
+  // withEditorView is a convenience function for making sure that a
+  // function runs with a valid CM6 EditorView.
+  withEditorView(callback: (view: EditorView) => void): void {
+    const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
+    if (!markdownView) {
+      return;
+    }
+
+    // Access CM6 EditorView through Obsidian's editor.cm property
+    // This property exists but may not be in official types
+    const editorView = (markdownView.editor as any)?.cm as EditorView;
+
+    if (!editorView) {
+      return;
+    }
+
+    callback(editorView);
   }
 }
