@@ -129,3 +129,62 @@ Wave 2: Core Implementation (Extension, Events, Tests) - Ready to begin
   - Committed to feature/cm6-tests (ad68b5b)
 
 [2025-10-22 20:17] COORD_POINT_2_START: Beginning merge and integration testing
+[2025-10-22 20:40] MERGE: feature/cm6-extension → main (auto-merged package.json)
+[2025-10-22 20:41] MERGE: feature/cm6-events → main (resolved conflicts in package.json, yarn.lock)
+[2025-10-22 20:42] MERGE: feature/cm6-tests → main (resolved conflicts in yarn.lock)
+[2025-10-22 20:43] INTEGRATION_TEST: Build successful (main.js: 1.2MB)
+[2025-10-22 20:43] INTEGRATION_TEST: Lint passed (2 pre-existing errors, new code clean after auto-fix)
+[2025-10-22 20:44] INTEGRATION_TEST: Tests passed (50 passed, 2 skipped as expected)
+[2025-10-22 20:45] CLEANUP: Removed 3 worktrees
+[2025-10-22 20:45] CLEANUP: Deleted 3 feature branches
+[2025-10-22 20:45] WAVE_2_COMPLETE: Tagged wave-2-complete
+
+---
+
+## Wave 2 Summary
+
+**Duration**: 47 minutes (19:58 - 20:45)
+**Agents**: 3 concurrent sub-agents
+**Deliverables**: All completed successfully
+
+### Quality Gates Met
+- ✅ Extension builds without errors (main.js: 1.2MB)
+- ✅ All state effects defined and typed
+- ✅ StateField handles all effects correctly
+- ✅ Event handlers implemented
+- ✅ Test infrastructure complete
+- ✅ All tests pass (50 passed, 2 skipped as expected)
+- ✅ Lint errors fixed (only 2 pre-existing errors remain)
+
+### Files Created/Modified
+**Source Code** (~1,200 lines new code):
+- src/editor/effects.ts (152 lines, 5 state effects)
+- src/editor/decorations.ts (199 lines, decoration factories)
+- src/editor/stateField.ts (322 lines, complete StateField)
+- src/editor/valeExtension.ts (157 lines, extension + theme)
+- src/editor/index.ts (43 lines, public API)
+- src/editor/eventHandlers.ts (356 lines, click/hover handlers)
+
+**Test Infrastructure** (~1,300 lines):
+- test/mocks/editorView.ts (105 lines)
+- test/mocks/obsidian.ts (161 lines)
+- test/mocks/valeAlerts.ts (261 lines)
+- test/editor/stateField.test.ts (127 lines)
+- docs/testing-guide.md (632 lines)
+
+**Dependencies Added**:
+- @codemirror/state@6.5.2
+- @codemirror/view@6.38.6
+- @codemirror/language@6.11.3
+
+### Architecture Highlights
+- ✅ Immutable state management via StateField
+- ✅ UTF-8 multi-byte character support
+- ✅ Efficient decoration updates (no full rebuilds)
+- ✅ Error-resilient position conversion
+- ✅ Theme integration with Obsidian CSS variables
+- ✅ Custom event bridge for plugin communication
+- ✅ Comprehensive mocks using real CM6 EditorState
+
+### Next Steps
+Wave 3: Integration (Main Plugin Refactor, Click Integration, Unit Tests) - Ready to begin
