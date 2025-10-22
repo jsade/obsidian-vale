@@ -82,9 +82,9 @@ export function isValeEvent(
  * });
  * ```
  */
-function dispatchValeEvent(
+function dispatchValeEvent<T = Record<string, unknown>>(
   type: string,
-  detail: Record<string, unknown>
+  detail: T
 ): void {
   const event = new CustomEvent(`vale-${type}`, {
     detail,
