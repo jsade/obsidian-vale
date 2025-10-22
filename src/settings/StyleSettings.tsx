@@ -5,7 +5,7 @@ import { ValeSettings, ValeStyle } from "../types";
 
 interface Props {
   settings: ValeSettings;
-  navigate: (page: string, context: any) => void;
+  navigate: (page: string, context: string) => void;
 }
 
 export const StyleSettings = ({

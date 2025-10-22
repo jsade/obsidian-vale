@@ -52,12 +52,12 @@ export const GeneralSettings = ({
                 .setValue(settings.server.url)
                 .setPlaceholder("http://localhost:7777");
 
-              component.inputEl.onblur = async (value) => {
+              component.inputEl.onblur = async (value: FocusEvent) => {
                 onSettingsChange({
                   ...settings,
                   server: {
                     ...settings.server,
-                    url: (value.currentTarget as any).value,
+                    url: (value.currentTarget as HTMLInputElement).value,
                   },
                 });
               };
@@ -86,12 +86,12 @@ export const GeneralSettings = ({
               .addText((text) => {
                 const component = text.setValue(settings.cli.valePath);
 
-                component.inputEl.onblur = async (value) => {
+                component.inputEl.onblur = async (value: FocusEvent) => {
                   onSettingsChange({
                     ...settings,
                     cli: {
                       ...settings.cli,
-                      valePath: (value.currentTarget as any).value,
+                      valePath: (value.currentTarget as HTMLInputElement).value,
                     },
                   });
                 };
@@ -105,12 +105,13 @@ export const GeneralSettings = ({
               .addText((text) => {
                 const component = text.setValue(settings.cli.configPath);
 
-                component.inputEl.onblur = async (value) => {
+                component.inputEl.onblur = async (value: FocusEvent) => {
                   onSettingsChange({
                     ...settings,
                     cli: {
                       ...settings.cli,
-                      configPath: (value.currentTarget as any).value,
+                      configPath: (value.currentTarget as HTMLInputElement)
+                        .value,
                     },
                   });
                 };

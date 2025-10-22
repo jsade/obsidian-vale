@@ -7,7 +7,7 @@ import { RuleSettingList } from "../components/RuleSettingList";
 interface Props {
   settings: ValeSettings;
   style: string;
-  navigate: (page: string, context: any) => void;
+  navigate: (page: string, context: string) => void;
 }
 
 export const RuleSettings = ({
