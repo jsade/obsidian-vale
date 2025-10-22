@@ -215,7 +215,7 @@ describe("EventBus", () => {
       const unsubscribe1 = eventBus.on("ready", callback1);
       unsubscribe1();
 
-      const unsubscribe2 = eventBus.on("ready", callback2);
+      eventBus.on("ready", callback2);
 
       eventBus.dispatch("ready", null);
 
@@ -241,6 +241,7 @@ describe("EventBus", () => {
       const warnSpy = jest.spyOn(console, "warn");
 
       // Subscribe to custom event
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       eventBus.on("custom-event" as any, callback);
 
       // Dispatch custom event

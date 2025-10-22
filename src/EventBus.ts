@@ -7,17 +7,21 @@ type EventType =
   | "deselect-alert"
   | "alerts";
 
+// Generic event handler type for type-safe event handling
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type EventHandler<T = any> = (data: T) => void;
+
 // The main purpose of the event bus is to issue commands to the React
 // application.
 export class EventBus {
-  private subscribers: Record<string, Function>;
+  private subscribers: Record<string, EventHandler>;
 
   constructor() {
     this.subscribers = {};
   }
 
-  // TODO: Make type-safe rather than relying on Function.
-  on(topic: EventType, cb: Function): () => void {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  on<T = any>(topic: EventType, cb: EventHandler<T>): () => void {
     debug(`Registering subscriber for topic "${topic}"`);
     this.subscribers[topic] = cb;
 

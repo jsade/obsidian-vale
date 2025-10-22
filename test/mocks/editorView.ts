@@ -2,12 +2,12 @@
  * Mock EditorView factory for testing CM6 components
  */
 
-import { EditorState, Text } from "@codemirror/state";
+import { EditorState, Extension } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 
 export interface MockEditorViewOptions {
   doc?: string;
-  extensions?: any[];
+  extensions?: Extension[];
 }
 
 /**
@@ -37,18 +37,18 @@ export function createMockEditorView(
     dom,
 
     // Mock dispatch function
-    dispatch: jest.fn((transaction) => {
+    dispatch: jest.fn((_transaction) => {
       // In real implementation, this would update state
       // For testing, we just record the call
     }),
 
     // Mock position conversion methods
-    posAtCoords: jest.fn((coords: { x: number; y: number }) => {
+    posAtCoords: jest.fn((_coords: { x: number; y: number }) => {
       // Return a mock position
       return { pos: 0, inside: -1 };
     }),
 
-    coordsAtPos: jest.fn((pos: number, side?: -1 | 1) => {
+    coordsAtPos: jest.fn((_pos: number, _side?: -1 | 1) => {
       // Return mock coordinates
       return { left: 0, right: 10, top: 0, bottom: 20 };
     }),
@@ -60,14 +60,14 @@ export function createMockEditorView(
     visibleRanges: [{ from: 0, to: state.doc.length }],
 
     // Mock DOM query methods
-    domAtPos: jest.fn((pos: number) => {
+    domAtPos: jest.fn((_pos: number) => {
       return { node: dom, offset: 0 };
     }),
 
     // Mock lifecycle methods (no-ops for tests)
     destroy: jest.fn(),
     update: jest.fn(),
-    setState: jest.fn((newState: EditorState) => {
+    setState: jest.fn((_newState: EditorState) => {
       // In tests, you might want to manually update mockView.state
     }),
   } as unknown as EditorView;
@@ -100,5 +100,5 @@ export function updateMockViewText(view: EditorView, newText: string): void {
   });
 
   // Update the state property directly (only works on mock)
-  (view as any).state = newState;
+  (view as unknown as { state: EditorState }).state = newState;
 }

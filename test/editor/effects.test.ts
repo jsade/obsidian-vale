@@ -5,7 +5,7 @@
  * to modify Vale decoration state in CodeMirror 6.
  */
 
-import { EditorState, Transaction } from "@codemirror/state";
+import { EditorState } from "@codemirror/state";
 import {
   addValeMarks,
   clearAllValeMarks,
@@ -151,6 +151,7 @@ describe("State Effects", () => {
     });
 
     it("should allow null as value", () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const effect = clearAllValeMarks.of(null as any);
 
       expect(effect).toBeDefined();

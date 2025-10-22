@@ -4,7 +4,6 @@ import {
   MarkdownView,
   normalizePath,
   Plugin,
-  EditorView as ObsidianEditorView,
 } from "obsidian";
 import { EditorView } from "@codemirror/view";
 import * as path from "path";
@@ -161,10 +160,14 @@ export default class ValePlugin extends Plugin {
       if (this.settings.cli.managed) {
         this.configManager = this.newManagedConfigManager();
       } else {
-        this.configManager = new ValeConfigManager(
-          this.settings.cli.valePath!,
-          this.normalizeConfigPath(this.settings.cli.configPath!)
-        );
+        const valePath = this.settings.cli.valePath;
+        const configPath = this.settings.cli.configPath;
+        if (valePath && configPath) {
+          this.configManager = new ValeConfigManager(
+            valePath,
+            this.normalizeConfigPath(configPath)
+          );
+        }
       }
     }
 
@@ -287,7 +290,10 @@ export default class ValePlugin extends Plugin {
 
     // Access CM6 EditorView through Obsidian's editor.cm property
     // This property exists but may not be in official types
-    const editorView = (markdownView.editor as any)?.cm as EditorView;
+    interface EditorWithCM {
+      cm?: EditorView;
+    }
+    const editorView = (markdownView.editor as EditorWithCM)?.cm;
 
     if (!editorView) {
       return;

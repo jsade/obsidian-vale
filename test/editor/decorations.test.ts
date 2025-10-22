@@ -342,7 +342,7 @@ describe("Decoration Factory Functions", () => {
     it("should work with all severity levels", () => {
       const severities = createAlertsBySeverity();
 
-      for (const [severity, alert] of Object.entries(severities)) {
+      for (const alert of Object.values(severities)) {
         const decoration = createValeMarkDecoration(alert);
         const extractedId = getAlertIdFromDecoration(decoration);
 
@@ -419,7 +419,8 @@ describe("Decoration Factory Functions", () => {
     });
 
     it("should handle alert with very long check name", () => {
-      const longCheckName = "Vale.This.Is.A.Very.Long.Check.Name.With.Many.Dots";
+      const longCheckName =
+        "Vale.This.Is.A.Very.Long.Check.Name.With.Many.Dots";
       const alert = createMockValeAlert({
         Check: longCheckName,
       });

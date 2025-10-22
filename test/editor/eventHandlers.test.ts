@@ -6,7 +6,6 @@
  */
 
 import { EditorState } from "@codemirror/state";
-import { EditorView } from "@codemirror/view";
 import {
   clickHandler,
   hoverHandler,
@@ -39,15 +38,8 @@ describe("Event Handlers", () => {
     });
 
     it("should handle clicks within editor bounds", () => {
-      const view = createMockEditorView({ doc: "test document" });
+      createMockEditorView({ doc: "test document" });
       const handler = clickHandler();
-
-      // Create a mousedown event
-      const event = new MouseEvent("mousedown", {
-        clientX: 10,
-        clientY: 10,
-        bubbles: true,
-      });
 
       // The handler should process without throwing
       expect(() => {
@@ -296,9 +288,9 @@ describe("Event Handlers", () => {
   describe("registerValeEventListeners", () => {
     afterEach(() => {
       // Clean up any lingering event listeners
-      document.removeEventListener("vale-alert-click", () => {});
-      document.removeEventListener("vale-alert-hover", () => {});
-      document.removeEventListener("vale-alert-dismiss", () => {});
+      document.removeEventListener("vale-alert-click", jest.fn());
+      document.removeEventListener("vale-alert-hover", jest.fn());
+      document.removeEventListener("vale-alert-dismiss", jest.fn());
     });
 
     it("should register event listeners for provided handlers", () => {
@@ -585,6 +577,7 @@ describe("Event Handlers", () => {
     it("should handle debounce with undefined delay", () => {
       const fn = jest.fn();
       // TypeScript would catch this, but testing runtime behavior
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const debounced = debounce(fn, undefined as any);
 
       expect(debounced).toBeDefined();

@@ -64,7 +64,7 @@ export function createMockEditor(options?: {
 
     // Document methods
     getValue: jest.fn(() => cm.state.doc.toString()),
-    setValue: jest.fn((value: string) => {
+    setValue: jest.fn((_value: string) => {
       // In real implementation, would dispatch transaction
     }),
 
@@ -114,21 +114,26 @@ export function createMockEditor(options?: {
     replaceRange: jest.fn(),
 
     // Range methods
-    getRange: jest.fn((from: any, to: any) => {
-      // Handle both offset and pos formats
-      let fromOffset: number;
-      let toOffset: number;
+    getRange: jest.fn(
+      (
+        from: number | { line: number; ch: number },
+        to: number | { line: number; ch: number }
+      ) => {
+        // Handle both offset and pos formats
+        let fromOffset: number;
+        let toOffset: number;
 
-      if (typeof from === "number") {
-        fromOffset = from;
-        toOffset = to as number;
-      } else {
-        fromOffset = mockEditor.posToOffset(from);
-        toOffset = mockEditor.posToOffset(to);
+        if (typeof from === "number") {
+          fromOffset = from;
+          toOffset = to as number;
+        } else {
+          fromOffset = mockEditor.posToOffset(from);
+          toOffset = mockEditor.posToOffset(to);
+        }
+
+        return cm.state.doc.sliceString(fromOffset, toOffset);
       }
-
-      return cm.state.doc.sliceString(fromOffset, toOffset);
-    }),
+    ),
 
     // Transaction methods
     transaction: jest.fn(),
@@ -157,5 +162,5 @@ export function createMockMarkdownView(options?: {
  * Helper to get CM6 EditorView from mock Editor
  */
 export function getEditorView(editor: Editor): EditorView {
-  return (editor as any).cm as EditorView;
+  return (editor as unknown as { cm: EditorView }).cm;
 }

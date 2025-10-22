@@ -6,7 +6,6 @@
  */
 
 import { EditorState } from "@codemirror/state";
-import { Decoration } from "@codemirror/view";
 import { valeStateField, valeAlertMap } from "../../src/editor/stateField";
 import {
   addValeMarks,
@@ -18,7 +17,6 @@ import {
 import { generateAlertId } from "../../src/editor/decorations";
 import {
   createMockValeAlert,
-  mockAlerts,
   createSequentialAlerts,
   createOverlappingAlerts,
   createAlertsBySeverity,
@@ -110,7 +108,7 @@ describe("StateField", () => {
     });
 
     it("should store alerts in valeAlertMap", () => {
-      let state = createTestState("test document");
+      const state = createTestState("test document");
       const alert = createMockValeAlert({
         Line: 1,
         Span: [0, 4],
@@ -118,12 +116,13 @@ describe("StateField", () => {
       });
       const alertId = generateAlertId(alert);
 
-      state = state.update({
+      const newState = state.update({
         effects: addValeMarks.of([alert]),
       }).state;
 
       expect(valeAlertMap.has(alertId)).toBe(true);
       expect(valeAlertMap.get(alertId)).toBe(alert);
+      expect(newState).toBeDefined();
     });
 
     it("should apply correct CSS class based on severity", () => {
@@ -257,24 +256,25 @@ describe("StateField", () => {
     });
 
     it("should clear valeAlertMap when clearing all", () => {
-      let state = createTestState("test document");
+      const state = createTestState("test document");
       const alert = createMockValeAlert({
         Line: 1,
         Span: [0, 4],
         Check: "Vale.Test",
       });
 
-      state = state.update({
+      const stateWithAlerts = state.update({
         effects: addValeMarks.of([alert]),
       }).state;
 
       expect(valeAlertMap.size).toBeGreaterThan(0);
 
-      state = state.update({
+      const clearedState = stateWithAlerts.update({
         effects: clearAllValeMarks.of(undefined),
       }).state;
 
       expect(valeAlertMap.size).toBe(0);
+      expect(clearedState).toBeDefined();
     });
 
     it("should clear decorations in specific range", () => {
@@ -322,7 +322,7 @@ describe("StateField", () => {
     });
 
     it("should remove cleared decorations from valeAlertMap", () => {
-      let state = createTestState("test document");
+      const state = createTestState("test document");
       const alert = createMockValeAlert({
         Line: 1,
         Span: [0, 4],
@@ -330,17 +330,18 @@ describe("StateField", () => {
       });
       const alertId = generateAlertId(alert);
 
-      state = state.update({
+      const stateWithAlert = state.update({
         effects: addValeMarks.of([alert]),
       }).state;
 
       expect(valeAlertMap.has(alertId)).toBe(true);
 
-      state = state.update({
+      const clearedState = stateWithAlert.update({
         effects: clearValeMarksInRange.of({ from: 0, to: 4 }),
       }).state;
 
       expect(valeAlertMap.has(alertId)).toBe(false);
+      expect(clearedState).toBeDefined();
     });
   });
 
@@ -593,7 +594,7 @@ describe("StateField", () => {
       const decorations = state.field(valeStateField);
       let foundDecoration = false;
 
-      decorations.between(0, state.doc.length, (from, to, value) => {
+      decorations.between(0, state.doc.length, (from) => {
         // Decoration should shift by length of inserted text
         if (from > 5) {
           // Shifted beyond original position
