@@ -41,6 +41,8 @@
     "typescript": "^4.2.4"
   },
   "dependencies": {
+    "@codemirror/state": "^6.5.2",
+    "@codemirror/view": "^6.38.6",
     "compressing": "^1.5.1",
     "download": "^8.0.0",
     "ini": "^2.0.0",
