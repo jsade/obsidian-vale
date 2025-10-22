@@ -1,0 +1,346 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project Overview
+
+Obsidian Vale is a Vale linter client plugin for Obsidian. It integrates the Vale prose linter into the Obsidian markdown editor, providing real-time writing feedback through underlines and a results panel.
+
+**Current Status**: v1.0.0+ supports Obsidian 1.5.0+ with CodeMirror 6 (CM6). Previous versions (v0.9.0) used CodeMirror 5 and are no longer functional.
+
+## Build Commands
+
+- **Development build with watch mode**: `yarn dev` or `npm run dev`
+  - Uses esbuild with sourcemaps and DEBUG=true
+  - Outputs to `main.js` with auto-rebuild on changes
+
+- **Production build**: `yarn build` or `npm run build`
+  - Minified bundle with DEBUG=false
+
+- **Lint**: `yarn lint` or `npm run lint`
+  - Uses ESLint with TypeScript parser
+
+- **Format**: `yarn format` or `npm run format`
+  - Formats all TypeScript files with Prettier
+
+## Architecture
+
+### CodeMirror 6 Integration (v1.0.0+)
+
+**Important**: The editor integration has been completely rewritten for CM6. See [docs/architecture-cm6.md](docs/architecture-cm6.md) for comprehensive technical details.
+
+#### Core Plugin Flow
+
+1. **ValePlugin** (`src/main.ts`) - Main plugin class that manages the entire lifecycle
+   - Loads settings and initializes the Vale runner
+   - **Registers CM6 extension**: `this.registerEditorExtension(valeExtension(this))`
+   - Registers commands ("Check document", "Toggle alerts", "Jump to next alert")
+   - Coordinates between ValeView (React UI) and ValeRunner (backend)
+   - Integrates with Obsidian's editor menu for context actions
+
+2. **EventBus** (`src/EventBus.ts`) - Simple pub/sub system for communication
+   - Bridges between Obsidian plugin code and React components
+   - Key events: "ready", "check", "alerts", "select-alert", "deselect-alert"
+   - **Note**: CM6 integration uses direct dispatch, EventBus primarily for UI↔React communication
+
+3. **ValeRunner** (`src/vale/ValeRunner.ts`) - Orchestrates Vale execution
+   - Ensures only one check runs at a time using `notConcurrent` wrapper
+   - Delegates to either ValeServer or ValeCli based on settings
+   - Returns `ValeAlert[]` with position information
+
+#### CM6 Editor Integration (`src/editor/`)
+
+**Key Files** (to be implemented in migration):
+- `src/editor/extension.ts`: Extension factory that composes all editor features
+- `src/editor/underlines.ts`: StateField managing decoration lifecycle
+- `src/editor/tooltip.ts`: Hover tooltips for interactive suggestions
+- `src/editor/autoCheck.ts`: Debounced auto-checking on document changes
+- `src/editor/theme.ts`: CSS styling for underlines and tooltips
+
+**Architecture Pattern**:
+```
+registerEditorExtension(valeExtension(plugin))
+    ↓
+valeExtension() returns Extension[]
+    ├── underlineDecoration (StateField<DecorationSet>)
+    ├── autoCheckListener (EditorView.updateListener)
+    ├── hoverTooltip (CM6 tooltip extension)
+    └── baseTheme (CSS)
+```
+
+**State Management**:
+- **State Effects**: Explicit operations that modify decoration state
+  - `addUnderline.of(alert)`: Add new underline decoration
+  - `clearAllUnderlines.of()`: Remove all decorations
+  - `clearUnderlinesInRange.of({ from, to })`: Remove decorations in range
+  - `clearMatchingUnderlines.of(predicate)`: Remove decorations matching condition
+
+- **StateField**: Manages `DecorationSet` through immutable updates
+  - Maps decorations through text changes automatically
+  - Filters decorations when text is edited
+  - Provides decorations to editor rendering pipeline
+
+**Commands**:
+Commands extract EditorView from Obsidian's Editor:
+```typescript
+editorCallback: (editor, view) => {
+    const editorView = editor.cm as EditorView;
+    // Use editorView.dispatch() to modify state
+}
+```
+
+**Interaction Patterns**:
+1. **Hover tooltips**: Use CM6's `hoverTooltip()` helper
+2. **Context menu**: Obsidian's `workspace.on("editor-menu")` event
+3. **Suggestion acceptance**: Dispatch transaction with both text change and effect:
+   ```typescript
+   view.dispatch({
+       changes: [{ from, to, insert: suggestion }],
+       effects: [clearUnderlinesInRange.of({ from, to })]
+   });
+   ```
+
+### Vale Backends
+
+The plugin supports two modes:
+
+- **CLI Mode** (`src/vale/ValeCli.ts`): Spawns Vale binary as child process, pipes stdin/stdout
+- **Server Mode** (`src/vale/ValeServer.ts`): Makes HTTP POST requests to a Vale server
+
+**ValeConfigManager** (`src/vale/ValeConfigManager.ts`) handles all file operations:
+- Vale binary installation (downloads from GitHub releases)
+- Config file management (.vale.ini parsing/writing using `ini` package)
+- Style installation/uninstallment (downloads ZIP files from GitHub)
+- Rule configuration (enable/disable individual rules)
+
+### UI Architecture
+
+- **ValeView** (`src/ValeView.tsx`) - Obsidian ItemView that hosts the React app
+  - Registers as a workspace leaf with view type "vale"
+  - Renders React app into Obsidian's container element
+
+- **ValeApp** (`src/components/ValeApp.tsx`) - Root React component
+  - Listens to EventBus "check" events to trigger Vale runs
+  - Displays results in AlertList component
+
+- Settings are rendered as React components in `src/settings/` using a router pattern
+
+### Text Marking System (CM6)
+
+**New Approach** (v1.0.0+):
+- Uses CodeMirror 6's Decoration system (declarative)
+- Decorations automatically track position changes
+- State managed through StateField and state effects
+- CSS classes: `vale-underline vale-{severity}` (error, warning, suggestion)
+- Alert metadata stored via data attributes or separate Map keyed by alert ID
+
+**Old Approach** (v0.9.0, deprecated):
+- Used CodeMirror 5's `markText()` API (imperative)
+- Manual tracking of markers in a Map
+- Manual cleanup and position tracking
+- **No longer functional in Obsidian 1.5.0+**
+
+### Managed vs Custom Vale
+
+- **Managed mode**: Plugin downloads and manages Vale binary and config in `.obsidian/plugins/obsidian-vale/data/`
+- **Custom mode**: User provides paths to their own Vale binary and config file
+- Paths can be relative (converted to absolute using vault adapter) or absolute
+
+## Key Technical Details
+
+- **Platform detection**: Uses `process.platform` to determine OS for binary downloads (win32/darwin/linux)
+- **Binary naming**: Windows uses `vale.exe`, Unix uses `vale`
+- **Vale exit codes**: 0 = no alerts, 1 = alerts found, other = error
+- **React integration**: Uses `ReactDOM.render` in `onOpen()` and `unmountComponentAtNode` in `onClose()`
+- **TypeScript paths**: Uses `baseUrl: "./src"` for absolute imports from src/
+- **Bundle externals**: `obsidian` and `electron` are marked as external in esbuild
+
+## Vale Configuration Structure
+
+Vale config (.vale.ini) uses INI format:
+```ini
+StylesPath = styles
+[*]
+[*.md]
+BasedOnStyles = Vale, Google, Microsoft
+Google.Headings = warning
+```
+
+Styles are directories in the StylesPath containing `.yml` rule files.
+
+## CodeMirror 6 Migration Details
+
+### Breaking Changes from CM5 → CM6
+
+| Operation | CM5 (Old) | CM6 (New) |
+|-----------|-----------|-----------|
+| **Add underline** | `editor.markText(from, to, options)` | `view.dispatch({ effects: [addUnderline.of(alert)] })` |
+| **Clear underlines** | `marker.clear()` | `view.dispatch({ effects: [clearAllUnderlines.of()] })` |
+| **Get cursor** | `editor.getCursor()` | `view.state.selection.main.head` |
+| **Get text** | `editor.getValue()` | `view.state.doc.toString()` |
+| **Replace text** | `editor.replaceRange(text, from, to)` | `view.dispatch({ changes: [{ from, to, insert: text }] })` |
+| **Listen to changes** | `editor.on("change", callback)` | `EditorView.updateListener.of(callback)` |
+
+### Migration Phases
+
+See [docs/reports/parallel-implementation-plan.md](docs/reports/parallel-implementation-plan.md) for the complete multi-wave migration strategy.
+
+**High-level phases**:
+1. **Configuration**: Package updates, TypeScript config, dependencies
+2. **Core Extension**: State field, decorations, effects
+3. **Integration**: Plugin registration, command updates
+4. **Event Handling**: Auto-check, tooltips, context menu
+5. **Testing**: Manual and automated tests
+
+### Reference Implementation
+
+This migration is based on [obsidian-languagetool](https://github.com/wrenger/obsidian-languagetool), which successfully migrated to CM6 and provides:
+- State field patterns for decorations
+- Hover tooltip implementation
+- Auto-check with debouncing
+- Context menu integration
+- Performance optimizations
+
+**Key files to reference**:
+- [underlines.ts](https://github.com/wrenger/obsidian-languagetool/blob/master/src/editor/underlines.ts)
+- [tooltip.ts](https://github.com/wrenger/obsidian-languagetool/blob/master/src/editor/tooltip.ts)
+- [autoCheck.ts](https://github.com/wrenger/obsidian-languagetool/blob/master/src/editor/autoCheck.ts)
+- [extension.ts](https://github.com/wrenger/obsidian-languagetool/blob/master/src/editor/extension.ts)
+
+## Development Guidelines
+
+### Working with CM6
+
+1. **Always use state effects** for modifying decorations - never mutate state directly
+2. **Batch effects** in single dispatch for performance: `view.dispatch({ effects: [...] })`
+3. **Map decorations** through changes at start of update function: `decorations.map(tr.changes)`
+4. **Filter carefully** when clearing decorations - consider overlap conditions
+5. **Use data attributes** sparingly - prefer separate Map for alert metadata
+6. **Test position tracking** - decorations should move correctly with text edits
+
+### Testing Checklist
+
+- [ ] Basic underlines appear after check
+- [ ] Underlines track position when text inserted before them
+- [ ] Underlines disappear when their text is edited
+- [ ] Hover tooltips display correct alert information
+- [ ] Clicking suggestion replaces text and clears underline
+- [ ] Context menu populates with suggestions
+- [ ] Auto-check triggers after typing stops
+- [ ] Auto-check doesn't run in code blocks (if configured)
+- [ ] Commands work with multiple editor instances
+- [ ] Performance acceptable with 100+ alerts
+
+### Common Pitfalls
+
+1. **Not mapping decorations**: Causes position drift after edits
+2. **Aggressive filtering**: Clears decorations too far from edit location
+3. **Memory leaks**: Storing alert references in decoration specs without cleanup
+4. **Rebuilding decoration set**: Use `update()` method, not creating new set
+5. **Synchronous checks**: Auto-check should be debounced to avoid lag
+
+## Obsidian Reference Documentation
+
+You can find Obsidian API references and other documentation under `docs/reference`. If what you're looking for isn't found, you **MUST** check with context7 these available library IDs:
+
+- obsidian_md: Obsidian Developer Docs
+- obsidian-api: Type definitions for Obsidian API
+- obsidian-sample-plugin: A sample plugin for Obsidian
+- codemirror_net: Latest CodeMirror documentation
+
+If you fetch documentation from context7, you **must** write that documentation into a markdown file under `docs/reference` (if it doesn't yet exist).
+
+This enables faster lookup the next time similar information is needed.
+
+## Additional Resources
+
+### Official Documentation
+- [Obsidian CM6 Migration Guide](https://docs.obsidian.md/Plugins/Editor/Migrating+from+CM5+to+CM6)
+- [Obsidian Plugin Docs - Editor Extensions](https://docs.obsidian.md/Plugins/Editor/Editor+extensions)
+- [CodeMirror 6 Documentation](https://codemirror.net/docs/)
+- [CM6 State Management](https://codemirror.net/docs/guide/#state-and-updates)
+- [CM6 Decorations Example](https://codemirror.net/examples/decoration/)
+
+### CM6 Learning Resources
+- [CM6 System Guide](https://codemirror.net/docs/guide/) - Understanding the architecture
+- [CM6 Reference Manual](https://codemirror.net/docs/ref/) - API documentation
+- [State Effects Deep Dive](https://codemirror.net/docs/ref/#state.StateEffect) - How effects work
+
+### Community Resources
+- [Obsidian Plugin Developer Docs](https://marcus.se.net/obsidian-plugin-docs/)
+- [Obsidian Hub - Live Preview Update Guide](https://publish.obsidian.md/hub/04+-+Guides%2C+Workflows%2C+%26+Courses/Guides/How+to+update+your+plugins+and+CSS+for+live+preview)
+- [Goodbye Legacy Editor Announcement](https://obsidian.md/blog/goodbye-legacy-editor/)
+
+## Architecture Diagram
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                          ValePlugin                              │
+│  ┌────────────────────────────────────────────────────────────┐ │
+│  │  onload()                                                   │ │
+│  │    ├── loadSettings()                                       │ │
+│  │    ├── registerEditorExtension(valeExtension(this)) ◄─┐    │ │
+│  │    ├── registerCommands()                             │    │ │
+│  │    ├── registerView("vale", ValeView)                 │    │ │
+│  │    └── registerEvent("editor-menu", handler)          │    │ │
+│  └────────────────────────────────────────────────────────────┘ │
+└──────────────────┬──────────────────────────────────────────┬────┘
+                   │                                          │
+                   │ Events                      CM6 Extension│
+                   ▼                                          ▼
+┌──────────────────────────────┐      ┌──────────────────────────────┐
+│        EventBus              │      │   valeExtension(plugin)      │
+│  ┌────────────────────────┐ │      │  ┌────────────────────────┐ │
+│  │ "check"    → ValeApp   │ │      │  │ underlineDecoration    │ │
+│  │ "alerts"   → AlertList │ │      │  │   (StateField)         │ │
+│  │ "select"   → Editor    │ │      │  ├────────────────────────┤ │
+│  └────────────────────────┘ │      │  │ autoCheckListener      │ │
+└──────────────────────────────┘      │  │   (updateListener)     │ │
+                                       │  ├────────────────────────┤ │
+┌──────────────────────────────┐      │  │ hoverTooltip           │ │
+│      ValeRunner              │      │  │   (tooltip extension)  │ │
+│  ┌────────────────────────┐ │      │  ├────────────────────────┤ │
+│  │ ValeCli / ValeServer   │ │      │  │ baseTheme (CSS)        │ │
+│  └────────────────────────┘ │      │  └────────────────────────┘ │
+└──────────────────────────────┘      └──────────────┬───────────────┘
+         ↓                                           │
+    Vale Binary                                      │
+         ↓                                           ▼
+    ValeAlert[]                    ┌──────────────────────────────────┐
+         ↓                         │      CodeMirror 6 Editor         │
+         ├─────────────────────────┤  ┌────────────────────────────┐ │
+         │                         │  │   EditorView               │ │
+         │                         │  │    ├── State               │ │
+         ▼                         │  │    │    └── DecorationSet  │ │
+    dispatch(addUnderline)         │  │    └── Dispatch            │ │
+         ↓                         │  │         (transactions)      │ │
+    StateField.update()            │  └────────────────────────────┘ │
+         ↓                         │                                  │
+    new DecorationSet              │    Rendered with underlines     │
+         ↓                         └──────────────────────────────────┘
+    EditorView re-renders
+
+User Interactions:
+1. Type → updateListener → debounce → runDetection → Vale → alerts → dispatch(addUnderline)
+2. Hover → hoverTooltip → findAlertAtPosition → show tooltip with suggestions
+3. Click suggestion → dispatch({ changes, effects }) → replace text + clear underline
+4. Right-click → editor-menu → populate context menu → dispatch on selection
+```
+
+## Summary
+
+**Key Architectural Principles**:
+1. **Declarative CM6 extensions** compose editor functionality
+2. **Immutable state** managed through StateField and state effects
+3. **Vale backend unchanged** - CLI and Server modes work as before
+4. **React UI unchanged** - EventBus communication still works
+5. **Commands updated** to extract EditorView and use dispatch
+
+**Migration Status**:
+- ✅ Vale backend: No changes needed
+- ✅ React UI: Minimal changes
+- ✅ Settings: No changes needed
+- 🔄 Editor integration: Complete rewrite for CM6 (in progress)
+- 🔄 Commands: Update to use EditorView.dispatch (in progress)
+
+**Result**: A modern, performant Vale integration that supports Obsidian 1.5.0+ with improved reliability and UX.
