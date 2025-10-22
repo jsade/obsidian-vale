@@ -1,6 +1,6 @@
-# Intellij
-*.iml
-.idea
+# IDE and tools
+.claude
+CLAUDE.md
 
 # npm
 node_modules
@@ -14,8 +14,24 @@ main.js
 data.json
 data
 
+# yarn
 yarn-error.log
+
+# yarn berry artifacts
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
+
+# macOS
 .DS_Store
 
 # test coverage
 coverage
+
+# docs
+docs
+
