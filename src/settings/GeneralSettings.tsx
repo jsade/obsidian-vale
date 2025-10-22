@@ -133,9 +133,9 @@ export const GeneralSettings = ({
         <small>
           {"If you found this plugin useful, you can "}
           <a href="https://www.buymeacoffee.com/marcusolsson">
-            buy me a coffee
+            buy Marcus a coffee
           </a>
-          {" to support its continued development."}
+          {" as a thank you ☕."}
         </small>
       </div>
       <div ref={ref} />
