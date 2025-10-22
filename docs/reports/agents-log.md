@@ -188,3 +188,32 @@ Wave 2: Core Implementation (Extension, Events, Tests) - Ready to begin
 
 ### Next Steps
 Wave 3: Integration (Main Plugin Refactor, Click Integration, Unit Tests) - Ready to begin
+
+---
+
+## Wave 3: Integration
+
+[2025-10-22 20:47] WAVE_3_SETUP_START: Beginning Wave 3 with 3 streams (Main Refactor, Click Integration, Unit Tests)
+[2025-10-22 20:47] WAVE_3_START: Created 3 worktrees, dependencies installed in parallel (~7s per worktree)
+[2025-10-22 20:48] AGENT_LAUNCH_PREP: Preparing to launch 3 parallel sub-agents for integration work
+[2025-10-22 20:48] AGENT_LAUNCH: Integration Agent (Stream A) in feature-cm6-main-refactor
+[2025-10-22 20:48] AGENT_LAUNCH: Click Integration Agent (Stream B) in feature-cm6-click-integration
+[2025-10-22 20:48] AGENT_LAUNCH: Unit Test Agent (Stream C) in feature-cm6-unit-tests
+
+[2025-10-22 20:52] STREAM_A_COMPLETE: Main Plugin Refactor finished (commit bede3e4)
+  - Removed all CM5 code from main.ts
+  - Integrated CM6 extension via registerEditorExtension
+  - Build succeeds ✅
+  
+[2025-10-22 20:52] STREAM_B_COMPLETE: Click Integration finished (commit 5469e3e)
+  - Created scrollToAlert.ts utility
+  - Wired bi-directional click handlers (decoration ↔ UI)
+  - Build succeeds ✅
+  
+[2025-10-22 20:52] STREAM_C_COMPLETE: Unit Tests finished (commit 7713122)
+  - Coverage: 75.94% overall, 83.45% CM6 layer (exceeds 80% target)
+  - 268 passing tests (+41 new tests)
+  - Fixed 5 bugs in stateField and eventHandlers
+  - Build succeeds ✅
+
+[2025-10-22 20:52] COORDINATION_POINT_3_START: Beginning Wave 3 integration

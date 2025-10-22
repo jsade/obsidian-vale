@@ -12,17 +12,17 @@ A refactoring plan is active, read @docs/reports/README.md
 
 ## Build Commands
 
-- **Development build with watch mode**: `yarn dev` or `npm run dev`
+- **Development build with watch mode**: `yarn dev` 
   - Uses esbuild with sourcemaps and DEBUG=true
   - Outputs to `main.js` with auto-rebuild on changes
 
-- **Production build**: `yarn build` or `npm run build`
+- **Production build**: `yarn build`
   - Minified bundle with DEBUG=false
 
-- **Lint**: `yarn lint` or `npm run lint`
+- **Lint**: `yarn lint` 
   - Uses ESLint with TypeScript parser
 
-- **Format**: `yarn format` or `npm run format`
+- **Format**: `yarn format` 
   - Formats all TypeScript files with Prettier
 
 ## Architecture
