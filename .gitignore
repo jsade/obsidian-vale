@@ -16,3 +16,6 @@ data
 
 yarn-error.log
 .DS_Store
+
+# test coverage
+coverage
