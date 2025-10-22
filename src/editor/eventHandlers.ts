@@ -82,7 +82,10 @@ export function isValeEvent(
  * });
  * ```
  */
-function dispatchValeEvent(type: string, detail: any): void {
+function dispatchValeEvent(
+  type: string,
+  detail: Record<string, unknown>
+): void {
   const event = new CustomEvent(`vale-${type}`, {
     detail,
     bubbles: true,
@@ -242,7 +245,7 @@ export function clickHandler(): Extension {
  * editor.on("change", debouncedCheck);
  * ```
  */
-export function debounce<T extends (...args: any[]) => void>(
+export function debounce<T extends (...args: never[]) => void>(
   fn: T,
   delay: number
 ): (...args: Parameters<T>) => void {
