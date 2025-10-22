@@ -83,7 +83,9 @@ describe("Position Conversion Utilities", () => {
     });
 
     it("should handle multi-line documents", () => {
-      const editor = new MockEditor("Line 1\nLine 2\nLine 3") as unknown as Editor;
+      const editor = new MockEditor(
+        "Line 1\nLine 2\nLine 3"
+      ) as unknown as Editor;
       const offset = lineColToOffset(editor, 2, 0);
       expect(offset).toBe(14); // "Line 1\nLine 2\n"
     });
@@ -127,7 +129,9 @@ describe("Position Conversion Utilities", () => {
     });
 
     it("should handle multi-line documents", () => {
-      const editor = new MockEditor("Line 1\nLine 2\nLine 3") as unknown as Editor;
+      const editor = new MockEditor(
+        "Line 1\nLine 2\nLine 3"
+      ) as unknown as Editor;
       const pos = offsetToLineCol(editor, 14);
       expect(pos).toEqual({ line: 2, ch: 0 });
     });
@@ -179,7 +183,9 @@ describe("Position Conversion Utilities", () => {
     });
 
     it("should handle empty lines", () => {
-      const emptyLineEditor = new MockEditor("Hello\n\nWorld") as unknown as Editor;
+      const emptyLineEditor = new MockEditor(
+        "Hello\n\nWorld"
+      ) as unknown as Editor;
       expect(isValidPosition(emptyLineEditor, 1, 0)).toBe(true);
       expect(isValidPosition(emptyLineEditor, 1, 1)).toBe(false);
     });
@@ -307,15 +313,25 @@ describe("Position Conversion Utilities", () => {
     it("should be inverse of lineColToByteOffset for ASCII", () => {
       const editor = new MockEditor("Hello\nWorld\nTest") as unknown as Editor;
       const originalPos = { line: 1, ch: 3 };
-      const byteOffset = lineColToByteOffset(editor, originalPos.line, originalPos.ch);
+      const byteOffset = lineColToByteOffset(
+        editor,
+        originalPos.line,
+        originalPos.ch
+      );
       const resultPos = byteOffsetToLineCol(editor, byteOffset);
       expect(resultPos).toEqual(originalPos);
     });
 
     it("should be inverse of lineColToByteOffset with Unicode", () => {
-      const editor = new MockEditor("Hello 🌍\nWorld 🎉\nTest") as unknown as Editor;
+      const editor = new MockEditor(
+        "Hello 🌍\nWorld 🎉\nTest"
+      ) as unknown as Editor;
       const originalPos = { line: 1, ch: 6 };
-      const byteOffset = lineColToByteOffset(editor, originalPos.line, originalPos.ch);
+      const byteOffset = lineColToByteOffset(
+        editor,
+        originalPos.line,
+        originalPos.ch
+      );
       const resultPos = byteOffsetToLineCol(editor, byteOffset);
       expect(resultPos).toEqual(originalPos);
     });
@@ -330,7 +346,9 @@ describe("Position Conversion Utilities", () => {
 
   describe("Round-trip conversions", () => {
     it("should preserve position through offset conversion", () => {
-      const editor = new MockEditor("Line 1\nLine 2\nLine 3\nLine 4") as unknown as Editor;
+      const editor = new MockEditor(
+        "Line 1\nLine 2\nLine 3\nLine 4"
+      ) as unknown as Editor;
       const positions = [
         { line: 0, ch: 0 },
         { line: 0, ch: 3 },
@@ -340,14 +358,20 @@ describe("Position Conversion Utilities", () => {
       ];
 
       positions.forEach((originalPos) => {
-        const offset = lineColToOffset(editor, originalPos.line, originalPos.ch);
+        const offset = lineColToOffset(
+          editor,
+          originalPos.line,
+          originalPos.ch
+        );
         const resultPos = offsetToLineCol(editor, offset);
         expect(resultPos).toEqual(originalPos);
       });
     });
 
     it("should preserve position through byte offset conversion", () => {
-      const editor = new MockEditor("Hello 🌍\nWorld 🎉\nTest 🔥") as unknown as Editor;
+      const editor = new MockEditor(
+        "Hello 🌍\nWorld 🎉\nTest 🔥"
+      ) as unknown as Editor;
       const positions = [
         { line: 0, ch: 0 },
         { line: 0, ch: 6 },
@@ -356,7 +380,11 @@ describe("Position Conversion Utilities", () => {
       ];
 
       positions.forEach((originalPos) => {
-        const byteOffset = lineColToByteOffset(editor, originalPos.line, originalPos.ch);
+        const byteOffset = lineColToByteOffset(
+          editor,
+          originalPos.line,
+          originalPos.ch
+        );
         const resultPos = byteOffsetToLineCol(editor, byteOffset);
         expect(resultPos).toEqual(originalPos);
       });
@@ -395,7 +423,9 @@ describe("Position Conversion Utilities", () => {
 
     it("should handle mixed line endings (conceptually)", () => {
       // Note: In practice, Obsidian normalizes line endings, but we test the logic
-      const editor = new MockEditor("Line 1\nLine 2\nLine 3") as unknown as Editor;
+      const editor = new MockEditor(
+        "Line 1\nLine 2\nLine 3"
+      ) as unknown as Editor;
       const offset = lineColToOffset(editor, 2, 0);
       const pos = offsetToLineCol(editor, offset);
       expect(pos).toEqual({ line: 2, ch: 0 });
