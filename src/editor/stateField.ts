@@ -71,6 +71,13 @@ function alertToOffsets(
   const lineText = line.text;
   const [spanStart, spanEnd] = alert.Span;
 
+  // Check if span is completely beyond the line length
+  const lineBytes = new TextEncoder().encode(lineText).length;
+  if (spanStart >= lineBytes || spanEnd > lineBytes) {
+    // Return invalid range that will be caught by the validation below
+    return { from: -1, to: -1 };
+  }
+
   // Convert byte offsets to character offsets
   const encoder = new TextEncoder();
   let charStart = 0;
@@ -195,8 +202,11 @@ export const valeStateField = StateField.define<DecorationSet>({
           }
         }
 
-        // Add all new decorations at once
+        // Add all new decorations at once (must be sorted by position)
         if (newDecorations.length > 0) {
+          // Sort decorations by from position (required by CodeMirror)
+          newDecorations.sort((a, b) => a.from - b.from);
+
           decorations = decorations.update({
             add: newDecorations.map((d) => d.deco.range(d.from, d.to)),
           });

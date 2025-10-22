@@ -138,23 +138,25 @@ export const mockAlerts = {
 /**
  * Creates a set of alerts with sequential positions
  * Useful for testing decoration ordering and mapping
+ * NOTE: Alerts are positioned relative to their line, with ~3 alerts per line
  */
 export function createSequentialAlerts(count: number): ValeAlert[] {
   const alerts: ValeAlert[] = [];
-  let currentPos = 0;
 
   for (let i = 0; i < count; i++) {
     const matchLength = 5 + (i % 10); // Vary length from 5-14 chars
+    const lineNumber = Math.floor(i / 3) + 1; // ~3 alerts per line
+    const posInLine = (i % 3) * 15; // Position within the line (0, 15, 30)
+
     alerts.push(
       createMockValeAlert({
         Check: `Vale.Test${i}`,
         Message: `Test alert ${i}`,
-        Span: [currentPos, currentPos + matchLength],
+        Span: [posInLine, posInLine + matchLength],
         Match: `word${i}`,
-        Line: Math.floor(i / 3) + 1, // ~3 alerts per line
+        Line: lineNumber,
       })
     );
-    currentPos += matchLength + 5; // Add some spacing
   }
 
   return alerts;
@@ -195,17 +197,17 @@ export function createAlertsBySeverity(): {
   return {
     error: createMockValeAlert({
       Severity: "error",
-      Span: [0, 5],
+      Span: [0, 5], // "error"
       Check: "Vale.Error",
     }),
     warning: createMockValeAlert({
       Severity: "warning",
-      Span: [10, 15],
+      Span: [6, 13], // "warning"
       Check: "Vale.Warning",
     }),
     suggestion: createMockValeAlert({
       Severity: "suggestion",
-      Span: [20, 25],
+      Span: [14, 24], // "suggestion"
       Check: "Vale.Suggestion",
     }),
   };
@@ -224,8 +226,8 @@ Sometimes we use although when though would be better.`,
   alerts: [
     createMockValeAlert({
       Line: 1,
-      Span: [10, 17], // "example"
-      Match: "example",
+      Span: [8, 17], // "a example" - line-relative byte offset
+      Match: "a example",
       Check: "Vale.Articles",
       Message: "Use 'an example' instead of 'a example'.",
       Severity: "error",
@@ -236,7 +238,7 @@ Sometimes we use although when though would be better.`,
     }),
     createMockValeAlert({
       Line: 4,
-      Span: [179, 186], // "recieve"
+      Span: [13, 20], // "recieve" - line-relative byte offset
       Match: "recieve",
       Check: "Vale.Spelling",
       Message: "Did you really mean 'recieve'?",
@@ -248,7 +250,7 @@ Sometimes we use although when though would be better.`,
     }),
     createMockValeAlert({
       Line: 5,
-      Span: [228, 236], // "although"
+      Span: [17, 25], // "although" - line-relative byte offset
       Match: "although",
       Check: "Google.WordList",
       Message: "Use 'though' instead of 'although'.",

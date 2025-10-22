@@ -345,7 +345,11 @@ export function registerValeEventListeners(
     if (handler) {
       const listener = (event: Event) => {
         if (event instanceof CustomEvent) {
-          handler(event);
+          try {
+            handler(event);
+          } catch (error) {
+            console.error(`Error in Vale event handler for ${type}:`, error);
+          }
         }
       };
       document.addEventListener(type, listener);

@@ -96,7 +96,7 @@ export function getMockViewText(view: EditorView): string {
 export function updateMockViewText(view: EditorView, newText: string): void {
   const newState = EditorState.create({
     doc: newText,
-    extensions: view.state.facet(EditorState.tabSize), // Preserve extensions
+    // Extensions are handled internally by EditorState
   });
 
   // Update the state property directly (only works on mock)
