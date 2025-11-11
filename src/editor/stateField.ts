@@ -26,6 +26,53 @@ import {
 import { ValeAlert } from "../types";
 
 /**
+ * Type definition for decoration spec with attributes.
+ * CodeMirror's Decoration.spec is typed as `any`, so we define
+ * our own interface for type safety.
+ */
+interface DecorationSpecWithAttributes {
+  attributes?: {
+    [key: string]: string;
+  };
+  [key: string]: unknown;
+}
+
+/**
+ * Type guard to check if a value is a DecorationSpecWithAttributes.
+ *
+ * @param spec - The spec to check (typed as any from CodeMirror)
+ * @returns True if the spec has the expected structure
+ */
+function isDecorationSpecWithAttributes(
+  spec: unknown,
+): spec is DecorationSpecWithAttributes {
+  return (
+    typeof spec === "object" &&
+    spec !== null &&
+    (!("attributes" in spec) ||
+      (typeof (spec as DecorationSpecWithAttributes).attributes === "object" &&
+        (spec as DecorationSpecWithAttributes).attributes !== null))
+  );
+}
+
+/**
+ * Safely gets an attribute value from a decoration spec.
+ *
+ * @param spec - The decoration spec (typed as any from CodeMirror)
+ * @param attributeName - The name of the attribute to retrieve
+ * @returns The attribute value if it exists, otherwise undefined
+ */
+function getDecorationAttribute(
+  spec: unknown,
+  attributeName: string,
+): string | undefined {
+  if (!isDecorationSpecWithAttributes(spec)) {
+    return undefined;
+  }
+  return spec.attributes?.[attributeName];
+}
+
+/**
  * Map to store Vale alerts by their IDs for quick lookup.
  *
  * This map maintains the relationship between alert IDs (stored in decoration
@@ -58,7 +105,7 @@ export const valeAlertMap = new Map<string, ValeAlert>();
  */
 function alertToOffsets(
   state: EditorState,
-  alert: ValeAlert
+  alert: ValeAlert,
 ): { from: number; to: number } {
   // Vale uses 1-based line numbers, CM6 uses 0-based
   const lineNumber = alert.Line - 1;
@@ -230,7 +277,10 @@ export const valeStateField = StateField.define<DecorationSet>({
 
             // If decoration overlaps, remove its alert from the map
             if (overlaps) {
-              const alertId = value.spec.attributes?.["data-alert-id"];
+              const alertId = getDecorationAttribute(
+                value.spec,
+                "data-alert-id",
+              );
               if (alertId) {
                 valeAlertMap.delete(alertId);
               }
@@ -250,7 +300,8 @@ export const valeStateField = StateField.define<DecorationSet>({
           // Remove previous selection decorations
           decorations = decorations.update({
             filter: (from, to, value) =>
-              value.spec.attributes?.["data-vale-decoration"] !== "selection",
+              getDecorationAttribute(value.spec, "data-vale-decoration") !==
+              "selection",
           });
 
           // Add new selection decoration
@@ -273,7 +324,8 @@ export const valeStateField = StateField.define<DecorationSet>({
         // Remove previous highlight decorations
         decorations = decorations.update({
           filter: (from, to, value) =>
-            value.spec.attributes?.["data-vale-decoration"] !== "highlight",
+            getDecorationAttribute(value.spec, "data-vale-decoration") !==
+            "highlight",
         });
 
         // Add new highlight decoration if alertId is not empty
@@ -302,8 +354,10 @@ export const valeStateField = StateField.define<DecorationSet>({
       decorations = decorations.update({
         filter: (from, to, value) => {
           // Keep selection and highlight decorations
-          const decorationType =
-            value.spec.attributes?.["data-vale-decoration"];
+          const decorationType = getDecorationAttribute(
+            value.spec,
+            "data-vale-decoration",
+          );
           if (
             decorationType === "selection" ||
             decorationType === "highlight"
@@ -318,7 +372,7 @@ export const valeStateField = StateField.define<DecorationSet>({
 
           // If decoration is being removed, clean up the alert map
           if (overlapsWithSelection) {
-            const alertId = value.spec.attributes?.["data-alert-id"];
+            const alertId = getDecorationAttribute(value.spec, "data-alert-id");
             if (alertId) {
               valeAlertMap.delete(alertId);
             }

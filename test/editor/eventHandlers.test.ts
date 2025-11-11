@@ -272,7 +272,7 @@ describe("Event Handlers", () => {
       const event = new MouseEvent("click");
 
       expect(isValeEvent(event, "vale-alert-click" as ValeEventType)).toBe(
-        false
+        false,
       );
     });
 
@@ -381,7 +381,7 @@ describe("Event Handlers", () => {
       expect(clickHandler).toHaveBeenCalledWith(
         expect.objectContaining({
           detail: detail,
-        })
+        }),
       );
 
       cleanup();
@@ -577,7 +577,7 @@ describe("Event Handlers", () => {
     it("should handle debounce with undefined delay", () => {
       const fn = jest.fn();
       // TypeScript would catch this, but testing runtime behavior
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
       const debounced = debounce(fn, undefined as any);
 
       expect(debounced).toBeDefined();
@@ -617,7 +617,7 @@ describe("Event Handlers", () => {
       expect(handler).toHaveBeenCalledWith(
         expect.objectContaining({
           detail: { unexpected: "data" },
-        })
+        }),
       );
 
       cleanup();
@@ -643,10 +643,11 @@ describe("Event Handlers", () => {
 
       expect(handler).toHaveBeenCalledWith(
         expect.objectContaining({
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           detail: expect.objectContaining({
             alertId: longId,
           }),
-        })
+        }),
       );
 
       cleanup();

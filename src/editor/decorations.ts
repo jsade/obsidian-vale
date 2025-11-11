@@ -166,6 +166,42 @@ export function generateAlertId(alert: ValeAlert): string {
 }
 
 /**
+ * Interface representing a decoration spec with attributes.
+ * Used to provide type safety when accessing CodeMirror decoration specs.
+ *
+ * @internal
+ */
+interface DecorationSpecWithAttributes {
+  attributes?: {
+    [key: string]: string;
+  };
+}
+
+/**
+ * Type guard to check if a decoration spec has attributes.
+ *
+ * Since CodeMirror's Decoration.spec is typed as `any`, we need this
+ * type guard to safely access the attributes property.
+ *
+ * @param spec - The decoration spec to check
+ * @returns True if the spec has an attributes object
+ *
+ * @internal
+ */
+function hasAttributes(spec: unknown): spec is DecorationSpecWithAttributes {
+  if (typeof spec !== "object" || spec === null) {
+    return false;
+  }
+
+  const specObj = spec as Record<string, unknown>;
+  const hasNoAttributes = !("attributes" in specObj);
+  const hasValidAttributes =
+    typeof specObj.attributes === "object" && specObj.attributes !== null;
+
+  return hasNoAttributes || hasValidAttributes;
+}
+
+/**
  * Extracts the alert ID from a decoration's attributes.
  *
  * This utility function retrieves the alert ID stored in a decoration's
@@ -193,7 +229,12 @@ export function generateAlertId(alert: ValeAlert): string {
  * @public
  */
 export function getAlertIdFromDecoration(
-  decoration: Decoration
+  decoration: Decoration,
 ): string | undefined {
-  return decoration.spec.attributes?.["data-alert-id"];
+  if (!hasAttributes(decoration.spec)) {
+    return undefined;
+  }
+
+  const alertId = decoration.spec.attributes?.["data-alert-id"];
+  return typeof alertId === "string" ? alertId : undefined;
 }

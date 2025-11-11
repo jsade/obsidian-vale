@@ -12,23 +12,25 @@ interface Props {
 
 export const SettingsRouter = ({ plugin }: Props): React.ReactElement => {
   const [settings, setSettings] = React.useState<ValeSettings>(plugin.settings);
-  const [style, setStyle] = React.useState<string>();
+  const [style, setStyle] = React.useState<string>("");
   const [page, setPage] = React.useState<string>("General");
   const [validConfigPath, setValidConfigPath] = React.useState(false);
 
   const configManager = useConfigManager(settings);
 
-  const onSettingsChange = async (settings: ValeSettings) => {
+  const onSettingsChange = (settings: ValeSettings) => {
     // Write new changes to disk.
     plugin.settings = settings;
-    await plugin.saveSettings();
+    void plugin.saveSettings();
 
     setSettings(settings);
   };
 
   React.useEffect(() => {
     if (settings.type === "cli" && configManager) {
-      configManager.configPathExists().then((res) => setValidConfigPath(res));
+      void configManager
+        .configPathExists()
+        .then((res) => setValidConfigPath(res));
     } else {
       setValidConfigPath(false);
     }
@@ -45,7 +47,7 @@ export const SettingsRouter = ({ plugin }: Props): React.ReactElement => {
           {validConfigPath && (
             <StyleSettings
               settings={settings}
-              navigate={(page, context) => {
+              navigate={(page: string, context: string) => {
                 setStyle(context);
                 setPage(page);
               }}
@@ -58,7 +60,7 @@ export const SettingsRouter = ({ plugin }: Props): React.ReactElement => {
         <RuleSettings
           settings={settings}
           style={style}
-          navigate={(page, context) => {
+          navigate={(page: string, context: string) => {
             setStyle(context);
             setPage(page);
           }}

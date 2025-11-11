@@ -23,6 +23,75 @@ import {
   sampleDocument,
 } from "../mocks/valeAlerts";
 
+/**
+ * Type definition for decoration spec with attributes and class.
+ * CodeMirror's Decoration.spec is typed as `any`, so we define
+ * our own interface for type safety in tests.
+ */
+interface DecorationSpec {
+  class?: string;
+  attributes?: {
+    [key: string]: string;
+  };
+  [key: string]: unknown;
+}
+
+/**
+ * Type guard to check if a value is a DecorationSpec.
+ *
+ * @param spec - The spec to check (typed as any from CodeMirror)
+ * @returns True if the spec has the expected structure
+ */
+function isDecorationSpec(spec: unknown): spec is DecorationSpec {
+  if (typeof spec !== "object" || spec === null) {
+    return false;
+  }
+  // Further validate that if class exists, it's a string
+  const specObj = spec as Record<string, unknown>;
+  if ("class" in specObj && typeof specObj.class !== "string") {
+    return false;
+  }
+  // Further validate that if attributes exists, it's an object
+  if (
+    "attributes" in specObj &&
+    (typeof specObj.attributes !== "object" || specObj.attributes === null)
+  ) {
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Safely gets the class from a decoration spec.
+ *
+ * @param spec - The decoration spec (typed as any from CodeMirror)
+ * @returns The class value if it exists, otherwise undefined
+ */
+function getDecorationClass(spec: unknown): string | undefined {
+  if (!isDecorationSpec(spec)) {
+    return undefined;
+  }
+  return typeof spec.class === "string" ? spec.class : undefined;
+}
+
+/**
+ * Safely gets an attribute value from a decoration spec.
+ *
+ * @param spec - The decoration spec (typed as any from CodeMirror)
+ * @param attributeName - The name of the attribute to retrieve
+ * @returns The attribute value if it exists, otherwise undefined
+ */
+function getDecorationAttribute(
+  spec: unknown,
+  attributeName: string,
+): string | undefined {
+  if (!isDecorationSpec(spec)) {
+    return undefined;
+  }
+  const value = spec.attributes?.[attributeName];
+  return typeof value === "string" ? value : undefined;
+}
+
 describe("StateField", () => {
   // Helper to create state with Vale field
   function createTestState(doc = "test document"): EditorState {
@@ -47,7 +116,7 @@ describe("StateField", () => {
     const decorations = state.field(valeStateField);
     const ids: string[] = [];
     decorations.between(0, state.doc.length, (from, to, value) => {
-      const id = value.spec.attributes?.["data-alert-id"];
+      const id = getDecorationAttribute(value.spec, "data-alert-id");
       if (id) {
         ids.push(id);
       }
@@ -156,8 +225,9 @@ describe("StateField", () => {
       const classes: string[] = [];
 
       decorations.between(0, state.doc.length, (from, to, value) => {
-        if (value.spec.class) {
-          classes.push(value.spec.class);
+        const className = getDecorationClass(value.spec);
+        if (className) {
+          classes.push(className);
         }
       });
 
@@ -449,7 +519,7 @@ describe("StateField", () => {
       let hasSelectionClass = false;
 
       decorations.between(0, state.doc.length, (from, to, value) => {
-        if (value.spec.class === "vale-selected") {
+        if (getDecorationClass(value.spec) === "vale-selected") {
           hasSelectionClass = true;
         }
       });
@@ -564,7 +634,7 @@ describe("StateField", () => {
       let hasHighlightClass = false;
 
       decorations.between(0, state.doc.length, (from, to, value) => {
-        if (value.spec.class === "vale-highlight") {
+        if (getDecorationClass(value.spec) === "vale-highlight") {
           hasHighlightClass = true;
         }
       });
@@ -733,7 +803,7 @@ describe("StateField", () => {
 
     it("should handle overlapping alerts", () => {
       let state = createTestState(
-        "This has overlapping issues that need attention"
+        "This has overlapping issues that need attention",
       );
       const alerts = createOverlappingAlerts();
 

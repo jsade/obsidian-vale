@@ -11,7 +11,7 @@ export const RuleSetting = ({
   value: rule,
   onChange,
 }: Props): React.ReactElement => {
-  const ref = React.useRef<HTMLDivElement>();
+  const ref = React.useRef<HTMLDivElement>(null);
 
   const [internal, setInternal] = React.useState(rule);
 
@@ -39,7 +39,7 @@ export const RuleSetting = ({
                 ...internal,
                 severity: value as ValeRuleSeverity,
               });
-            })
+            }),
         )
         .addToggle((toggle) =>
           toggle.setValue(!internal?.disabled).onChange(async (value) => {
@@ -53,7 +53,7 @@ export const RuleSetting = ({
               severity: "default",
               disabled: !value,
             });
-          })
+          }),
         );
     }
   }, [internal]);

@@ -1,12 +1,13 @@
 {
   "name": "obsidian-vale",
   "version": "1.0.0",
+  "type": "module",
   "description": "A Vale client for Obsidian.",
   "main": "main.js",
   "scripts": {
     "dev": "node esbuild.config.mjs",
     "build": "node esbuild.config.mjs production",
-    "lint": "eslint ./ --ignore-path .gitignore",
+    "lint": "eslint ./",
     "format": "prettier --write \"{,!(node_modules)/**/}*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
     "test": "jest",
@@ -21,6 +22,7 @@
   "devDependencies": {
     "@codemirror/state": "^6.5.2",
     "@codemirror/view": "^6.38.6",
+    "@eslint/js": "^9.39.1",
     "@types/download": "^8.0.1",
     "@types/ini": "^1.3.30",
     "@types/jest": "^30.0.0",
@@ -28,21 +30,22 @@
     "@types/react": "^17.0.24",
     "@types/react-dom": "^17.0.9",
     "@types/unzipper": "^0.10.4",
-    "@typescript-eslint/eslint-plugin": "^4.32.0",
-    "@typescript-eslint/parser": "^4.32.0",
     "builtin-modules": "^5.0.0",
     "esbuild": "^0.25.11",
-    "eslint": "^7.32.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-react": "^7.26.0",
+    "eslint": "^9",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-obsidianmd": "^0.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-react": "^7.37.5",
+    "globals": "^16.5.0",
     "jest": "^30.2.0",
     "jest-environment-jsdom": "^30.2.0",
     "obsidian": "latest",
-    "prettier": "^2.4.1",
+    "prettier": "^3.6.2",
     "ts-jest": "^29.4.5",
     "tslib": "^2.2.0",
-    "typescript": "^5.3.0"
+    "typescript": "^5.3.0",
+    "typescript-eslint": "^8.46.4"
   },
   "dependencies": {
     "@codemirror/language": "^6.11.3",
@@ -54,6 +57,9 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "unzipper": "^0.10.11"
+  },
+  "resolutions": {
+    "@types/estree": "^1.0.6"
   },
   "packageManager": "yarn@4.10.3+sha512.c38cafb5c7bb273f3926d04e55e1d8c9dfa7d9c3ea1f36a4868fa028b9e5f72298f0b7f401ad5eb921749eb012eb1c3bb74bf7503df3ee43fd600d14a018266f"
 }

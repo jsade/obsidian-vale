@@ -18,7 +18,7 @@ export class ValeSettingTab extends PluginSettingTab {
       <AppContext.Provider value={this.app}>
         <SettingsRouter plugin={this.plugin} />
       </AppContext.Provider>,
-      this.containerEl
+      this.containerEl,
     );
   }
 

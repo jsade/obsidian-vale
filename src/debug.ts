@@ -1,9 +1,14 @@
+// Enable debug logging when NODE_ENV is development or when explicitly enabled
+const DEBUG =
+  process.env.NODE_ENV === "development" || process.env.DEBUG === "true";
+
 export const timed = <T>(label: string, cb: () => Promise<T>): Promise<T> => {
   if (DEBUG) {
-    console.log(label + " started");
-    console.time(label + " finished in");
+    console.debug(label + " started");
+    const start = performance.now();
     const res = cb().finally(() => {
-      console.timeEnd(label + " finished in");
+      const duration = performance.now() - start;
+      console.debug(label + " finished in " + duration.toFixed(2) + "ms");
     });
     return res;
   }
@@ -12,6 +17,6 @@ export const timed = <T>(label: string, cb: () => Promise<T>): Promise<T> => {
 
 export const debug = (msg: string): void => {
   if (DEBUG) {
-    console.log(msg);
+    console.debug(msg);
   }
 };

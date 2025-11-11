@@ -31,7 +31,7 @@ export const ValeApp = ({
 
   const check = async (
     input: CheckInput,
-    checked: (cb: () => void) => void
+    checked: (cb: () => void) => void,
   ) => {
     const { text, format } = input;
 
@@ -50,16 +50,16 @@ export const ValeApp = ({
           eventBus.dispatch("alerts", results);
         });
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         if (err instanceof Error) {
           if (err.message === "net::ERR_CONNECTION_REFUSED") {
             checked(() =>
               setReport({
-                ...report,
+                results: [],
                 errors: (
                   <ErrorMessage message={"Couldn't connect to Vale Server."} />
                 ),
-              })
+              }),
             );
           } else if (
             err.message === "Couldn't find vale" ||
@@ -69,17 +69,19 @@ export const ValeApp = ({
           } else {
             checked(() =>
               setReport({
-                ...report,
+                results: [],
                 errors: <ErrorMessage message={err.toString()} />,
-              })
+              }),
             );
           }
         } else {
+          // Handle non-Error objects by safely converting to string
+          const errorMessage = typeof err === "string" ? err : String(err);
           checked(() =>
             setReport({
-              ...report,
-              errors: <ErrorMessage message={err.toString()} />,
-            })
+              results: [],
+              errors: <ErrorMessage message={errorMessage} />,
+            }),
           );
         }
       })
@@ -116,7 +118,7 @@ export const ValeApp = ({
     };
 
     const unregister = eventBus.on("check", (input: CheckInput): void => {
-      check(input, off);
+      void check(input, off);
     });
 
     // Signal that the view is ready to check the document.

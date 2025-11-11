@@ -5,21 +5,21 @@ import { ValeConfigManager } from "vale/ValeConfigManager";
 import { AppContext, SettingsContext } from "./context";
 import { ValeSettings } from "./types";
 
-export const useApp = (): App | undefined => {
+export const useApp = (): App | null => {
   return React.useContext(AppContext);
 };
 
-export const useSettings = (): ValeSettings => {
+export const useSettings = (): ValeSettings | null => {
   return React.useContext(SettingsContext);
 };
 
 export const useConfigManager = (
-  settings: ValeSettings
+  settings: ValeSettings,
 ): ValeConfigManager | undefined => {
   const app = useApp();
 
   return React.useMemo(() => {
-    if (settings.type === "server") {
+    if (settings.type === "server" || !app) {
       return undefined;
     }
 
@@ -27,11 +27,15 @@ export const useConfigManager = (
       return newManagedConfigManager(app.vault);
     }
 
+    if (!settings.cli.valePath || !settings.cli.configPath) {
+      return undefined;
+    }
+
     return new ValeConfigManager(
       ensureAbsolutePath(settings.cli.valePath, app.vault),
-      ensureAbsolutePath(settings.cli.configPath, app.vault)
+      ensureAbsolutePath(settings.cli.configPath, app.vault),
     );
-  }, [settings]);
+  }, [settings, app]);
 };
 
 const ensureAbsolutePath = (resourcePath: string, vault: Vault): string => {
@@ -55,6 +59,6 @@ const newManagedConfigManager = (vault: Vault): ValeConfigManager => {
 
   return new ValeConfigManager(
     ensureAbsolutePath(path.join(dataDir, "bin", binaryName), vault),
-    ensureAbsolutePath(path.join(dataDir, ".vale.ini"), vault)
+    ensureAbsolutePath(path.join(dataDir, ".vale.ini"), vault),
   );
 };

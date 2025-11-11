@@ -36,7 +36,7 @@ export class ValeCli {
           resolve({});
         } else if (code === 1) {
           // Vale returned alerts.
-          resolve(JSON.parse(stdout));
+          resolve(JSON.parse(stdout) as ValeResponse);
         } else {
           // Vale exited unexpectedly.
           reject(new Error(`child exited with code ${code}`));

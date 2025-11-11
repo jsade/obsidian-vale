@@ -23,6 +23,10 @@ export class ValeRunner {
         if (this.settings.type === "server") {
           return new ValeServer(this.settings.server.url).vale(text, format);
         } else if (this.settings.type === "cli") {
+          if (!this.configManager) {
+            throw new Error("Config manager is required for CLI mode");
+          }
+
           const [valeExists, configExists] = await Promise.all([
             this.configManager.valePathExists(),
             this.configManager.configPathExists(),
@@ -38,17 +42,17 @@ export class ValeRunner {
           if (!configExists) {
             throw new Error("Couldn't find config file");
           }
-        } else {
-          throw new Error("Unknown runner");
         }
+
+        throw new Error("Unknown runner");
       });
-    }
+    },
   );
 }
 
 // notConcurrent ensures there's only ever one promise in-flight.
 const notConcurrent = (
-  proc: (text: string, format: string) => PromiseLike<ValeResponse>
+  proc: (text: string, format: string) => PromiseLike<ValeResponse>,
 ) => {
   let inFlight: Promise<ValeResponse> | false = false;
 

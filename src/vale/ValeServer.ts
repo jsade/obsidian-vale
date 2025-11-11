@@ -10,7 +10,7 @@ export class ValeServer {
 
   async vale(text: string, format: string): Promise<ValeResponse> {
     const formData = `text=${encodeURIComponent(
-      text
+      text,
     )}&format=${encodeURIComponent(format)}`;
 
     const res = await request({
@@ -20,6 +20,6 @@ export class ValeServer {
       body: formData,
     });
 
-    return JSON.parse(res);
+    return JSON.parse(res) as ValeResponse;
   }
 }

@@ -58,7 +58,7 @@ export type ValeEventType =
  */
 export function isValeEvent(
   event: Event,
-  type: ValeEventType
+  type: ValeEventType,
 ): event is CustomEvent {
   return event.type === type && event instanceof CustomEvent;
 }
@@ -84,7 +84,7 @@ export function isValeEvent(
  */
 function dispatchValeEvent<T = Record<string, unknown>>(
   type: string,
-  detail: T
+  detail: T,
 ): void {
   const event = new CustomEvent(`vale-${type}`, {
     detail,
@@ -131,7 +131,7 @@ function dispatchValeEvent<T = Record<string, unknown>>(
  */
 function findAlertAtPosition(
   view: EditorView,
-  pos: number
+  pos: number,
 ): { alertId: string; from: number; to: number } | null {
   try {
     const decorations = view.state.field(valeStateField);
@@ -247,7 +247,7 @@ export function clickHandler(): Extension {
  */
 export function debounce<T extends (...args: never[]) => void>(
   fn: T,
-  delay: number
+  delay: number,
 ): (...args: Parameters<T>) => void {
   let timeout: number | undefined;
 
@@ -362,7 +362,7 @@ export function hoverHandler(hoverDelay = 300): Extension {
  * ```
  */
 export function registerValeEventListeners(
-  handlers: Partial<Record<ValeEventType, (event: CustomEvent) => void>>
+  handlers: Partial<Record<ValeEventType, (event: CustomEvent) => void>>,
 ): () => void {
   const listeners: Array<[string, EventListener]> = [];
 

@@ -24,7 +24,7 @@ import {
 } from "./editor";
 
 export default class ValePlugin extends Plugin {
-  public settings: ValeSettings;
+  public settings: ValeSettings = DEFAULT_SETTINGS;
 
   private configManager?: ValeConfigManager; // Manages operations that require disk access.
   private runner?: ValeRunner; // Runs the actual check.
@@ -52,13 +52,13 @@ export default class ValePlugin extends Plugin {
     this.addSettingTab(new ValeSettingTab(this.app, this));
 
     // Add ribbon icon for quick access to Vale check
-    this.addRibbonIcon("check-small", "Vale: Check document", () => {
-      this.activateView();
+    this.addRibbonIcon("check-small", "Vale: check document", () => {
+      void this.activateView();
     });
 
     // Add status bar item to show check results
     this.statusBarItem = this.addStatusBarItem();
-    this.statusBarItem.setText("Vale: Ready");
+    this.statusBarItem.setText("Vale: ready");
 
     this.addCommand({
       id: "vale-check-document",
@@ -68,7 +68,7 @@ export default class ValePlugin extends Plugin {
         // a check may take some time to complete, the command only activates
         // the view and then asks the view to run the check. This lets us
         // display a progress bar while the check runs.
-        this.activateView();
+        void this.activateView();
       },
     });
 
@@ -98,7 +98,7 @@ export default class ValePlugin extends Plugin {
     // Open Vale panel command (without running check)
     this.addCommand({
       id: "vale-open-panel",
-      name: "Open Vale panel",
+      name: "Open panel",
       callback: async () => {
         // Open the panel without triggering a check
         const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_VALE);
@@ -113,27 +113,24 @@ export default class ValePlugin extends Plugin {
             active: true,
           });
         }
-        this.app.workspace.revealLeaf(
-          this.app.workspace.getLeavesOfType(VIEW_TYPE_VALE)[0]
+        void this.app.workspace.revealLeaf(
+          this.app.workspace.getLeavesOfType(VIEW_TYPE_VALE)[0],
         );
       },
     });
 
-    this.onResult = this.onResult.bind(this);
-    this.onMarkerClick = this.onMarkerClick.bind(this);
-    this.onAlertClick = this.onAlertClick.bind(this);
-
-    this.registerView(
-      VIEW_TYPE_VALE,
-      (leaf) =>
-        new ValeView(
-          leaf,
-          this.settings,
-          this.runner,
-          this.eventBus,
-          this.onAlertClick
-        )
-    );
+    this.registerView(VIEW_TYPE_VALE, (leaf) => {
+      if (!this.runner) {
+        throw new Error("ValeRunner not initialized");
+      }
+      return new ValeView(
+        leaf,
+        this.settings,
+        this.runner,
+        this.eventBus,
+        this.onAlertClick,
+      );
+    });
 
     // Register Vale custom event listeners
     this.unregisterValeEvents = registerValeEventListeners({
@@ -146,20 +143,19 @@ export default class ValePlugin extends Plugin {
 
     this.unregisterCheckListener = this.eventBus.on("check", () => {
       if (this.statusBarItem) {
-        this.statusBarItem.setText("Vale: Checking...");
+        this.statusBarItem.setText("Vale: checking...");
       }
     });
   }
 
   // onunload runs when plugin becomes disabled.
-  async onunload(): Promise<void> {
+  onunload(): void {
     // Clean up status bar
     if (this.statusBarItem) {
       this.statusBarItem.remove();
     }
 
     // Remove all open Vale leaves.
-    this.app.workspace.detachLeavesOfType(VIEW_TYPE_VALE);
 
     // Unregister event listeners
     this.unregisterAlerts();
@@ -196,7 +192,7 @@ export default class ValePlugin extends Plugin {
 
     // There should only be one Vale view open.
     this.app.workspace.getLeavesOfType(VIEW_TYPE_VALE).forEach((leaf) => {
-      this.app.workspace.revealLeaf(leaf);
+      void this.app.workspace.revealLeaf(leaf);
 
       if (leaf.view instanceof ValeView) {
         leaf.view.runValeCheck();
@@ -205,12 +201,13 @@ export default class ValePlugin extends Plugin {
   }
 
   async saveSettings(): Promise<void> {
-    this.saveData(this.settings);
+    await this.saveData(this.settings);
     this.initializeValeRunner();
   }
 
   async loadSettings(): Promise<void> {
-    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+    const data = (await this.loadData()) as Partial<ValeSettings> | null;
+    this.settings = Object.assign({}, DEFAULT_SETTINGS, data ?? {});
     this.initializeValeRunner();
   }
 
@@ -227,7 +224,7 @@ export default class ValePlugin extends Plugin {
         if (valePath && configPath) {
           this.configManager = new ValeConfigManager(
             valePath,
-            this.normalizeConfigPath(configPath)
+            this.normalizeConfigPath(configPath),
           );
         }
       }
@@ -244,14 +241,14 @@ export default class ValePlugin extends Plugin {
   newManagedConfigManager(): ValeConfigManager {
     const dataDir = path.join(
       this.app.vault.configDir,
-      "plugins/obsidian-vale/data"
+      "plugins/obsidian-vale/data",
     );
 
     const binaryName = process.platform === "win32" ? "vale.exe" : "vale";
 
     return new ValeConfigManager(
       this.normalizeConfigPath(path.join(dataDir, "bin", binaryName)),
-      this.normalizeConfigPath(path.join(dataDir, ".vale.ini"))
+      this.normalizeConfigPath(path.join(dataDir, ".vale.ini")),
     );
   }
 
@@ -272,13 +269,13 @@ export default class ValePlugin extends Plugin {
   }
 
   // onResult creates markers for every alert after each new check.
-  onResult(alerts: ValeAlert[]): void {
+  onResult = (alerts: ValeAlert[]): void => {
     this.alerts = alerts;
 
     // Update status bar
     if (this.statusBarItem) {
       if (alerts.length === 0) {
-        this.statusBarItem.setText("Vale: No issues");
+        this.statusBarItem.setText("Vale: no issues");
       } else {
         const noun = alerts.length === 1 ? "issue" : "issues";
         this.statusBarItem.setText(`Vale: ${alerts.length} ${noun}`);
@@ -287,7 +284,7 @@ export default class ValePlugin extends Plugin {
 
     this.clearAlertMarkers();
     this.markAlerts();
-  }
+  };
 
   clearAlertMarkers = (): void => {
     this.withEditorView((view) => {
@@ -311,7 +308,7 @@ export default class ValePlugin extends Plugin {
 
   // onAlertClick highlights an alert in the editor when the user clicks one of
   // the cards in the results view.
-  onAlertClick(alert: ValeAlert): void {
+  onAlertClick = (alert: ValeAlert): void => {
     const view = this.app.workspace.getActiveViewOfType(MarkdownView);
     if (!view) {
       return;
@@ -324,11 +321,11 @@ export default class ValePlugin extends Plugin {
       // Dispatch to EventBus for UI panel highlighting
       this.eventBus.dispatch("select-alert", alert);
     });
-  }
+  };
 
   // onMarkerClick determines whether the user clicks on an existing marker in
   // the editor and highlights the corresponding alert in the results view.
-  onMarkerClick(detail: ValeAlertClickDetail): void {
+  onMarkerClick = (detail: ValeAlertClickDetail): void => {
     // Ignore if there's no Vale view open.
     if (this.app.workspace.getLeavesOfType(VIEW_TYPE_VALE).length === 0) {
       return;
@@ -350,7 +347,7 @@ export default class ValePlugin extends Plugin {
 
     // Dispatch to EventBus for UI panel
     this.eventBus.dispatch("select-alert", alert);
-  }
+  };
 
   // withEditorView is a convenience function for making sure that a
   // function runs with a valid CM6 EditorView.

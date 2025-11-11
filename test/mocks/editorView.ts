@@ -17,7 +17,7 @@ export interface MockEditorViewOptions {
  * @returns Partial mock of EditorView with essential properties
  */
 export function createMockEditorView(
-  options: MockEditorViewOptions = {}
+  options: MockEditorViewOptions = {},
 ): EditorView {
   const { doc = "", extensions = [] } = options;
 

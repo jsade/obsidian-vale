@@ -98,7 +98,7 @@ describe("EventBus", () => {
 
       expect(warnSpy).toHaveBeenCalledWith(
         "Dispatched event has no subscriber:",
-        "check"
+        "check",
       );
     });
 
@@ -118,7 +118,7 @@ describe("EventBus", () => {
       eventBus.dispatch("ready", null);
       expect(warnSpy).toHaveBeenCalledWith(
         "Dispatched event has no subscriber:",
-        "ready"
+        "ready",
       );
     });
 
@@ -241,7 +241,7 @@ describe("EventBus", () => {
       const warnSpy = jest.spyOn(console, "warn");
 
       // Subscribe to custom event
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
       eventBus.on("custom-event" as any, callback);
 
       // Dispatch custom event

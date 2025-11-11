@@ -47,7 +47,7 @@ export function scrollToAlert(
   view: EditorView,
   editor: Editor,
   alert: ValeAlert,
-  highlight = true
+  highlight = true,
 ): void {
   // Generate alert ID for selection
   const alertId = generateAlertId(alert);
@@ -96,7 +96,7 @@ export function scrollToAlert(
 export function scrollToPosition(
   view: EditorView,
   offset: number,
-  yAlign: "start" | "center" | "end" | "nearest" = "center"
+  yAlign: "start" | "center" | "end" | "nearest" = "center",
 ): void {
   view.dispatch({
     effects: EditorView.scrollIntoView(offset, {
@@ -123,7 +123,7 @@ export function scrollToPosition(
  */
 export function getAlertPosition(
   editor: Editor,
-  alert: ValeAlert
+  alert: ValeAlert,
 ): { start: number; end: number } {
   // Calculate line start offset (0-based line number)
   const lineStart = editor.posToOffset({ line: alert.Line - 1, ch: 0 });

@@ -38,7 +38,7 @@ import { Editor, EditorPosition } from "obsidian";
 export function lineColToOffset(
   editor: Editor,
   line: number,
-  ch: number
+  ch: number,
 ): number {
   return editor.posToOffset({ line, ch });
 }
@@ -79,7 +79,7 @@ export function lineColToOffset(
  */
 export function offsetToLineCol(
   editor: Editor,
-  offset: number
+  offset: number,
 ): EditorPosition {
   return editor.offsetToPos(offset);
 }
@@ -121,7 +121,7 @@ export function offsetToLineCol(
 export function isValidPosition(
   editor: Editor,
   line: number,
-  ch: number
+  ch: number,
 ): boolean {
   // Check if line is within bounds
   if (line < 0 || line >= editor.lineCount()) {
@@ -175,7 +175,7 @@ export function isValidPosition(
 export function clampPosition(
   editor: Editor,
   line: number,
-  ch: number
+  ch: number,
 ): EditorPosition {
   // Clamp line to valid range
   const clampedLine = Math.max(0, Math.min(line, editor.lastLine()));
@@ -222,7 +222,7 @@ export function clampPosition(
 export function lineColToByteOffset(
   editor: Editor,
   line: number,
-  ch: number
+  ch: number,
 ): number {
   let byteOffset = 0;
 
@@ -274,7 +274,7 @@ export function lineColToByteOffset(
  */
 export function byteOffsetToLineCol(
   editor: Editor,
-  byteOffset: number
+  byteOffset: number,
 ): EditorPosition {
   let remainingBytes = byteOffset;
   const lineCount = editor.lineCount();

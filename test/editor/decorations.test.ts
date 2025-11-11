@@ -19,6 +19,75 @@ import {
   createAlertsBySeverity,
 } from "../mocks/valeAlerts";
 
+/**
+ * Type definition for decoration spec with attributes and class.
+ * CodeMirror's Decoration.spec is typed as `any`, so we define
+ * our own interface for type safety in tests.
+ */
+interface DecorationSpec {
+  class?: string;
+  attributes?: {
+    [key: string]: string;
+  };
+  [key: string]: unknown;
+}
+
+/**
+ * Type guard to check if a value is a DecorationSpec.
+ *
+ * @param spec - The spec to check (typed as any from CodeMirror)
+ * @returns True if the spec has the expected structure
+ */
+function isDecorationSpec(spec: unknown): spec is DecorationSpec {
+  return typeof spec === "object" && spec !== null;
+}
+
+/**
+ * Safely gets the class from a decoration spec.
+ *
+ * @param spec - The decoration spec (typed as any from CodeMirror)
+ * @returns The class value if it exists, otherwise undefined
+ */
+function getDecorationClass(spec: unknown): string | undefined {
+  if (!isDecorationSpec(spec)) {
+    return undefined;
+  }
+  return typeof spec.class === "string" ? spec.class : undefined;
+}
+
+/**
+ * Safely gets an attribute value from a decoration spec.
+ *
+ * @param spec - The decoration spec (typed as any from CodeMirror)
+ * @param attributeName - The name of the attribute to retrieve
+ * @returns The attribute value if it exists, otherwise undefined
+ */
+function getDecorationAttribute(
+  spec: unknown,
+  attributeName: string,
+): string | undefined {
+  if (!isDecorationSpec(spec)) {
+    return undefined;
+  }
+  const value = spec.attributes?.[attributeName];
+  return typeof value === "string" ? value : undefined;
+}
+
+/**
+ * Safely gets all attributes from a decoration spec.
+ *
+ * @param spec - The decoration spec (typed as any from CodeMirror)
+ * @returns The attributes object if it exists, otherwise undefined
+ */
+function getDecorationAttributes(
+  spec: unknown,
+): Record<string, string> | undefined {
+  if (!isDecorationSpec(spec)) {
+    return undefined;
+  }
+  return spec.attributes;
+}
+
 describe("Decoration Factory Functions", () => {
   describe("createValeMarkDecoration", () => {
     it("should create a mark decoration with correct class for error severity", () => {
@@ -26,7 +95,9 @@ describe("Decoration Factory Functions", () => {
       const decoration = createValeMarkDecoration(alert);
 
       expect(decoration).toBeDefined();
-      expect(decoration.spec.class).toBe("vale-underline vale-error");
+      expect(getDecorationClass(decoration.spec)).toBe(
+        "vale-underline vale-error",
+      );
     });
 
     it("should create a mark decoration with correct class for warning severity", () => {
@@ -34,7 +105,9 @@ describe("Decoration Factory Functions", () => {
       const decoration = createValeMarkDecoration(alert);
 
       expect(decoration).toBeDefined();
-      expect(decoration.spec.class).toBe("vale-underline vale-warning");
+      expect(getDecorationClass(decoration.spec)).toBe(
+        "vale-underline vale-warning",
+      );
     });
 
     it("should create a mark decoration with correct class for suggestion severity", () => {
@@ -42,39 +115,49 @@ describe("Decoration Factory Functions", () => {
       const decoration = createValeMarkDecoration(alert);
 
       expect(decoration).toBeDefined();
-      expect(decoration.spec.class).toBe("vale-underline vale-suggestion");
+      expect(getDecorationClass(decoration.spec)).toBe(
+        "vale-underline vale-suggestion",
+      );
     });
 
     it("should handle mixed-case severity by normalizing to lowercase", () => {
       const alert = createMockValeAlert({ Severity: "ERROR" });
       const decoration = createValeMarkDecoration(alert);
 
-      expect(decoration.spec.class).toBe("vale-underline vale-error");
+      expect(getDecorationClass(decoration.spec)).toBe(
+        "vale-underline vale-error",
+      );
     });
 
     it("should include data-alert-id attribute", () => {
       const alert = mockAlerts.spellingError;
       const decoration = createValeMarkDecoration(alert);
 
-      expect(decoration.spec.attributes).toBeDefined();
-      expect(decoration.spec.attributes?.["data-alert-id"]).toBeDefined();
-      expect(typeof decoration.spec.attributes?.["data-alert-id"]).toBe(
-        "string"
-      );
+      expect(getDecorationAttributes(decoration.spec)).toBeDefined();
+      expect(
+        getDecorationAttribute(decoration.spec, "data-alert-id"),
+      ).toBeDefined();
+      expect(
+        typeof getDecorationAttribute(decoration.spec, "data-alert-id"),
+      ).toBe("string");
     });
 
     it("should include data-check attribute with check name", () => {
       const alert = createMockValeAlert({ Check: "Vale.Spelling" });
       const decoration = createValeMarkDecoration(alert);
 
-      expect(decoration.spec.attributes?.["data-check"]).toBe("Vale.Spelling");
+      expect(getDecorationAttribute(decoration.spec, "data-check")).toBe(
+        "Vale.Spelling",
+      );
     });
 
     it("should include data-severity attribute", () => {
       const alert = createMockValeAlert({ Severity: "error" });
       const decoration = createValeMarkDecoration(alert);
 
-      expect(decoration.spec.attributes?.["data-severity"]).toBe("error");
+      expect(getDecorationAttribute(decoration.spec, "data-severity")).toBe(
+        "error",
+      );
     });
 
     it("should create unique alert IDs for different alerts", () => {
@@ -92,8 +175,8 @@ describe("Decoration Factory Functions", () => {
       const deco1 = createValeMarkDecoration(alert1);
       const deco2 = createValeMarkDecoration(alert2);
 
-      const id1 = deco1.spec.attributes?.["data-alert-id"];
-      const id2 = deco2.spec.attributes?.["data-alert-id"];
+      const id1 = getDecorationAttribute(deco1.spec, "data-alert-id");
+      const id2 = getDecorationAttribute(deco2.spec, "data-alert-id");
 
       expect(id1).not.toBe(id2);
     });
@@ -108,8 +191,8 @@ describe("Decoration Factory Functions", () => {
       const deco1 = createValeMarkDecoration(alert);
       const deco2 = createValeMarkDecoration(alert);
 
-      const id1 = deco1.spec.attributes?.["data-alert-id"];
-      const id2 = deco2.spec.attributes?.["data-alert-id"];
+      const id1 = getDecorationAttribute(deco1.spec, "data-alert-id");
+      const id2 = getDecorationAttribute(deco2.spec, "data-alert-id");
 
       expect(id1).toBe(id2);
     });
@@ -126,10 +209,9 @@ describe("Decoration Factory Functions", () => {
       for (const alert of alerts) {
         const decoration = createValeMarkDecoration(alert);
         expect(decoration).toBeDefined();
-        expect(decoration.spec.class).toContain("vale-underline");
-        expect(decoration.spec.class).toContain(
-          `vale-${alert.Severity.toLowerCase()}`
-        );
+        const className = getDecorationClass(decoration.spec);
+        expect(className).toContain("vale-underline");
+        expect(className).toContain(`vale-${alert.Severity.toLowerCase()}`);
       }
     });
   });
@@ -139,23 +221,27 @@ describe("Decoration Factory Functions", () => {
       const decoration = createSelectionDecoration();
 
       expect(decoration).toBeDefined();
-      expect(decoration.spec.class).toBe("vale-selected");
+      expect(getDecorationClass(decoration.spec)).toBe("vale-selected");
     });
 
     it("should include data-vale-decoration attribute set to 'selection'", () => {
       const decoration = createSelectionDecoration();
 
-      expect(decoration.spec.attributes?.["data-vale-decoration"]).toBe(
-        "selection"
-      );
+      expect(
+        getDecorationAttribute(decoration.spec, "data-vale-decoration"),
+      ).toBe("selection");
     });
 
     it("should create consistent decorations on multiple calls", () => {
       const deco1 = createSelectionDecoration();
       const deco2 = createSelectionDecoration();
 
-      expect(deco1.spec.class).toBe(deco2.spec.class);
-      expect(deco1.spec.attributes).toEqual(deco2.spec.attributes);
+      expect(getDecorationClass(deco1.spec)).toBe(
+        getDecorationClass(deco2.spec),
+      );
+      expect(getDecorationAttributes(deco1.spec)).toEqual(
+        getDecorationAttributes(deco2.spec),
+      );
     });
   });
 
@@ -164,24 +250,28 @@ describe("Decoration Factory Functions", () => {
       const decoration = createHighlightDecoration();
 
       expect(decoration).toBeDefined();
-      expect(decoration.spec.class).toBe("vale-highlight");
+      expect(getDecorationClass(decoration.spec)).toBe("vale-highlight");
     });
 
     it("should include data-vale-decoration attribute set to 'highlight'", () => {
       const decoration = createHighlightDecoration();
 
-      expect(decoration.spec.attributes?.["data-vale-decoration"]).toBe(
-        "highlight"
-      );
+      expect(
+        getDecorationAttribute(decoration.spec, "data-vale-decoration"),
+      ).toBe("highlight");
     });
 
     it("should be distinguishable from selection decorations", () => {
       const highlight = createHighlightDecoration();
       const selection = createSelectionDecoration();
 
-      expect(highlight.spec.class).not.toBe(selection.spec.class);
-      expect(highlight.spec.attributes?.["data-vale-decoration"]).not.toBe(
-        selection.spec.attributes?.["data-vale-decoration"]
+      expect(getDecorationClass(highlight.spec)).not.toBe(
+        getDecorationClass(selection.spec),
+      );
+      expect(
+        getDecorationAttribute(highlight.spec, "data-vale-decoration"),
+      ).not.toBe(
+        getDecorationAttribute(selection.spec, "data-vale-decoration"),
       );
     });
   });
@@ -413,8 +503,8 @@ describe("Decoration Factory Functions", () => {
       const decoration = createValeMarkDecoration(alert);
 
       expect(decoration).toBeDefined();
-      expect(decoration.spec.attributes?.["data-alert-id"]).toBe(
-        "1:0:5:Vale.First"
+      expect(getDecorationAttribute(decoration.spec, "data-alert-id")).toBe(
+        "1:0:5:Vale.First",
       );
     });
 

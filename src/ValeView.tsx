@@ -16,8 +16,8 @@ export class ValeView extends ItemView {
   private runner: ValeRunner;
   private eventBus: EventBus;
 
-  private ready: boolean;
-  private unregisterReady: () => void;
+  private ready = false;
+  private unregisterReady: (() => void) | null = null;
 
   private onAlertClick: (alert: ValeAlert) => void;
 
@@ -26,7 +26,7 @@ export class ValeView extends ItemView {
     settings: ValeSettings,
     runner: ValeRunner,
     eventBus: EventBus,
-    onAlertClick: (alert: ValeAlert) => void
+    onAlertClick: (alert: ValeAlert) => void,
   ) {
     super(leaf);
     this.settings = settings;
@@ -67,14 +67,16 @@ export class ValeView extends ItemView {
             </div>
           </SettingsContext.Provider>
         </AppContext.Provider>,
-        this.containerEl.children[1]
+        this.containerEl.children[1],
       );
     });
   }
 
   async onClose(): Promise<void> {
     this.ready = false;
-    this.unregisterReady();
+    if (this.unregisterReady) {
+      this.unregisterReady();
+    }
 
     return timed("ValeResultsView.onClose()", async () => {
       ReactDOM.unmountComponentAtNode(this.containerEl.children[1]);
@@ -86,7 +88,7 @@ export class ValeView extends ItemView {
 
     // Only run the check if there's an active Markdown document and the view
     // is ready to accept check requests.
-    if (view && this.ready) {
+    if (view && view.file && this.ready) {
       this.eventBus.dispatch("check", {
         text: view.editor.getValue(),
         format: "." + view.file.extension,

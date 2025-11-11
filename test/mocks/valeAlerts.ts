@@ -8,7 +8,7 @@ import { ValeAlert } from "../../src/types";
  * Factory function to create a ValeAlert with sensible defaults
  */
 export function createMockValeAlert(
-  overrides: Partial<ValeAlert> = {}
+  overrides: Partial<ValeAlert> = {},
 ): ValeAlert {
   return {
     Action: {
@@ -155,7 +155,7 @@ export function createSequentialAlerts(count: number): ValeAlert[] {
         Span: [posInLine, posInLine + matchLength],
         Match: `word${i}`,
         Line: lineNumber,
-      })
+      }),
     );
   }
 

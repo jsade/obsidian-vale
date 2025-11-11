@@ -10,7 +10,6 @@ global.TextDecoder = TextDecoder as typeof global.TextDecoder;
 
 // Define DEBUG global (used in src/debug.ts)
 declare global {
-  // eslint-disable-next-line no-var
   var DEBUG: boolean;
 }
 global.DEBUG = false; // Set to false for tests to avoid debug output

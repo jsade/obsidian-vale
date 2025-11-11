@@ -151,7 +151,7 @@ describe("State Effects", () => {
     });
 
     it("should allow null as value", () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
       const effect = clearAllValeMarks.of(null as any);
 
       expect(effect).toBeDefined();

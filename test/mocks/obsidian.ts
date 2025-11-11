@@ -117,7 +117,7 @@ export function createMockEditor(options?: {
     getRange: jest.fn(
       (
         from: number | { line: number; ch: number },
-        to: number | { line: number; ch: number }
+        to: number | { line: number; ch: number },
       ) => {
         // Handle both offset and pos formats
         let fromOffset: number;
@@ -127,12 +127,14 @@ export function createMockEditor(options?: {
           fromOffset = from;
           toOffset = to as number;
         } else {
-          fromOffset = mockEditor.posToOffset(from);
-          toOffset = mockEditor.posToOffset(to);
+          fromOffset = mockEditor.posToOffset(
+            from as { line: number; ch: number },
+          );
+          toOffset = mockEditor.posToOffset(to as { line: number; ch: number });
         }
 
         return cm.state.doc.sliceString(fromOffset, toOffset);
-      }
+      },
     ),
 
     // Transaction methods

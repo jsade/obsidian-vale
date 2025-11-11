@@ -14,24 +14,26 @@ export const GeneralSettings = ({
   onSettingsChange,
 }: Props): React.ReactElement => {
   const [onboarding, setOnboarding] = React.useState(false);
-  const ref = React.useRef<HTMLDivElement>();
+  const ref = React.useRef<HTMLDivElement | null>(null);
   const configManager = useConfigManager(settings);
 
   // Check whether the user have configured a path to a valid config file.
   React.useEffect(() => {
     if (settings.type === "cli" && configManager) {
-      configManager.valePathExists().then((exists) => setOnboarding(!exists));
+      void configManager
+        .valePathExists()
+        .then((exists) => setOnboarding(!exists));
     }
   }, [settings, configManager]);
 
   React.useEffect(() => {
-    (async () => {
+    void (async () => {
       if (ref.current) {
         ref.current.empty();
 
         new Setting(ref.current)
-          .setName("Use Vale Server")
-          .setDesc("If disabled, you need to have the Vale CLI installed.")
+          .setName("Enable Vale Server")
+          .setDesc("If disabled, you need to have Vale CLI installed.")
           .addToggle((toggle) =>
             toggle
               .setValue(settings.type === "server")
@@ -40,7 +42,7 @@ export const GeneralSettings = ({
                   ...settings,
                   type: value ? "server" : "cli",
                 });
-              })
+              }),
           );
 
         if (settings.type === "server") {
@@ -68,7 +70,7 @@ export const GeneralSettings = ({
           new Setting(ref.current)
             .setName("Use managed Vale CLI")
             .setDesc(
-              "Install Vale to your vault. Disable if you want to use an existing Vale configuration."
+              "Install Vale to your vault. Disable if you want to use an existing Vale configuration.",
             )
             .addToggle((toggle) =>
               toggle.setValue(settings.cli.managed).onChange((managed) => {
@@ -76,7 +78,7 @@ export const GeneralSettings = ({
                   ...settings,
                   cli: { ...settings.cli, managed },
                 });
-              })
+              }),
             );
 
           if (!settings.cli.managed) {
@@ -84,7 +86,7 @@ export const GeneralSettings = ({
               .setName("Vale path")
               .setDesc("Absolute path to the Vale binary.")
               .addText((text) => {
-                const component = text.setValue(settings.cli.valePath);
+                const component = text.setValue(settings.cli.valePath ?? "");
 
                 component.inputEl.onblur = async (value: FocusEvent) => {
                   onSettingsChange({
@@ -103,7 +105,7 @@ export const GeneralSettings = ({
               .setName("Config path")
               .setDesc("Absolute path to a Vale config file.")
               .addText((text) => {
-                const component = text.setValue(settings.cli.configPath);
+                const component = text.setValue(settings.cli.configPath ?? "");
 
                 component.inputEl.onblur = async (value: FocusEvent) => {
                   onSettingsChange({
@@ -220,15 +222,17 @@ export const DownloadButton = ({
     <button
       style={{ marginBottom: "1rem" }}
       className="mod-cta"
-      onClick={async () => {
-        setDownloading(true);
+      onClick={() => {
+        void (async () => {
+          setDownloading(true);
 
-        try {
-          await onInstall();
-        } finally {
-          setDownloading(false);
-          onInstalled();
-        }
+          try {
+            await onInstall();
+          } finally {
+            setDownloading(false);
+            onInstalled();
+          }
+        })();
       }}
     >
       Install Vale to vault

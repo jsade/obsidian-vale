@@ -14,12 +14,12 @@ export const StyleSettings = ({
 }: Props): React.ReactElement => {
   const [installedStyles, setInstalledStyles] = React.useState<ValeStyle[]>([]);
   const [enabledStyles, setEnabledStyles] = React.useState<string[]>([]);
-  const ref = React.useRef<HTMLDivElement>();
+  const ref = React.useRef<HTMLDivElement | null>(null);
 
   const configManager = useConfigManager(settings);
 
   React.useEffect(() => {
-    (async () => {
+    void (async () => {
       try {
         if (configManager && (await configManager.configPathExists())) {
           setInstalledStyles(await configManager.getAvailableStyles());
@@ -37,7 +37,7 @@ export const StyleSettings = ({
 
     new Setting(ref.current)
       .setHeading()
-      .setName("Styles for Vale CLI")
+      .setName("Vale styles")
       .setDesc("A collection of officially supported styles.");
 
     new Setting(ref.current)
@@ -48,11 +48,11 @@ export const StyleSettings = ({
           .setDisabled(true)
           .setIcon("gear")
           .setTooltip(
-            "Rule management for the Vale style is coming in a future release."
+            "Coming in a future release: rule management for the Vale style.",
           )
           .onClick(() => {
             // navigate("Rules", "Vale");
-          })
+          }),
       )
       .addToggle((toggle) =>
         toggle
@@ -73,19 +73,20 @@ export const StyleSettings = ({
               setEnabledStyles([...newstyles]);
             }
             setInstalledStyles(installedStyles);
-          })
+          }),
       );
 
     installedStyles.forEach((style) => {
+      if (!ref.current) return;
       const setting = new Setting(ref.current)
         .setName(style.name)
-        .setDesc(style.description);
+        .setDesc(style.description || "");
 
       if (enabledStyles.contains(style.name)) {
         setting.addExtraButton((button) =>
           button.setIcon("gear").onClick(() => {
             navigate("Rules", style.name);
-          })
+          }),
         );
       }
 
@@ -109,7 +110,7 @@ export const StyleSettings = ({
               newstyles.delete(style.name);
               setEnabledStyles([...newstyles]);
             }
-          })
+          }),
       );
     });
   }
