@@ -27,12 +27,12 @@ export const SettingsRouter = ({ plugin }: Props): React.ReactElement => {
   };
 
   React.useEffect(() => {
-    if (settings.type === "cli") {
+    if (settings.type === "cli" && configManager) {
       configManager.configPathExists().then((res) => setValidConfigPath(res));
     } else {
       setValidConfigPath(false);
     }
-  }, [settings]);
+  }, [settings, configManager]);
 
   switch (page) {
     case "General":

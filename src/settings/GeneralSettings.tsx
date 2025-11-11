@@ -19,7 +19,7 @@ export const GeneralSettings = ({
 
   // Check whether the user have configured a path to a valid config file.
   React.useEffect(() => {
-    if (settings.type === "cli") {
+    if (settings.type === "cli" && configManager) {
       configManager.valePathExists().then((exists) => setOnboarding(!exists));
     }
   }, [settings, configManager]);
@@ -169,6 +169,10 @@ export const Onboarding = ({
       {settings.cli.managed ? (
         <DownloadButton
           onInstall={async () => {
+            if (!configManager) {
+              console.error("Config manager not available");
+              return;
+            }
             await configManager.initializeDataPath();
             await configManager.installVale();
           }}

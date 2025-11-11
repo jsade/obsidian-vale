@@ -32,6 +32,6 @@ yarn-error.log
 # test coverage
 coverage
 
-# docs
+# local
 docs
-
+local

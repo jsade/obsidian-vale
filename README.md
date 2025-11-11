@@ -9,7 +9,7 @@ Obsidian Vale is a [Vale](https://vale.sh/) linter client plugin for [Obsidian](
 - **Real-time linting**: Vale analyzes your prose as you write
 - **Inline feedback**: Underlined text shows issues directly in the editor
 - **Multiple severity levels**: Error, warning, and suggestion styles
-- **Interactive tooltips**: Hover over underlined text for details and suggested fixes
+- **Interactive tooltips**: Hover over underlined text for details and suggested fixes (Planned for future release)
 - **Custom rules**: Use Vale's extensive style library or create your own
 - **Managed or custom Vale**: Let the plugin manage Vale or use your own installation
 - **Obsidian compatibility**: 1.5+
@@ -33,8 +33,8 @@ Obsidian Vale is a [Vale](https://vale.sh/) linter client plugin for [Obsidian](
 - **v1.0.0+**: Full support for Obsidian 1.5.0+ with CodeMirror 6
   - Modern, declarative editor integration
   - Improved performance and reliability
-  - Auto-check with debouncing
-  - Interactive hover tooltips
+  - Auto-check with debouncing (Planned for future release)
+  - Interactive hover tooltips (Planned for future release)
 
 - **v0.9.0 and earlier**: Legacy editor support (Obsidian pre-1.5.0)
   - No longer functional on Obsidian 1.5.0+
@@ -82,7 +82,7 @@ If you already have Vale installed:
 ### Check Document
 
 - **Command Palette**: `Vale: Check document` (or use configured hotkey)
-- **Toolbar**: Click the Vale icon (if enabled in settings)
+- **Ribbon Icon**: Click the Vale icon in the left sidebar to run a check
 
 Underlined text indicates issues:
 - **Red underline**: Errors
@@ -91,25 +91,27 @@ Underlined text indicates issues:
 
 ### View Details and Fix Issues
 
-**Method 1: Hover Tooltip**
+**Method 1: Hover Tooltip** (Planned for future release)
 - Hover over underlined text to see a tooltip with:
   - Issue description
   - Suggested fixes (click to apply)
   - Actions (ignore, disable rule)
 
 **Method 2: Results Panel**
-- Open the Vale panel from the sidebar
-- Click an alert to jump to its location
+- Open the Vale panel from the sidebar:
+  - Use `Vale: Check document` command to run check and open panel
+  - Use `Vale: Open Vale panel` command to just open the panel
+- Click an alert to jump to its location in the editor
 - Review all issues in one place
 
-**Method 3: Context Menu**
+**Method 3: Context Menu** (Planned for future release)
 - Right-click on underlined text
 - Select from Vale suggestions submenu
 - Quick access to ignore or disable rule
 
-### Auto-Check
+### Auto-Check (Planned for future release)
 
-Enable automatic checking in settings:
+Automatic checking will be available in a future version:
 - Checks document after you stop typing (configurable delay)
 - Only checks changed sections (efficient for large documents)
 - Can be toggled on/off per document
@@ -119,6 +121,20 @@ Enable automatic checking in settings:
 - **Command Palette**: `Vale: Clear alerts`
 - Removes all underlines without fixing issues
 - Useful when you want to focus on writing
+
+### Toggle Alerts
+
+- **Command Palette**: `Vale: Toggle alerts`
+- Hides or shows all alert underlines
+- Alerts remain in the panel even when hidden
+
+### Status Bar
+
+The status bar (bottom of window) shows real-time check status:
+- **"Vale: Ready"** - Plugin is ready to check documents
+- **"Vale: Checking..."** - A check is currently running
+- **"Vale: No issues"** - Check complete with no issues found
+- **"Vale: X issue(s)"** - Check complete with issues found (shows count)
 
 ## Configuration
 
@@ -133,10 +149,10 @@ Configure Vale integration:
 ### Editor Settings
 
 Customize editor behavior:
-- **Auto-check**: Enable/disable automatic checking
-- **Auto-check delay**: Milliseconds to wait after typing (default: 1000)
-- **Show in status bar**: Display check status
-- **Alert panel position**: Left or right sidebar
+- **Alert panel position**: Choose left or right sidebar for the Vale panel
+- **Status bar**: Shows check status and issue count at the bottom of the window
+
+Note: Auto-check settings will be available in a future release.
 
 ### Rule Configuration
 
@@ -205,10 +221,10 @@ Install styles via the plugin's **Managed** mode or manually in your Vale config
 **Symptom**: Typing lags, Obsidian becomes unresponsive during checks
 
 **Solutions**:
-1. **Increase auto-check delay**: Settings → Vale → Auto-check delay (try 2000ms)
-2. **Use Vale Server**: Faster than CLI for frequent checks
-3. **Disable auto-check**: Use manual checking instead
-4. **Reduce active rules**: Disable unnecessary styles in Rule Configuration
+1. **Use Vale Server**: Enable in Settings → Vale → Server mode (faster than CLI for frequent checks)
+2. **Use manual checking**: Only run checks when needed using the command or ribbon icon
+3. **Reduce active rules**: Disable unnecessary styles in Rule Configuration
+4. **Check smaller sections**: Clear alerts and check again after making changes
 
 ### Underlines in wrong places
 

@@ -21,6 +21,7 @@ export const RuleSettings = ({
 
   React.useEffect(() => {
     (async () => {
+      if (!configManager) return;
       const styleRules = await configManager.getRulesForStyle(style);
       const configuredRules = await configManager.getConfiguredRules(style);
 
@@ -38,7 +39,7 @@ export const RuleSettings = ({
 
       setState(rules);
     })();
-  }, [style]);
+  }, [style, configManager]);
 
   return (
     <>
@@ -56,6 +57,7 @@ export const RuleSettings = ({
       <RuleSettingList
         rules={state}
         onChange={async (rule) => {
+          if (!configManager) return;
           await configManager.updateRule(style, rule);
         }}
       />

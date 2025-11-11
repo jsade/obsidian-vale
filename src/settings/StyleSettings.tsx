@@ -58,6 +58,7 @@ export const StyleSettings = ({
         toggle
           .setValue(enabledStyles.contains("Vale"))
           .onChange(async (value) => {
+            if (!configManager) return;
             if (value) {
               await configManager.enableStyle("Vale");
 
@@ -92,6 +93,7 @@ export const StyleSettings = ({
         toggle
           .setValue(enabledStyles.contains(style.name))
           .onChange(async (enabled) => {
+            if (!configManager) return;
             if (enabled) {
               await configManager.installStyle(style);
               await configManager.enableStyle(style.name);
