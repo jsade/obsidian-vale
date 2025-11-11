@@ -372,7 +372,7 @@ export class ValeConfigManager {
 
     return path.join(
       destinationPath,
-      "vale" + process.platform === "win32" ? ".exe" : "",
+      "vale" + (process.platform === "win32" ? ".exe" : ""),
     );
   }
 
