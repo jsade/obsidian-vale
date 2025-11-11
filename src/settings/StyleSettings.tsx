@@ -51,17 +51,6 @@ export const StyleSettings = ({
     new Setting(ref.current)
       .setName("Vale")
       .setDesc("Default style for spelling.")
-      .addExtraButton((button) =>
-        button
-          .setDisabled(true)
-          .setIcon("gear")
-          .setTooltip(
-            "Coming in a future release: rule management for the Vale style.",
-          )
-          .onClick(() => {
-            // navigate("Rules", "Vale");
-          }),
-      )
       .addToggle((toggle) =>
         toggle
           .setValue(enabledStyles.contains("Vale"))

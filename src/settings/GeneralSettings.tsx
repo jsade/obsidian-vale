@@ -2,6 +2,7 @@ import { useConfigManager } from "hooks";
 import { Setting } from "obsidian";
 import * as React from "react";
 import { LoaderCube } from "../components/LoaderCube";
+import { ValidationResult } from "../vale/ValeConfigManager";
 import { ValeSettings } from "../types";
 
 interface Props {
@@ -17,6 +18,16 @@ export const GeneralSettings = ({
   const ref = React.useRef<HTMLDivElement | null>(null);
   const configManager = useConfigManager(settings);
 
+  // Store validation results in state so they persist across UI recreations
+  const [valePathValidation, setValePathValidation] =
+    React.useState<ValidationResult | null>(null);
+  const [configPathValidation, setConfigPathValidation] =
+    React.useState<ValidationResult | null>(null);
+
+  // Refs to track the Setting instances so we can update their descriptions
+  const valePathSettingRef = React.useRef<Setting | null>(null);
+  const configPathSettingRef = React.useRef<Setting | null>(null);
+
   // Track previous values to prevent unnecessary re-renders
   // Start with null to ensure first render always executes
   const prevSettingsRef = React.useRef<{
@@ -25,13 +36,75 @@ export const GeneralSettings = ({
     serverUrl: string;
   } | null>(null);
 
+  // Validation function to check custom Vale paths and store results in state
+  const validatePaths = React.useCallback(async () => {
+    if (!configManager) {
+      // Clear validation state when configManager is not available
+      setValePathValidation(null);
+      setConfigPathValidation(null);
+      return;
+    }
+
+    // Only validate if we're in CLI mode and custom (not managed)
+    if (settings.type !== "cli" || settings.cli.managed) {
+      setValePathValidation(null);
+      setConfigPathValidation(null);
+      return;
+    }
+
+    // Validate Vale path only if it's not empty
+    if (settings.cli.valePath && settings.cli.valePath.trim() !== "") {
+      const valeResult = await configManager.validateValePath();
+      setValePathValidation(valeResult);
+    } else {
+      setValePathValidation(null);
+    }
+
+    // Validate Config path only if it's not empty
+    if (settings.cli.configPath && settings.cli.configPath.trim() !== "") {
+      const configResult = await configManager.validateConfigPath();
+      setConfigPathValidation(configResult);
+    } else {
+      setConfigPathValidation(null);
+    }
+  }, [
+    configManager,
+    settings.type,
+    settings.cli.managed,
+    settings.cli.valePath,
+    settings.cli.configPath,
+  ]);
+
+  // Helper to update Setting description with validation result
+  const updateSettingDescription = React.useCallback(
+    (
+      setting: Setting,
+      baseDescription: string,
+      validation: ValidationResult | null,
+    ) => {
+      if (!validation) {
+        // No validation result - show base description
+        setting.setDesc(baseDescription);
+      } else if (validation.valid) {
+        // Show success indicator
+        setting.setDesc(`${baseDescription} ✓`);
+      } else if (validation.error) {
+        // Show error message in red
+        const descEl = setting.descEl;
+        descEl.empty();
+        descEl.createSpan({ text: baseDescription });
+        descEl.createEl("br");
+        const errorSpan = descEl.createSpan({
+          text: `❌ ${validation.error}`,
+        });
+        errorSpan.setCssProps({ color: "var(--text-error)" });
+      }
+    },
+    [],
+  );
+
   // Check whether the user have configured a path to a valid config file.
   React.useEffect(() => {
-    console.debug("[DEBUG:GeneralSettings] Onboarding useEffect triggered", {
-      type: settings.type,
-      hasConfigManager: !!configManager,
-    });
-
     let isMounted = true;
 
     if (settings.type === "cli" && configManager) {
@@ -39,28 +112,46 @@ export const GeneralSettings = ({
         .valePathExists()
         .then((exists) => {
           if (isMounted) {
-            console.debug(
-              "[DEBUG:GeneralSettings] valePathExists result:",
-              exists,
-            );
             setOnboarding(!exists);
-          } else {
-            console.debug(
-              "[DEBUG:GeneralSettings] Component unmounted, skipping setOnboarding",
-            );
           }
         })
         .catch((error) => {
-          console.error("[DEBUG:GeneralSettings] valePathExists error:", error);
+          console.error("valePathExists error:", error);
         });
     }
 
     return () => {
-      console.debug("[DEBUG:GeneralSettings] Onboarding useEffect cleanup");
       isMounted = false;
     };
   }, [settings, configManager]);
 
+  // Validate paths when they change or when configManager becomes available
+  React.useEffect(() => {
+    void validatePaths();
+  }, [validatePaths]);
+
+  // Update Setting descriptions when validation results change (without recreating UI)
+  React.useEffect(() => {
+    if (valePathSettingRef.current) {
+      updateSettingDescription(
+        valePathSettingRef.current,
+        "Absolute path to the Vale binary.",
+        valePathValidation,
+      );
+    }
+  }, [valePathValidation, updateSettingDescription]);
+
+  React.useEffect(() => {
+    if (configPathSettingRef.current) {
+      updateSettingDescription(
+        configPathSettingRef.current,
+        "Absolute path to a Vale config file.",
+        configPathValidation,
+      );
+    }
+  }, [configPathValidation, updateSettingDescription]);
+
+  // Effect to recreate Settings UI when certain values change
   React.useEffect(() => {
     const currentValues = {
       type: settings.type,
@@ -76,23 +167,7 @@ export const GeneralSettings = ({
       prevSettingsRef.current.managed !== currentValues.managed ||
       prevSettingsRef.current.serverUrl !== currentValues.serverUrl;
 
-    console.debug(
-      "[DEBUG:GeneralSettings] useEffect triggered - settings changed",
-      {
-        type: settings.type,
-        managed: settings.type === "cli" ? settings.cli.managed : "N/A",
-        hasConfigManager: !!configManager,
-        hasChanged,
-        isFirstRender: prevSettingsRef.current === null,
-        prevType: prevSettingsRef.current?.type,
-        prevManaged: prevSettingsRef.current?.managed,
-      },
-    );
-
     if (!hasChanged) {
-      console.debug(
-        "[DEBUG:GeneralSettings] No relevant changes detected, skipping UI rebuild",
-      );
       return;
     }
 
@@ -101,9 +176,6 @@ export const GeneralSettings = ({
 
     void (async () => {
       if (ref.current) {
-        console.debug(
-          "[DEBUG:GeneralSettings] Emptying ref.current and recreating UI",
-        );
         ref.current.empty();
 
         new Setting(ref.current)
@@ -111,10 +183,6 @@ export const GeneralSettings = ({
           .setDesc("If disabled, you need to have Vale CLI installed.")
           .addToggle((toggle) => {
             const handleChange = async (value: boolean) => {
-              console.debug("[DEBUG:GeneralSettings] Server toggle changed", {
-                from: settings.type,
-                to: value ? "server" : "cli",
-              });
               onSettingsChange({
                 ...settings,
                 type: value ? "server" : "cli",
@@ -154,13 +222,6 @@ export const GeneralSettings = ({
             )
             .addToggle((toggle) => {
               const handleChange = (managed: boolean) => {
-                console.debug(
-                  "[DEBUG:GeneralSettings] Managed toggle changed",
-                  {
-                    from: settings.cli.managed,
-                    to: managed,
-                  },
-                );
                 onSettingsChange({
                   ...settings,
                   cli: { ...settings.cli, managed },
@@ -178,13 +239,6 @@ export const GeneralSettings = ({
 
             // Helper to read both values from DOM and update settings
             const updateBothPaths = () => {
-              console.debug(
-                "[DEBUG:GeneralSettings] Updating both CLI paths from DOM",
-                {
-                  valePath: valePathInput?.value,
-                  configPath: configPathInput?.value,
-                },
-              );
               onSettingsChange({
                 ...settings,
                 cli: {
@@ -193,9 +247,10 @@ export const GeneralSettings = ({
                   configPath: configPathInput?.value || "",
                 },
               });
+              // Validation will be triggered automatically by the validatePaths useEffect
             };
 
-            new Setting(ref.current)
+            const valePathSetting = new Setting(ref.current)
               .setName("Vale path")
               .setDesc("Absolute path to the Vale binary.")
               .addText((text) => {
@@ -209,7 +264,10 @@ export const GeneralSettings = ({
                 return component;
               });
 
-            new Setting(ref.current)
+            // Store reference to Vale path Setting for later updates
+            valePathSettingRef.current = valePathSetting;
+
+            const configPathSetting = new Setting(ref.current)
               .setName("Config path")
               .setDesc("Absolute path to a Vale config file.")
               .addText((text) => {
@@ -222,10 +280,12 @@ export const GeneralSettings = ({
 
                 return component;
               });
+
+            // Store reference to Config path Setting for later updates
+            configPathSettingRef.current = configPathSetting;
           }
         }
       }
-      console.debug("[DEBUG:GeneralSettings] useEffect async block completed");
     })();
   }, [settings]);
 

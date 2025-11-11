@@ -20,10 +20,17 @@ export class ValeCli {
     ]);
 
     let stdout = "";
+    let stderr = "";
 
     if (child.stdout) {
       child.stdout.on("data", (data) => {
         stdout += data;
+      });
+    }
+
+    if (child.stderr) {
+      child.stderr.on("data", (data) => {
+        stderr += data;
       });
     }
 
@@ -39,7 +46,10 @@ export class ValeCli {
           resolve(JSON.parse(stdout) as ValeResponse);
         } else {
           // Vale exited unexpectedly.
-          reject(new Error(`child exited with code ${code}`));
+          const errorMessage = stderr.trim()
+            ? `Vale exited with code ${code}: ${stderr.trim()}`
+            : `Vale exited with code ${code}`;
+          reject(new Error(errorMessage));
         }
       });
 

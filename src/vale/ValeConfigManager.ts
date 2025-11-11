@@ -12,6 +12,11 @@ import {
   ValeStyle,
 } from "../types";
 
+export interface ValidationResult {
+  valid: boolean;
+  error?: string;
+}
+
 // ValeManager exposes file operations for working with the Vale configuration
 // file and styles.
 export class ValeConfigManager {
@@ -32,17 +37,95 @@ export class ValeConfigManager {
   }
 
   async valePathExists(): Promise<boolean> {
-    return fs.promises
-      .stat(this.valePath)
-      .then((stat) => stat.isFile())
-      .catch(() => false);
+    try {
+      const stat = await fs.promises.stat(this.valePath);
+      if (!stat.isFile()) {
+        return false;
+      }
+      // Check if the file is executable
+      await fs.promises.access(this.valePath, fs.constants.X_OK);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  async validateValePath(): Promise<ValidationResult> {
+    try {
+      // First, check if the file exists
+      const stat = await fs.promises.stat(this.valePath);
+      if (!stat.isFile()) {
+        return {
+          valid: false,
+          error: `Vale binary not found at ${this.valePath}`,
+        };
+      }
+
+      // Then check if it's executable
+      try {
+        await fs.promises.access(this.valePath, fs.constants.X_OK);
+      } catch {
+        // On Windows, executability checks may not work as expected
+        // So we check if the platform is Windows and allow it through
+        if (process.platform !== "win32") {
+          return {
+            valid: false,
+            error: `Vale binary at ${this.valePath} is not executable`,
+          };
+        }
+      }
+
+      return { valid: true };
+    } catch {
+      return {
+        valid: false,
+        error: `Vale binary not found at ${this.valePath}`,
+      };
+    }
   }
 
   async configPathExists(): Promise<boolean> {
-    return fs.promises
-      .stat(this.configPath)
-      .then((stat) => stat.isFile())
-      .catch(() => false);
+    try {
+      const stat = await fs.promises.stat(this.configPath);
+      if (!stat.isFile()) {
+        return false;
+      }
+      // Check if the file is readable
+      await fs.promises.access(this.configPath, fs.constants.R_OK);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  async validateConfigPath(): Promise<ValidationResult> {
+    try {
+      // First, check if the file exists
+      const stat = await fs.promises.stat(this.configPath);
+      if (!stat.isFile()) {
+        return {
+          valid: false,
+          error: `Config file not found at ${this.configPath}`,
+        };
+      }
+
+      // Then check if it's readable
+      try {
+        await fs.promises.access(this.configPath, fs.constants.R_OK);
+      } catch {
+        return {
+          valid: false,
+          error: `Config file at ${this.configPath} is not readable`,
+        };
+      }
+
+      return { valid: true };
+    } catch {
+      return {
+        valid: false,
+        error: `Config file not found at ${this.configPath}`,
+      };
+    }
   }
 
   async installStyle(style: ValeStyle): Promise<void> {

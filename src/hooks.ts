@@ -19,40 +19,22 @@ export const useConfigManager = (
   const app = useApp();
 
   return React.useMemo(() => {
-    console.debug("[DEBUG:useConfigManager] useMemo triggered", {
-      type: settings.type,
-      managed: settings.type === "cli" ? settings.cli.managed : "N/A",
-      valePath: settings.type === "cli" ? settings.cli.valePath : "N/A",
-      configPath: settings.type === "cli" ? settings.cli.configPath : "N/A",
-    });
-
     if (settings.type === "server" || !app) {
-      console.debug(
-        "[DEBUG:useConfigManager] Returning undefined (server mode or no app)",
-      );
       return undefined;
     }
 
     if (settings.cli.managed) {
-      console.debug("[DEBUG:useConfigManager] Creating managed ConfigManager");
       return newManagedConfigManager(app.vault);
     }
 
-    if (!settings.cli.valePath || !settings.cli.configPath) {
-      console.debug(
-        "[DEBUG:useConfigManager] Returning undefined (missing paths)",
-        {
-          hasValePath: !!settings.cli.valePath,
-          hasConfigPath: !!settings.cli.configPath,
-        },
-      );
-      return undefined;
-    }
+    // Create a ConfigManager even with empty paths so validation can run
+    // Validation will handle empty paths appropriately
+    const valePath = settings.cli.valePath || "";
+    const configPath = settings.cli.configPath || "";
 
-    console.debug("[DEBUG:useConfigManager] Creating custom ConfigManager");
     return new ValeConfigManager(
-      ensureAbsolutePath(settings.cli.valePath, app.vault),
-      ensureAbsolutePath(settings.cli.configPath, app.vault),
+      valePath ? ensureAbsolutePath(valePath, app.vault) : "",
+      configPath ? ensureAbsolutePath(configPath, app.vault) : "",
     );
   }, [settings, app]);
 };

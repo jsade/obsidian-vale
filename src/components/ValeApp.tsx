@@ -18,6 +18,130 @@ interface CheckReport {
   errors?: React.ReactNode;
 }
 
+interface ErrorInfo {
+  message: string;
+  details?: string;
+  showOnboarding: boolean;
+}
+
+/**
+ * Categorizes Vale errors and returns user-friendly error messages
+ * with actionable guidance.
+ */
+const categorizeError = (err: Error): ErrorInfo => {
+  const errMessage = err.message;
+
+  // Connection errors (Vale Server mode)
+  if (errMessage === "net::ERR_CONNECTION_REFUSED") {
+    return {
+      message: "Couldn't connect to Vale Server.",
+      details:
+        "Make sure Vale Server is running and the server URL is correct in Settings.",
+      showOnboarding: false,
+    };
+  }
+
+  // Missing Vale binary or config - trigger onboarding
+  if (errMessage === "Couldn't find vale") {
+    return {
+      message: "",
+      showOnboarding: true,
+    };
+  }
+
+  if (errMessage === "Couldn't find config") {
+    return {
+      message: "",
+      showOnboarding: true,
+    };
+  }
+
+  // Vale CLI errors with exit codes (format: "Vale exited with code X: stderr content")
+  // Use [\s\S] instead of . with 's' flag for ES2018 compatibility
+  const valeExitMatch = errMessage.match(
+    /^Vale exited with code (\d+)(?:: ([\s\S]+))?$/,
+  );
+  if (valeExitMatch) {
+    const exitCode = valeExitMatch[1];
+    const stderrContent = valeExitMatch[2]?.trim();
+
+    if (!stderrContent) {
+      return {
+        message: `Vale exited unexpectedly with code ${exitCode}.`,
+        details:
+          "No error details were provided by Vale. Check your Vale installation and configuration.",
+        showOnboarding: false,
+      };
+    }
+
+    // Categorize based on stderr content patterns
+
+    // Configuration file errors
+    if (
+      stderrContent.includes(".vale.ini") ||
+      stderrContent.includes("config") ||
+      stderrContent.includes("Configuration")
+    ) {
+      return {
+        message: "Vale configuration error",
+        details: `${stderrContent}\n\nPlease check your Vale configuration file (.vale.ini) in Settings.`,
+        showOnboarding: false,
+      };
+    }
+
+    // Missing style packages
+    if (
+      stderrContent.includes("style") ||
+      stderrContent.includes("StylesPath") ||
+      stderrContent.includes("package")
+    ) {
+      return {
+        message: "Missing Vale styles",
+        details: `${stderrContent}\n\nYou may need to install Vale style packages. Check the Styles tab in Settings.`,
+        showOnboarding: false,
+      };
+    }
+
+    // Permission errors
+    if (
+      stderrContent.toLowerCase().includes("permission denied") ||
+      stderrContent.toLowerCase().includes("eacces")
+    ) {
+      return {
+        message: "Permission error",
+        details: `${stderrContent}\n\nThe Vale binary may not be executable. Try running: chmod +x /path/to/vale`,
+        showOnboarding: false,
+      };
+    }
+
+    // File not found errors
+    if (
+      stderrContent.toLowerCase().includes("no such file") ||
+      stderrContent.toLowerCase().includes("enoent")
+    ) {
+      return {
+        message: "Vale file not found",
+        details: `${stderrContent}\n\nVerify that your Vale binary path is correct in Settings.`,
+        showOnboarding: false,
+      };
+    }
+
+    // Generic Vale error - show stderr content
+    return {
+      message: `Vale error (exit code ${exitCode})`,
+      details: `${stderrContent}\n\nCheck your Vale configuration in Settings.`,
+      showOnboarding: false,
+    };
+  }
+
+  // Unknown error - show full error message
+  return {
+    message: "Something went wrong",
+    details: `${err.toString()}\n\nIf this problem persists, check your Vale configuration in Settings.`,
+    showOnboarding: false,
+  };
+};
+
 export const ValeApp = ({
   runner,
   eventBus,
@@ -52,25 +176,20 @@ export const ValeApp = ({
       })
       .catch((err: unknown) => {
         if (err instanceof Error) {
-          if (err.message === "net::ERR_CONNECTION_REFUSED") {
-            checked(() =>
-              setReport({
-                results: [],
-                errors: (
-                  <ErrorMessage message={"Couldn't connect to Vale Server."} />
-                ),
-              }),
-            );
-          } else if (
-            err.message === "Couldn't find vale" ||
-            err.message === "Couldn't find config"
-          ) {
+          const errorInfo = categorizeError(err);
+
+          if (errorInfo.showOnboarding) {
             setShowOnboarding(true);
           } else {
             checked(() =>
               setReport({
                 results: [],
-                errors: <ErrorMessage message={err.toString()} />,
+                errors: (
+                  <ErrorMessage
+                    message={errorInfo.message}
+                    details={errorInfo.details}
+                  />
+                ),
               }),
             );
           }
