@@ -8,6 +8,8 @@ Obsidian Vale is a [Vale](https://vale.sh/) linter client plugin for [Obsidian](
 
 - **Real-time linting**: Vale analyzes your prose as you write
 - **Inline feedback**: Underlined text shows issues directly in the editor
+- **Click-to-navigate**: Click underlines to jump to panel details, or click panel alerts to highlight in editor
+- **Smart underlines**: Decorations automatically update and stay positioned as you edit
 - **Multiple severity levels**: Error, warning, and suggestion styles
 - **Interactive tooltips**: Hover over underlined text for details and suggested fixes (Planned for future release)
 - **Custom rules**: Use Vale's extensive style library or create your own
@@ -84,10 +86,10 @@ If you already have Vale installed:
 - **Command Palette**: `Vale: Check document` (or use configured hotkey)
 - **Ribbon Icon**: Click the Vale icon in the left sidebar to run a check
 
-Underlined text indicates issues:
+Underlined text indicates issues (click any underline to view details in the panel):
 - **Red underline**: Errors
-- **Yellow underline**: Warnings
-- **Blue underline**: Suggestions
+- **Orange underline**: Warnings
+- **Purple underline**: Suggestions
 
 ### View Details and Fix Issues
 
@@ -103,6 +105,30 @@ Underlined text indicates issues:
   - Use `Vale: Open Vale panel` command to just open the panel
 - Click an alert to jump to its location in the editor
 - Review all issues in one place
+
+### Interactive Navigation
+
+The plugin provides seamless bidirectional navigation between the editor and results panel:
+
+**Click Underlines → Jump to Panel**
+- Click any underlined text in the editor to open the results panel
+- The panel automatically scrolls to and highlights the corresponding alert
+- Perfect for quickly viewing details about a specific issue
+
+**Click Panel Alerts → Highlight in Editor**
+- Click any alert in the results panel to scroll the editor to that location
+- The underline is temporarily highlighted to show exactly where the issue is
+- Makes it easy to review and fix issues one by one
+
+**Selection Sync**
+- Only one alert is selected at a time across both editor and panel
+- The selection stays synchronized as you navigate
+- Click anywhere in the editor (not on an underline) to deselect all alerts
+
+**Smart Underlines During Editing**
+- Underlines automatically update their positions as you edit text
+- The plugin intelligently tracks where issues are, even as content changes
+- No need to re-run checks just because you moved text around
 
 **Method 3: Context Menu** (Planned for future release)
 - Right-click on underlined text
@@ -127,6 +153,27 @@ Automatic checking will be available in a future version:
 - **Command Palette**: `Vale: Toggle alerts`
 - Hides or shows all alert underlines
 - Alerts remain in the panel even when hidden
+
+### Pro Tips
+
+**Efficient Navigation**
+- Use click-to-navigate to quickly move between editor and panel without losing your place
+- The smooth scrolling behavior helps you stay oriented in longer documents
+
+**Editing with Underlines Active**
+- Don't worry about underlines getting out of sync - they automatically track text positions during edits
+- Insert or delete text anywhere; the underlines will adjust intelligently
+- If underlines do get misaligned (rare), simply re-run the check to refresh them
+
+**Focus Management**
+- Click anywhere in the editor (not on an underline) to deselect the current alert
+- This clears the highlight and lets you focus on writing without distractions
+- The underlines remain visible so you can click them again when ready
+
+**Working Through Issues**
+- Click through panel alerts one-by-one to systematically review and fix issues
+- Each click scrolls and highlights the exact location in your document
+- The synchronized selection helps you maintain context as you work
 
 ### Status Bar
 

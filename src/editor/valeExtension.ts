@@ -30,8 +30,8 @@ import { clickHandler, hoverHandler } from "./eventHandlers";
  * **CSS Classes**:
  * - `.vale-underline`: Base class for all Vale underlines
  * - `.vale-error`: Red wavy underline for errors
- * - `.vale-warning`: Orange/yellow wavy underline for warnings
- * - `.vale-suggestion`: Blue wavy underline for suggestions
+ * - `.vale-warning`: Orange wavy underline for warnings
+ * - `.vale-suggestion`: Purple wavy underline for suggestions
  * - `.vale-selected`: Background highlight for selected alerts
  * - `.vale-highlight`: Subtle background for hovered alerts
  *
