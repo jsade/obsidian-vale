@@ -177,6 +177,11 @@ export default class ValePlugin extends Plugin {
   // activateView triggers a check and reveals the Vale view, if isn't already
   // visible.
   async activateView(): Promise<void> {
+    // Capture the currently active markdown view BEFORE opening the Vale panel.
+    // This is critical because revealing the panel will shift focus away from the
+    // markdown editor, making getActiveViewOfType() return null.
+    const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
+
     // Create the Vale view if it's not already created.
     if (this.app.workspace.getLeavesOfType(VIEW_TYPE_VALE).length === 0) {
       const rightLeaf = this.app.workspace.getRightLeaf(false);
@@ -195,6 +200,9 @@ export default class ValePlugin extends Plugin {
       void this.app.workspace.revealLeaf(leaf);
 
       if (leaf.view instanceof ValeView) {
+        // Set the target markdown view so that runValeCheck() uses it
+        // instead of trying to get the active view (which will be the Vale panel).
+        leaf.view.setTargetView(markdownView);
         leaf.view.runValeCheck();
       }
     });

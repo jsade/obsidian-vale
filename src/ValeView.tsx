@@ -18,6 +18,7 @@ export class ValeView extends ItemView {
 
   private ready = false;
   private unregisterReady: (() => void) | null = null;
+  private targetView: MarkdownView | null = null;
 
   private onAlertClick: (alert: ValeAlert) => void;
 
@@ -45,6 +46,10 @@ export class ValeView extends ItemView {
 
   getIcon(): string {
     return "check-small";
+  }
+
+  setTargetView(view: MarkdownView | null): void {
+    this.targetView = view;
   }
 
   async onOpen(): Promise<void> {
@@ -84,7 +89,14 @@ export class ValeView extends ItemView {
   }
 
   runValeCheck(): void {
-    const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+    // Use the target view if set (e.g., when panel was just opened),
+    // otherwise get the currently active markdown view.
+    const view =
+      this.targetView || this.app.workspace.getActiveViewOfType(MarkdownView);
+
+    // Clear the target view after consuming it to prevent memory leaks
+    // and ensure subsequent checks use the current active view.
+    this.targetView = null;
 
     // Only run the check if there's an active Markdown document and the view
     // is ready to accept check requests.

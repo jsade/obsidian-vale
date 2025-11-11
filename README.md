@@ -65,8 +65,8 @@ The plugin can automatically download and configure Vale for you:
 1. Open **Settings** → **Vale**
 2. Select **Managed** mode
 3. Click **Install Vale** (downloads appropriate binary for your OS)
-4. Click **Install styles** to download Vale style packages
-5. Configure rules in **Rule Configuration**
+4. Go to **Style Settings** and toggle ON desired style packages (each style automatically downloads and installs when enabled)
+5. Configure rules in **Rule Configuration** as needed
 
 ### Using an existing Vale installation
 
@@ -149,7 +149,6 @@ Configure Vale integration:
 ### Editor Settings
 
 Customize editor behavior:
-- **Alert panel position**: Choose left or right sidebar for the Vale panel
 - **Status bar**: Shows check status and issue count at the bottom of the window
 
 Note: Auto-check settings will be available in a future release.
@@ -178,7 +177,7 @@ Vale is a powerful, open-source prose linter:
 - **proselint**: Professional writing advice
 - **Joblint**: Check job posts for issues
 
-Install styles via the plugin's **Managed** mode or manually in your Vale configuration.
+In **Managed** mode, install styles by toggling them ON in **Settings** → **Vale** → **Style Settings**. Each style automatically downloads and installs when enabled. In **Custom** mode, manually install styles in your Vale configuration directory.
 
 ## Troubleshooting
 
@@ -207,9 +206,9 @@ Install styles via the plugin's **Managed** mode or manually in your Vale config
 **Symptom**: Vale runs but reports no issues (or "No styles found" error)
 
 **Solution (Managed mode)**:
-1. Go to **Settings** → **Vale**
-2. Click **Install styles**
-3. Enable desired styles in **Rule Configuration**
+1. Go to **Settings** → **Vale** → **Style Settings**
+2. Toggle ON desired style packages (each style automatically downloads and installs when enabled)
+3. Configure individual rules in **Rule Configuration** as needed
 
 **Solution (Custom mode)**:
 1. Check your `.vale.ini` has a valid `StylesPath`
