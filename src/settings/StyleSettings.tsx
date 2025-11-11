@@ -19,17 +19,25 @@ export const StyleSettings = ({
   const configManager = useConfigManager(settings);
 
   React.useEffect(() => {
+    let isMounted = true;
+
     void (async () => {
       try {
         if (configManager && (await configManager.configPathExists())) {
-          setInstalledStyles(await configManager.getAvailableStyles());
-          setEnabledStyles(await configManager.getEnabledStyles());
+          if (isMounted) {
+            setInstalledStyles(await configManager.getAvailableStyles());
+            setEnabledStyles(await configManager.getEnabledStyles());
+          }
         }
       } catch (err) {
         console.error(err);
         return;
       }
     })();
+
+    return () => {
+      isMounted = false;
+    };
   }, [configManager]);
 
   if (ref.current) {

@@ -17,33 +17,113 @@ export const GeneralSettings = ({
   const ref = React.useRef<HTMLDivElement | null>(null);
   const configManager = useConfigManager(settings);
 
+  // Track previous values to prevent unnecessary re-renders
+  // Start with null to ensure first render always executes
+  const prevSettingsRef = React.useRef<{
+    type: string;
+    managed: boolean;
+    serverUrl: string;
+  } | null>(null);
+
   // Check whether the user have configured a path to a valid config file.
   React.useEffect(() => {
+    console.debug("[DEBUG:GeneralSettings] Onboarding useEffect triggered", {
+      type: settings.type,
+      hasConfigManager: !!configManager,
+    });
+
+    let isMounted = true;
+
     if (settings.type === "cli" && configManager) {
       void configManager
         .valePathExists()
-        .then((exists) => setOnboarding(!exists));
+        .then((exists) => {
+          if (isMounted) {
+            console.debug(
+              "[DEBUG:GeneralSettings] valePathExists result:",
+              exists,
+            );
+            setOnboarding(!exists);
+          } else {
+            console.debug(
+              "[DEBUG:GeneralSettings] Component unmounted, skipping setOnboarding",
+            );
+          }
+        })
+        .catch((error) => {
+          console.error("[DEBUG:GeneralSettings] valePathExists error:", error);
+        });
     }
+
+    return () => {
+      console.debug("[DEBUG:GeneralSettings] Onboarding useEffect cleanup");
+      isMounted = false;
+    };
   }, [settings, configManager]);
 
   React.useEffect(() => {
+    const currentValues = {
+      type: settings.type,
+      managed: settings.type === "cli" ? settings.cli.managed : false,
+      serverUrl: settings.type === "server" ? settings.server.url : "",
+    };
+
+    // Check if relevant values have actually changed
+    // If this is the first render (null), always proceed
+    const hasChanged =
+      prevSettingsRef.current === null ||
+      prevSettingsRef.current.type !== currentValues.type ||
+      prevSettingsRef.current.managed !== currentValues.managed ||
+      prevSettingsRef.current.serverUrl !== currentValues.serverUrl;
+
+    console.debug(
+      "[DEBUG:GeneralSettings] useEffect triggered - settings changed",
+      {
+        type: settings.type,
+        managed: settings.type === "cli" ? settings.cli.managed : "N/A",
+        hasConfigManager: !!configManager,
+        hasChanged,
+        isFirstRender: prevSettingsRef.current === null,
+        prevType: prevSettingsRef.current?.type,
+        prevManaged: prevSettingsRef.current?.managed,
+      },
+    );
+
+    if (!hasChanged) {
+      console.debug(
+        "[DEBUG:GeneralSettings] No relevant changes detected, skipping UI rebuild",
+      );
+      return;
+    }
+
+    // Update the ref with current values
+    prevSettingsRef.current = currentValues;
+
     void (async () => {
       if (ref.current) {
+        console.debug(
+          "[DEBUG:GeneralSettings] Emptying ref.current and recreating UI",
+        );
         ref.current.empty();
 
         new Setting(ref.current)
           .setName("Enable Vale Server")
           .setDesc("If disabled, you need to have Vale CLI installed.")
-          .addToggle((toggle) =>
-            toggle
+          .addToggle((toggle) => {
+            const handleChange = async (value: boolean) => {
+              console.debug("[DEBUG:GeneralSettings] Server toggle changed", {
+                from: settings.type,
+                to: value ? "server" : "cli",
+              });
+              onSettingsChange({
+                ...settings,
+                type: value ? "server" : "cli",
+              });
+            };
+            return toggle
               .setValue(settings.type === "server")
-              .onChange(async (value) => {
-                onSettingsChange({
-                  ...settings,
-                  type: value ? "server" : "cli",
-                });
-              }),
-          );
+              .onChange(handleChange);
+          });
 
         if (settings.type === "server") {
           new Setting(ref.current)
@@ -72,30 +152,58 @@ export const GeneralSettings = ({
             .setDesc(
               "Install Vale to your vault. Disable if you want to use an existing Vale configuration.",
             )
-            .addToggle((toggle) =>
-              toggle.setValue(settings.cli.managed).onChange((managed) => {
+            .addToggle((toggle) => {
+              const handleChange = (managed: boolean) => {
+                console.debug(
+                  "[DEBUG:GeneralSettings] Managed toggle changed",
+                  {
+                    from: settings.cli.managed,
+                    to: managed,
+                  },
+                );
                 onSettingsChange({
                   ...settings,
                   cli: { ...settings.cli, managed },
                 });
-              }),
-            );
+              };
+              return toggle
+                .setValue(settings.cli.managed)
+                .onChange(handleChange);
+            });
 
           if (!settings.cli.managed) {
+            // Store references to both input elements to avoid stale closure issues
+            let valePathInput: HTMLInputElement;
+            let configPathInput: HTMLInputElement;
+
+            // Helper to read both values from DOM and update settings
+            const updateBothPaths = () => {
+              console.debug(
+                "[DEBUG:GeneralSettings] Updating both CLI paths from DOM",
+                {
+                  valePath: valePathInput?.value,
+                  configPath: configPathInput?.value,
+                },
+              );
+              onSettingsChange({
+                ...settings,
+                cli: {
+                  ...settings.cli,
+                  valePath: valePathInput?.value || "",
+                  configPath: configPathInput?.value || "",
+                },
+              });
+            };
+
             new Setting(ref.current)
               .setName("Vale path")
               .setDesc("Absolute path to the Vale binary.")
               .addText((text) => {
                 const component = text.setValue(settings.cli.valePath ?? "");
+                valePathInput = component.inputEl;
 
-                component.inputEl.onblur = async (value: FocusEvent) => {
-                  onSettingsChange({
-                    ...settings,
-                    cli: {
-                      ...settings.cli,
-                      valePath: (value.currentTarget as HTMLInputElement).value,
-                    },
-                  });
+                component.inputEl.onblur = async () => {
+                  updateBothPaths();
                 };
 
                 return component;
@@ -106,16 +214,10 @@ export const GeneralSettings = ({
               .setDesc("Absolute path to a Vale config file.")
               .addText((text) => {
                 const component = text.setValue(settings.cli.configPath ?? "");
+                configPathInput = component.inputEl;
 
-                component.inputEl.onblur = async (value: FocusEvent) => {
-                  onSettingsChange({
-                    ...settings,
-                    cli: {
-                      ...settings.cli,
-                      configPath: (value.currentTarget as HTMLInputElement)
-                        .value,
-                    },
-                  });
+                component.inputEl.onblur = async () => {
+                  updateBothPaths();
                 };
 
                 return component;
@@ -123,6 +225,7 @@ export const GeneralSettings = ({
           }
         }
       }
+      console.debug("[DEBUG:GeneralSettings] useEffect async block completed");
     })();
   }, [settings]);
 

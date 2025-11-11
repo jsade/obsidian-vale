@@ -19,21 +19,65 @@ export const SettingsRouter = ({ plugin }: Props): React.ReactElement => {
   const configManager = useConfigManager(settings);
 
   const onSettingsChange = (settings: ValeSettings) => {
+    console.debug("[DEBUG:SettingsRouter] onSettingsChange called", {
+      type: settings.type,
+      managed: settings.type === "cli" ? settings.cli.managed : "N/A",
+      valePath: settings.type === "cli" ? settings.cli.valePath : "N/A",
+      configPath: settings.type === "cli" ? settings.cli.configPath : "N/A",
+    });
     // Write new changes to disk.
     plugin.settings = settings;
+    console.debug("[DEBUG:SettingsRouter] Calling plugin.saveSettings()");
     void plugin.saveSettings();
 
+    console.debug("[DEBUG:SettingsRouter] Calling setSettings()");
     setSettings(settings);
   };
 
   React.useEffect(() => {
+    console.debug(
+      "[DEBUG:SettingsRouter] Config validation useEffect triggered",
+      {
+        type: settings.type,
+        hasConfigManager: !!configManager,
+      },
+    );
+
+    let isMounted = true;
+
     if (settings.type === "cli" && configManager) {
       void configManager
         .configPathExists()
-        .then((res) => setValidConfigPath(res));
+        .then((res) => {
+          if (isMounted) {
+            console.debug(
+              "[DEBUG:SettingsRouter] configPathExists result:",
+              res,
+            );
+            setValidConfigPath(res);
+          } else {
+            console.debug(
+              "[DEBUG:SettingsRouter] Component unmounted, skipping setValidConfigPath",
+            );
+          }
+        })
+        .catch((error) => {
+          console.error(
+            "[DEBUG:SettingsRouter] configPathExists error:",
+            error,
+          );
+        });
     } else {
+      console.debug("[DEBUG:SettingsRouter] Setting validConfigPath to false");
       setValidConfigPath(false);
     }
+
+    return () => {
+      console.debug(
+        "[DEBUG:SettingsRouter] Config validation useEffect cleanup",
+      );
+      isMounted = false;
+    };
   }, [settings, configManager]);
 
   switch (page) {

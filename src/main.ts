@@ -201,27 +201,55 @@ export default class ValePlugin extends Plugin {
   }
 
   async saveSettings(): Promise<void> {
+    console.debug("[DEBUG:ValePlugin] saveSettings called", {
+      type: this.settings.type,
+      managed: this.settings.type === "cli" ? this.settings.cli.managed : "N/A",
+    });
     await this.saveData(this.settings);
+    console.debug(
+      "[DEBUG:ValePlugin] saveData completed, calling initializeValeRunner",
+    );
     this.initializeValeRunner();
+    console.debug("[DEBUG:ValePlugin] saveSettings completed");
   }
 
   async loadSettings(): Promise<void> {
-    const data = (await this.loadData()) as Partial<ValeSettings> | null;
-    this.settings = Object.assign({}, DEFAULT_SETTINGS, data ?? {});
+    try {
+      const data = (await this.loadData()) as Partial<ValeSettings> | null;
+      this.settings = Object.assign({}, DEFAULT_SETTINGS, data ?? {});
+    } catch (error) {
+      console.warn("Vale: Failed to load settings, using defaults:", error);
+      this.settings = Object.assign({}, DEFAULT_SETTINGS);
+
+      // Try to save defaults, but don't fail if it doesn't work
+      try {
+        await this.saveData(this.settings);
+      } catch (saveError) {
+        console.error("Vale: Failed to save default settings:", saveError);
+        // Plugin can still function with in-memory defaults
+      }
+    }
     this.initializeValeRunner();
   }
 
   // initializeValeRunner rebuilds the config manager and runner. Should be run
   // whenever the settings change.
   initializeValeRunner(): void {
+    console.debug("[DEBUG:ValePlugin] initializeValeRunner started");
     this.configManager = undefined;
     if (this.settings.type === "cli") {
       if (this.settings.cli.managed) {
+        console.debug("[DEBUG:ValePlugin] Creating managed config manager");
         this.configManager = this.newManagedConfigManager();
       } else {
         const valePath = this.settings.cli.valePath;
         const configPath = this.settings.cli.configPath;
+        console.debug("[DEBUG:ValePlugin] Checking custom paths", {
+          hasValePath: !!valePath,
+          hasConfigPath: !!configPath,
+        });
         if (valePath && configPath) {
+          console.debug("[DEBUG:ValePlugin] Creating custom config manager");
           this.configManager = new ValeConfigManager(
             valePath,
             this.normalizeConfigPath(configPath),
@@ -230,12 +258,18 @@ export default class ValePlugin extends Plugin {
       }
     }
 
+    console.debug("[DEBUG:ValePlugin] Creating new ValeRunner");
     this.runner = new ValeRunner(this.settings, this.configManager);
 
     // Detach any leaves that use the old runner.
-    this.app.workspace.getLeavesOfType(VIEW_TYPE_VALE).forEach((leaf) => {
+    const leavesToDetach = this.app.workspace.getLeavesOfType(VIEW_TYPE_VALE);
+    console.debug("[DEBUG:ValePlugin] Detaching Vale leaves", {
+      count: leavesToDetach.length,
+    });
+    leavesToDetach.forEach((leaf) => {
       leaf.detach();
     });
+    console.debug("[DEBUG:ValePlugin] initializeValeRunner completed");
   }
 
   newManagedConfigManager(): ValeConfigManager {
