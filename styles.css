@@ -253,3 +253,111 @@
 .obsidian-vale .alert--highlighted:first-child {
   margin-top: 0;
 }
+
+/* ============================================
+   Vale Tooltip Styles
+   ============================================ */
+
+.vale-tooltip {
+  max-width: 400px;
+  padding: 12px;
+  background: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-size: var(--font-ui-small);
+  line-height: 1.4;
+  color: var(--text-normal);
+  z-index: var(--layer-tooltip);
+}
+
+/* Header */
+.vale-tooltip__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+/* Severity Badge */
+.vale-tooltip__severity {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.vale-tooltip__severity--error {
+  background-color: rgba(218, 97, 92, 0.2);
+  color: var(--vale-alert-error, #da615c);
+}
+
+.vale-tooltip__severity--warning {
+  background-color: rgba(233, 179, 95, 0.2);
+  color: var(--vale-alert-warning, #e9b35f);
+}
+
+.vale-tooltip__severity--suggestion {
+  background-color: rgba(137, 129, 243, 0.2);
+  color: var(--vale-alert-suggestion, #8981f3);
+}
+
+/* Check Name */
+.vale-tooltip__check {
+  font-weight: 500;
+  color: var(--text-muted);
+  font-family: var(--font-monospace);
+  font-size: 11px;
+}
+
+/* Message */
+.vale-tooltip__message {
+  margin-bottom: 8px;
+  color: var(--text-normal);
+  font-weight: 400;
+}
+
+/* Matched Text */
+.vale-tooltip__match {
+  padding: 4px 8px;
+  background-color: var(--background-secondary);
+  border-left: 3px solid var(--interactive-accent);
+  border-radius: 3px;
+  font-family: var(--font-monospace);
+  font-size: var(--font-ui-smaller);
+  margin-bottom: 8px;
+  color: var(--text-normal);
+}
+
+/* Documentation Link */
+.vale-tooltip__link {
+  display: inline-block;
+  color: var(--link-color);
+  text-decoration: none;
+  font-size: var(--font-ui-smaller);
+  margin-top: 4px;
+}
+
+.vale-tooltip__link:hover {
+  text-decoration: underline;
+  color: var(--link-color-hover);
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .vale-tooltip {
+    border-width: 2px;
+  }
+
+  .vale-tooltip__severity {
+    border: 1px solid currentColor;
+  }
+}
+
+/* Dark Theme Adjustments */
+.theme-dark .vale-tooltip {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}

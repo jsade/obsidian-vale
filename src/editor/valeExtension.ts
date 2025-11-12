@@ -12,6 +12,7 @@ import { Extension } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { valeStateField } from "./stateField";
 import { clickHandler, hoverHandler } from "./eventHandlers";
+import { valeHoverTooltip } from "./tooltip";
 
 /**
  * Base theme for Vale decorations.
@@ -91,6 +92,26 @@ export interface ValeExtensionConfig {
    * @defaultValue true
    */
   enableBaseTheme?: boolean;
+
+  /**
+   * Hover delay for tooltips in milliseconds.
+   *
+   * Controls how long the user must hover over an underlined alert
+   * before the tooltip appears.
+   *
+   * @defaultValue 300
+   */
+  tooltipHoverDelay?: number;
+
+  /**
+   * Enable hover tooltips.
+   *
+   * When enabled, hovering over underlined alerts will display a tooltip
+   * with detailed information about the Vale alert.
+   *
+   * @defaultValue true
+   */
+  enableTooltips?: boolean;
 }
 
 /**
@@ -137,7 +158,11 @@ export interface ValeExtensionConfig {
  * @public
  */
 export function valeExtension(config: ValeExtensionConfig = {}): Extension {
-  const { enableBaseTheme = true } = config;
+  const {
+    enableBaseTheme = true,
+    tooltipHoverDelay = 300,
+    enableTooltips = true,
+  } = config;
 
   const extensions: Extension[] = [
     // Core state management for decorations
@@ -145,7 +170,13 @@ export function valeExtension(config: ValeExtensionConfig = {}): Extension {
 
     // Event handlers for click and hover interactions
     clickHandler(),
-    hoverHandler(),
+    hoverHandler(), // Keep for potential future use
+
+    // Hover tooltip for displaying alert details
+    valeHoverTooltip({
+      hoverTime: tooltipHoverDelay,
+      enabled: enableTooltips,
+    }),
   ];
 
   // Add base theme if enabled
@@ -155,7 +186,6 @@ export function valeExtension(config: ValeExtensionConfig = {}): Extension {
 
   // Future extensions can be added here:
   // - autoCheckListener(plugin)
-  // - buildHoverTooltip(plugin)
 
   return extensions;
 }

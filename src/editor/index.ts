@@ -55,3 +55,11 @@ export {
   scrollToPosition,
   getAlertPosition,
 } from "./scrollToAlert";
+
+// Tooltip utilities
+export {
+  valeHoverTooltip,
+  getAlertAtPosition,
+  createTooltipContent,
+  type ValeTooltipConfig,
+} from "./tooltip";
