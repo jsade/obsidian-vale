@@ -24,53 +24,7 @@ import {
   generateAlertId,
 } from "./decorations";
 import { ValeAlert } from "../types";
-
-/**
- * Type definition for decoration spec with attributes.
- * CodeMirror's Decoration.spec is typed as `any`, so we define
- * our own interface for type safety.
- */
-interface DecorationSpecWithAttributes {
-  attributes?: {
-    [key: string]: string;
-  };
-  [key: string]: unknown;
-}
-
-/**
- * Type guard to check if a value is a DecorationSpecWithAttributes.
- *
- * @param spec - The spec to check (typed as any from CodeMirror)
- * @returns True if the spec has the expected structure
- */
-function isDecorationSpecWithAttributes(
-  spec: unknown,
-): spec is DecorationSpecWithAttributes {
-  return (
-    typeof spec === "object" &&
-    spec !== null &&
-    (!("attributes" in spec) ||
-      (typeof (spec as DecorationSpecWithAttributes).attributes === "object" &&
-        (spec as DecorationSpecWithAttributes).attributes !== null))
-  );
-}
-
-/**
- * Safely gets an attribute value from a decoration spec.
- *
- * @param spec - The decoration spec (typed as any from CodeMirror)
- * @param attributeName - The name of the attribute to retrieve
- * @returns The attribute value if it exists, otherwise undefined
- */
-function getDecorationAttribute(
-  spec: unknown,
-  attributeName: string,
-): string | undefined {
-  if (!isDecorationSpecWithAttributes(spec)) {
-    return undefined;
-  }
-  return spec.attributes?.[attributeName];
-}
+import { getDecorationAttribute } from "./decorationUtils";
 
 /**
  * Map to store Vale alerts by their IDs for quick lookup.
@@ -79,6 +33,30 @@ function getDecorationAttribute(
  * attributes) and the full ValeAlert objects. It enables features like tooltips
  * and context menus that need alert details when the user interacts with a
  * decoration.
+ *
+ * **Why Module-Level (Shared Across All Editor Instances)**:
+ * - CodeMirror StateFields are per-editor, but alert data needs to be accessible
+ *   from non-StateField contexts (e.g., tooltip hover handlers, event handlers)
+ * - Module-level scope provides a centralized lookup mechanism that any part of
+ *   the extension can access via the alert ID stored in decoration attributes
+ * - In practice, Obsidian typically has one active markdown editor at a time,
+ *   so cross-editor pollution is not a concern in normal usage
+ *
+ * **Cleanup Mechanism**:
+ * - `clearAllValeMarks` effect: Calls `valeAlertMap.clear()` to remove all entries
+ *   (line 266)
+ * - `clearValeMarksInRange` effect: Deletes specific alert IDs when decorations
+ *   in a range are removed (lines 284-286)
+ * - Document edit overlap: Deletes alert IDs when decorations are removed due to
+ *   text changes (lines 375-378)
+ * - This ensures the map stays synchronized with active decorations and prevents
+ *   memory leaks
+ *
+ * **Considerations**:
+ * - If multiple editor instances exist simultaneously, they share the same map
+ * - Alert IDs are generated from file path + line + span, making collisions unlikely
+ * - Map is cleared when all Vale marks are cleared, preventing unbounded growth
+ * - Size is bounded by number of active Vale alerts across all editors (~100s typically)
  *
  * @internal
  */

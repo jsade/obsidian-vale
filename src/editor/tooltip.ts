@@ -13,6 +13,7 @@ import { hoverTooltip, Tooltip } from "@codemirror/view";
 import type { Extension } from "@codemirror/state";
 import type { ValeAlert } from "../types";
 import { valeStateField, valeAlertMap } from "./stateField";
+import { getDecorationAttribute } from "./decorationUtils";
 
 /**
  * Configuration options for Vale hover tooltips.
@@ -31,56 +32,6 @@ export interface ValeTooltipConfig {
    * @defaultValue true
    */
   enabled?: boolean;
-}
-
-/**
- * Interface representing a decoration spec with attributes.
- * Used to provide type safety when accessing CodeMirror decoration specs.
- *
- * @internal
- */
-interface DecorationSpecWithAttributes {
-  attributes?: {
-    [key: string]: string;
-  };
-  [key: string]: unknown;
-}
-
-/**
- * Type guard to check if a value is a DecorationSpecWithAttributes.
- *
- * @param spec - The spec to check (typed as unknown)
- * @returns True if the spec has the expected structure
- * @internal
- */
-function isDecorationSpecWithAttributes(
-  spec: unknown,
-): spec is DecorationSpecWithAttributes {
-  return (
-    typeof spec === "object" &&
-    spec !== null &&
-    (!("attributes" in spec) ||
-      (typeof (spec as DecorationSpecWithAttributes).attributes === "object" &&
-        (spec as DecorationSpecWithAttributes).attributes !== null))
-  );
-}
-
-/**
- * Safely gets an attribute value from a decoration spec.
- *
- * @param spec - The decoration spec (typed as unknown from CodeMirror)
- * @param attributeName - The name of the attribute to retrieve
- * @returns The attribute value if it exists, otherwise undefined
- * @internal
- */
-function getDecorationAttribute(
-  spec: unknown,
-  attributeName: string,
-): string | undefined {
-  if (!isDecorationSpecWithAttributes(spec)) {
-    return undefined;
-  }
-  return spec.attributes?.[attributeName];
 }
 
 /**
@@ -220,7 +171,7 @@ export function createTooltipContent(alert: ValeAlert): HTMLElement {
   }
 
   // Documentation link (if available)
-  if (alert.Link) {
+  if (alert.Link && alert.Link.trim()) {
     const link = document.createElement("a");
     link.className = "vale-tooltip__link";
     link.href = alert.Link;
