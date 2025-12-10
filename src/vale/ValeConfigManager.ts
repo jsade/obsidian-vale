@@ -301,23 +301,28 @@ export class ValeConfigManager {
       return ["Vale"];
     }
 
-    const paths = await fs.promises.readdir(stylesPath);
+    try {
+      const paths = await fs.promises.readdir(stylesPath);
 
-    // Filter for directories using Promise.all to properly handle async checks
-    const installedChecks = await Promise.all(
-      paths
-        .filter((style) => style)
-        .map(async (name) => {
-          const info = await fs.promises.stat(path.join(stylesPath, name));
-          return info.isDirectory() ? name : null;
-        }),
-    );
+      // Filter for directories using Promise.all to properly handle async checks
+      const installedChecks = await Promise.all(
+        paths
+          .filter((style) => style)
+          .map(async (name) => {
+            const info = await fs.promises.stat(path.join(stylesPath, name));
+            return info.isDirectory() ? name : null;
+          }),
+      );
 
-    const installed = installedChecks.filter(
-      (name): name is string => name !== null,
-    );
+      const installed = installedChecks.filter(
+        (name): name is string => name !== null,
+      );
 
-    return [...installed, "Vale"];
+      return [...installed, "Vale"];
+    } catch (error) {
+      console.warn(`Failed to read styles directory ${stylesPath}:`, error);
+      return ["Vale"];
+    }
   }
 
   /**
