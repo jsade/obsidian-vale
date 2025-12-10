@@ -2,6 +2,7 @@ import * as compressing from "compressing";
 import download from "download";
 import * as fs from "fs";
 import { parse, stringify } from "ini";
+import * as os from "os";
 import * as path from "path";
 import { Extract } from "unzipper";
 import {
@@ -191,13 +192,37 @@ export class ValeConfigManager {
 
   async getStylesPath(): Promise<string | undefined> {
     const config = await this.loadConfig();
-    const stylesPath = config.StylesPath as string;
+    const rawStylesPath = config.StylesPath;
 
+    // Type validation: ensure StylesPath is actually a string
+    if (typeof rawStylesPath !== "string") {
+      return undefined;
+    }
+
+    // Trim whitespace to handle " styles " or "   "
+    const stylesPath = rawStylesPath.trim();
+
+    // Empty or whitespace-only paths are invalid
     if (!stylesPath) {
       return undefined;
     }
 
-    return path.join(path.dirname(this.configPath), stylesPath);
+    // Expand tilde for Unix home directory paths (e.g., ~/Documents/vale-styles)
+    let resolvedPath = stylesPath;
+    if (stylesPath.startsWith("~/") || stylesPath === "~") {
+      resolvedPath = path.join(os.homedir(), stylesPath.slice(1));
+    }
+
+    // If StylesPath is already absolute, return it as-is
+    // This prevents malformed paths like /configDir/Users/absolute/path
+    if (path.isAbsolute(resolvedPath)) {
+      return path.normalize(resolvedPath);
+    }
+
+    // For relative paths, resolve against the config file's directory
+    return path.normalize(
+      path.join(path.dirname(this.configPath), resolvedPath),
+    );
   }
 
   async enableStyle(name: string): Promise<void> {

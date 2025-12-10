@@ -42,3 +42,4 @@ docs
 local
 .env
 .envrc
+AGENTS.md

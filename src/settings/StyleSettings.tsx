@@ -1,6 +1,7 @@
 import { useConfigManager } from "hooks";
 import { Setting } from "obsidian";
 import React from "react";
+import { ErrorMessage } from "../components/ErrorMessage";
 import { ValeSettings, ValeStyle } from "../types";
 
 interface Props {
@@ -14,16 +15,25 @@ export const StyleSettings = ({
 }: Props): React.ReactElement => {
   const [installedStyles, setInstalledStyles] = React.useState<ValeStyle[]>([]);
   const [enabledStyles, setEnabledStyles] = React.useState<string[]>([]);
+  const [loadError, setLoadError] = React.useState<string | null>(null);
   const ref = React.useRef<HTMLDivElement | null>(null);
 
   const configManager = useConfigManager(settings);
 
   React.useEffect(() => {
+    // Clear previous error state before loading (prevents stale errors after config fixes)
+    setLoadError(null);
+
+    // Early return if configManager not available yet
+    if (!configManager) {
+      return;
+    }
+
     let isMounted = true;
 
     void (async () => {
       try {
-        if (configManager && (await configManager.configPathExists())) {
+        if (await configManager.configPathExists()) {
           if (isMounted) {
             const isCustomMode = !settings.cli.managed;
             setInstalledStyles(
@@ -36,6 +46,10 @@ export const StyleSettings = ({
         }
       } catch (err) {
         console.error(err);
+        if (isMounted) {
+          const message = err instanceof Error ? err.message : String(err);
+          setLoadError(message);
+        }
         return;
       }
     })();
@@ -44,6 +58,30 @@ export const StyleSettings = ({
       isMounted = false;
     };
   }, [configManager, settings.cli.managed]);
+
+  // Show error message if styles loading failed
+  if (loadError) {
+    const isCustomMode = !settings.cli.managed;
+    const modeLabel = isCustomMode ? "Custom" : "Managed";
+
+    return (
+      <div className="obsidian-vale">
+        <ErrorMessage
+          message="Cannot load Vale styles"
+          details={`We couldn't find your Vale styles folder.\n\nYou're using ${modeLabel} mode${isCustomMode ? `, which reads styles from your .vale.ini config file` : ""}.\n\nThis usually happens when:\n• The styles folder was moved, renamed, or deleted\n• The path in your config file has a typo\n• Vale is looking in the wrong location\n\nTo fix this:\n1. Go to General settings and check your config path\n2. Open your .vale.ini file and verify the StylesPath value\n3. Create the styles folder if it doesn't exist\n\nTechnical details: ${loadError}`}
+        />
+        <div style={{ marginTop: "1rem" }}>
+          <button
+            className="mod-cta"
+            onClick={() => navigate("General", "")}
+            style={{ marginRight: "0.5rem" }}
+          >
+            Go to General Settings
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (ref.current) {
     ref.current.empty();
