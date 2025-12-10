@@ -320,6 +320,31 @@ export class ValeConfigManager {
     return [...installed, "Vale"];
   }
 
+  /**
+   * Gets installed styles as ValeStyle objects for Custom mode.
+   * Returns actual styles from StylesPath directory with minimal metadata.
+   */
+  async getInstalledStyles(): Promise<ValeStyle[]> {
+    try {
+      const installedNames = await this.getInstalled();
+      const availableStyles = await this.getAvailableStyles();
+
+      return installedNames.map((name) => {
+        // Enrich known styles with library metadata
+        const knownStyle = availableStyles.find((s) => s.name === name);
+        if (knownStyle) {
+          return { ...knownStyle, url: undefined }; // Remove URL to prevent uninstall
+        }
+        // Unknown custom style - minimal metadata
+        return { name, description: `Custom style` };
+      });
+    } catch (error) {
+      // Fallback to Vale-only when filesystem operations fail
+      console.warn("Failed to read installed styles:", error);
+      return [{ name: "Vale", description: "Custom style" }];
+    }
+  }
+
   async getEnabledStyles(): Promise<string[]> {
     const config = await this.loadConfig();
 
