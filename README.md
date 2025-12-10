@@ -224,7 +224,7 @@ Vale is a powerful, open-source prose linter:
 - **proselint**: Professional writing advice
 - **Joblint**: Check job posts for issues
 
-In **Managed** mode, install styles by toggling them ON in **Settings** → **Vale** → **Style Settings**. Each style automatically downloads and installs when enabled. In **Custom** mode, manually install styles in your Vale configuration directory.
+Install styles by toggling them ON in **Settings** → **Vale** → **Styles**. Each style automatically downloads and installs when enabled. In **Managed** mode, styles are installed to the plugin's data directory. In **Custom** mode, styles are installed to your configured Vale styles directory.
 
 ## Troubleshooting
 

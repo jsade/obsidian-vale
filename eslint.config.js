@@ -1,32 +1,33 @@
-// @ts-check
+import eslint from "@eslint/js";
+import tseslint from "typescript-eslint";
+import reactPlugin from "eslint-plugin-react";
+import obsidianmd from "eslint-plugin-obsidianmd";
+import prettierConfig from "eslint-config-prettier";
+import prettierPlugin from "eslint-plugin-prettier";
+import globals from "globals";
+import tsparser from "@typescript-eslint/parser";
+import { defineConfig } from "eslint/config";
 
-import eslint from '@eslint/js';
-import tseslint from 'typescript-eslint';
-import reactPlugin from 'eslint-plugin-react';
-import obsidianmd from 'eslint-plugin-obsidianmd';
-import prettierConfig from 'eslint-config-prettier';
-import prettierPlugin from 'eslint-plugin-prettier';
-import globals from 'globals';
-
-export default tseslint.config(
+export default defineConfig(
   // Global ignores
   {
     ignores: [
-      'node_modules/**',
-      'main.js',
-      '*.js.map',
-      'data.json',
-      'data/**',
-      '.yarn/**',
-      '.pnp.*',
-      'coverage/**',
-      'docs/**',
-      'local/**',
-      'eslint.config.js',
-      'esbuild.config.mjs',
-      'jest.config.js',
-      '**/*.config.js',
-      '**/*.config.mjs',
+      "node_modules/**",
+      "main.js",
+      "*.js.map",
+      "data.json",
+      "data/**",
+      ".yarn/**",
+      ".pnp.*",
+      "coverage/**",
+      "dist/**",
+      "docs/**",
+      "local/**",
+      "eslint.config.js",
+      "esbuild.config.mjs",
+      "jest.config.js",
+      "**/*.config.js",
+      "**/*.config.mjs",
     ],
   },
 
@@ -35,12 +36,12 @@ export default tseslint.config(
 
   // TypeScript files configuration
   {
-    files: ['**/*.{ts,tsx}'],
+    files: ["**/*.{ts,tsx}"],
     extends: [...tseslint.configs.recommended],
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
-        project: './tsconfig.json',
+        project: "./tsconfig.json",
         ecmaFeatures: {
           jsx: true,
         },
@@ -55,25 +56,25 @@ export default tseslint.config(
     },
     rules: {
       ...reactPlugin.configs.recommended.rules,
-      'react/react-in-jsx-scope': 'off',
-      '@typescript-eslint/no-unused-vars': [
-        'warn',
+      "react/react-in-jsx-scope": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
         {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
         },
       ],
     },
     settings: {
       react: {
-        version: 'detect',
+        version: "detect",
       },
     },
   },
 
   // Test files configuration
   {
-    files: ['test/**/*.{ts,tsx}', '**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}'],
+    files: ["test/**/*.{ts,tsx}", "**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}"],
     languageOptions: {
       globals: {
         ...globals.jest,
@@ -84,34 +85,19 @@ export default tseslint.config(
 
   // Obsidian plugin recommended rules
   ...obsidianmd.configs.recommended,
-
-  // Custom rule configuration
   {
-    plugins: {
-      obsidianmd,
+    files: ["**/*.ts"],
+    languageOptions: {
+      parser: tsparser,
+      parserOptions: { project: "./tsconfig.json" },
     },
+
+    // You can add your own configuration to override or add rules
     rules: {
-      'obsidianmd/ui/sentence-case': [
-        'error',
-        {
-          brands: [
-            // Default brands from obsidianmd plugin
-            'iOS', 'iPadOS', 'macOS', 'Windows', 'Android', 'Linux',
-            'Obsidian', 'Obsidian Sync', 'Obsidian Publish',
-            'Google Drive', 'Dropbox', 'OneDrive', 'iCloud Drive',
-            'YouTube', 'Slack', 'Discord', 'Telegram', 'WhatsApp', 'Twitter', 'X',
-            'Readwise', 'Zotero',
-            'Excalidraw', 'Mermaid',
-            'Markdown', 'LaTeX', 'JavaScript', 'TypeScript', 'Node.js',
-            'npm', 'pnpm', 'Yarn', 'Git', 'GitHub',
-            'GitLab', 'Notion', 'Evernote', 'Roam Research', 'Logseq', 'Anki', 'Reddit',
-            'VS Code', 'Visual Studio Code', 'IntelliJ IDEA', 'WebStorm', 'PyCharm',
-            // Custom brands for this project
-            'Vale', 'Vale Server',
-          ],
-          ignoreRegex: ['^https?://'],
-        },
-      ],
+      // example: turn off a rule from the recommended set
+      "obsidianmd/sample-names": "off",
+      // example: add a rule not in the recommended set and set its severity
+      "obsidianmd/prefer-file-manager-trash": "error",
     },
   },
 
@@ -122,7 +108,7 @@ export default tseslint.config(
       prettier: prettierPlugin,
     },
     rules: {
-      'prettier/prettier': 'error',
+      "prettier/prettier": "error",
     },
-  }
+  },
 );

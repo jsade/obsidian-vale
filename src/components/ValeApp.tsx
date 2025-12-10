@@ -97,7 +97,7 @@ const categorizeError = (err: Error): ErrorInfo => {
     ) {
       return {
         message: "Missing Vale styles",
-        details: `${stderrContent}\n\nYou may need to install Vale style packages. Check the Styles tab in Settings.`,
+        details: `${stderrContent}\n\nYou may need to install Vale style packages. Go to Settings → Vale to configure styles.`,
         showOnboarding: false,
       };
     }

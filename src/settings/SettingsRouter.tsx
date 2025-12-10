@@ -4,7 +4,9 @@ import React from "react";
 import { ValeSettings } from "../types";
 import { GeneralSettings } from "./GeneralSettings";
 import { RuleSettings } from "./RuleSettings";
+import { SettingsNav } from "./SettingsNav";
 import { StyleSettings } from "./StyleSettings";
+import "./settings.css";
 
 interface Props {
   plugin: ValePlugin;
@@ -49,41 +51,55 @@ export const SettingsRouter = ({ plugin }: Props): React.ReactElement => {
     };
   }, [settings, configManager]);
 
-  // Only show StyleSettings in managed mode - custom Vale configs should manage their own styles
-  const shouldShowStyles =
-    validConfigPath && settings.type === "cli" && settings.cli.managed;
+  // Show Styles tab when a valid config path exists (works for both managed and custom modes)
+  const shouldShowStyles = validConfigPath && settings.type === "cli";
 
-  switch (page) {
-    case "General":
-      return (
-        <>
+  // Navigation handler
+  const navigate = (newPage: string, context: string = "") => {
+    setStyle(context);
+    setPage(newPage);
+  };
+
+  // Render the current page content
+  const renderPage = () => {
+    switch (page) {
+      case "General":
+        return (
           <GeneralSettings
             settings={settings}
             onSettingsChange={onSettingsChange}
           />
-          {shouldShowStyles && (
-            <StyleSettings
-              settings={settings}
-              navigate={(page: string, context: string) => {
-                setStyle(context);
-                setPage(page);
-              }}
-            />
-          )}
-        </>
-      );
-    case "Rules":
-      return (
-        <RuleSettings
-          settings={settings}
-          style={style}
-          navigate={(page: string, context: string) => {
-            setStyle(context);
-            setPage(page);
-          }}
-        />
-      );
-    default:
-      return <div></div>;
-  }
+        );
+      case "Styles":
+        if (!shouldShowStyles) {
+          // Show feedback when Styles tab is accessed but config path is invalid
+          return (
+            <div className="vale-settings-feedback">
+              <p>
+                Configure a valid Vale config path in General settings to manage
+                styles.
+              </p>
+            </div>
+          );
+        }
+        return <StyleSettings settings={settings} navigate={navigate} />;
+      case "Rules":
+        return (
+          <RuleSettings settings={settings} style={style} navigate={navigate} />
+        );
+      default:
+        return <div></div>;
+    }
+  };
+
+  return (
+    <>
+      <SettingsNav
+        currentPage={page}
+        showStyles={shouldShowStyles}
+        onNavigate={(newPage) => navigate(newPage)}
+      />
+      {renderPage()}
+    </>
+  );
 };

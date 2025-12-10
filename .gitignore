@@ -11,6 +11,8 @@ main.js
 *.js.map
 
 # obsidian
+dist
+dist/**/*
 data.json
 data
 
