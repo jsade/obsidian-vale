@@ -77,7 +77,7 @@ If you already have Vale installed:
 1. Open **Settings** → **Vale**
 2. Select **Custom** mode
 3. Provide paths to your Vale binary and `.vale.ini` config file
-4. Use your existing Vale styles and configuration
+4. Go to **Styles** to see your installed styles and enable or disable them as needed
 
 ## Usage
 
@@ -224,7 +224,22 @@ Vale is a powerful, open-source prose linter:
 - **proselint**: Professional writing advice
 - **Joblint**: Check job posts for issues
 
-Install styles by toggling them ON in **Settings** → **Vale** → **Styles**. Each style automatically downloads and installs when enabled. In **Managed** mode, styles are installed to the plugin's data directory. In **Custom** mode, styles are installed to your configured Vale styles directory.
+### Style Management: Managed vs Custom Mode
+
+The Styles settings page behaves differently depending on which mode you are using:
+
+| Action | Managed Mode | Custom Mode |
+|--------|--------------|-------------|
+| **Styles shown** | Official Vale style library (8 styles) | Styles installed in your StylesPath directory |
+| **Toggle ON** | Downloads, installs, and enables the style | Enables the style in `.vale.ini` only |
+| **Toggle OFF** | Disables and uninstalls the style | Disables the style in `.vale.ini` only |
+| **Section heading** | "Vale styles" | "Installed Styles" |
+
+**Managed mode** is ideal if you want the plugin to handle everything for you. Toggling a style ON downloads it from the official repository, installs it, and configures your `.vale.ini` automatically.
+
+**Custom mode** gives you full control. The plugin reads your existing StylesPath directory and displays whatever styles you have installed there. Toggling styles ON or OFF only updates the `BasedOnStyles` setting in your `.vale.ini`; it does not download or delete style files. To add new styles in Custom mode, download them from [Vale's style library](https://vale.sh/library) and place them in your StylesPath directory.
+
+> **Note**: If no styles appear in Custom mode, ensure your `.vale.ini` has a valid `StylesPath` pointing to a directory containing Vale style folders.
 
 ## Troubleshooting
 
@@ -253,14 +268,15 @@ Install styles by toggling them ON in **Settings** → **Vale** → **Styles**. 
 **Symptom**: Vale runs but reports no issues (or "No styles found" error)
 
 **Solution (Managed mode)**:
-1. Go to **Settings** → **Vale** → **Style Settings**
+1. Go to **Settings** → **Vale** → **Styles**
 2. Toggle ON desired style packages (each style automatically downloads and installs when enabled)
 3. Configure individual rules in **Rule Configuration** as needed
 
 **Solution (Custom mode)**:
-1. Check your `.vale.ini` has a valid `StylesPath`
+1. Check your `.vale.ini` has a valid `StylesPath` setting
 2. Download styles to that path from [Vale's style library](https://vale.sh/library)
-3. Ensure styles are referenced in `BasedOnStyles` in `.vale.ini`
+3. Go to **Settings** → **Vale** → **Styles** to see your installed styles
+4. Toggle ON the styles you want to enable (this updates `BasedOnStyles` in your `.vale.ini`)
 
 ### Slow performance
 
