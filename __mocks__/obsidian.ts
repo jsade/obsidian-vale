@@ -23,12 +23,12 @@ export function normalizePath(path: string): string {
 
 // Extend HTMLElement with Obsidian-specific methods
 if (typeof HTMLElement !== "undefined") {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (HTMLElement.prototype as any).empty = function (): void {
-    while (this.firstChild) {
-      this.removeChild(this.firstChild);
-    }
-  };
+  (HTMLElement.prototype as HTMLElement & { empty: () => void }).empty =
+    function (this: HTMLElement): void {
+      while (this.firstChild) {
+        this.removeChild(this.firstChild);
+      }
+    };
 }
 
 /**
@@ -86,7 +86,7 @@ export class Setting {
   addExtraButton(callback: (button: ButtonComponent) => void): this {
     const buttonEl = document.createElement("button");
     buttonEl.className = "extra-button";
-    buttonEl.setAttribute("aria-label", "gear");
+    buttonEl.setAttribute("aria-label", "Gear");
     this.controlEl.appendChild(buttonEl);
 
     const mockButton = new ButtonComponent(buttonEl);

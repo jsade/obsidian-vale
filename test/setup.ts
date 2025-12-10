@@ -16,15 +16,16 @@ declare global {
 global.DEBUG = false; // Set to false for tests to avoid debug output
 
 // Extend HTMLElement with Obsidian-specific methods
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-(HTMLElement.prototype as any).empty = function (): void {
-  while (this.firstChild) {
-    this.removeChild(this.firstChild);
-  }
-};
+(HTMLElement.prototype as HTMLElement & { empty: () => void }).empty =
+  function (this: HTMLElement): void {
+    while (this.firstChild) {
+      this.removeChild(this.firstChild);
+    }
+  };
 
 // Extend Array with Obsidian-specific methods
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-(Array.prototype as any).contains = function <T>(this: T[], value: T): boolean {
+(
+  Array.prototype as Array<unknown> & { contains: <T>(value: T) => boolean }
+).contains = function <T>(this: T[], value: T): boolean {
   return this.includes(value);
 };

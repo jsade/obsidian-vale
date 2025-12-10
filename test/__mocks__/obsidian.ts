@@ -4,8 +4,13 @@
  */
 
 // Global storage for captured Settings (accessible from test utils)
-(global as any).__capturedSettings__ = [];
-(global as any).__settingMockEnabled__ = false;
+interface GlobalWithMocks {
+  __capturedSettings__: Setting[];
+  __settingMockEnabled__: boolean;
+}
+
+(global as unknown as GlobalWithMocks).__capturedSettings__ = [];
+(global as unknown as GlobalWithMocks).__settingMockEnabled__ = false;
 
 export class App {}
 export class Plugin {}
@@ -27,13 +32,13 @@ export class Setting {
   private _isHeading = false;
   private _name = "";
   private _desc = "";
-  private _toggleCallback: ((toggle: any) => void) | null = null;
-  private _buttonCallback: ((button: any) => void) | null = null;
+  private _toggleCallback: ((toggle: unknown) => void) | null = null;
+  private _buttonCallback: ((button: unknown) => void) | null = null;
 
   constructor(_containerEl: HTMLElement) {
     // Capture this instance if mocking is enabled
-    if ((global as any).__settingMockEnabled__) {
-      (global as any).__capturedSettings__.push(this);
+    if ((global as unknown as GlobalWithMocks).__settingMockEnabled__) {
+      (global as unknown as GlobalWithMocks).__capturedSettings__.push(this);
     }
   }
 
@@ -52,41 +57,53 @@ export class Setting {
     return this;
   }
 
-  addToggle(callback: any): this {
+  addToggle(callback: (toggle: unknown) => void): this {
     this._toggleCallback = callback;
     // Create a simple mock toggle
     const toggle = {
-      setValue: function(value: boolean) { this._value = value; return this; },
-      onChange: function(cb: any) { this._onChange = cb; return this; },
+      setValue: function (value: boolean) {
+        this._value = value;
+        return this;
+      },
+      onChange: function (cb: unknown) {
+        this._onChange = cb;
+        return this;
+      },
       _value: false,
-      _onChange: null
+      _onChange: null as unknown,
     };
     callback(toggle);
     return this;
   }
 
-  addExtraButton(callback: any): this {
+  addExtraButton(callback: (button: unknown) => void): this {
     this._buttonCallback = callback;
     // Create a simple mock button
     const button = {
-      setIcon: function(icon: string) { this._icon = icon; return this; },
-      onClick: function(cb: any) { this._onClick = cb; return this; },
+      setIcon: function (icon: string) {
+        this._icon = icon;
+        return this;
+      },
+      onClick: function (cb: unknown) {
+        this._onClick = cb;
+        return this;
+      },
       _icon: "",
-      _onClick: null
+      _onClick: null as unknown,
     };
     callback(button);
     return this;
   }
 
-  addButton(_callback: any): this {
+  addButton(_callback: unknown): this {
     return this;
   }
 
-  addText(_callback: any): this {
+  addText(_callback: unknown): this {
     return this;
   }
 
-  addDropdown(_callback: any): this {
+  addDropdown(_callback: unknown): this {
     return this;
   }
 
@@ -103,11 +120,11 @@ export class Setting {
     return this._desc;
   }
 
-  get toggleCallback(): ((toggle: any) => void) | null {
+  get toggleCallback(): ((toggle: unknown) => void) | null {
     return this._toggleCallback;
   }
 
-  get buttonCallback(): ((button: any) => void) | null {
+  get buttonCallback(): ((button: unknown) => void) | null {
     return this._buttonCallback;
   }
 }

@@ -31,20 +31,23 @@ export const SettingsRouter = ({ plugin }: Props): React.ReactElement => {
   React.useEffect(() => {
     let isMounted = true;
 
-    if (settings.type === "cli" && configManager) {
-      void configManager
-        .configPathExists()
-        .then((res) => {
-          if (isMounted) {
-            setValidConfigPath(res);
-          }
-        })
-        .catch((error) => {
+    const checkConfig = async () => {
+      let isValid = false;
+
+      if (settings.type === "cli" && configManager) {
+        try {
+          isValid = await configManager.configPathExists();
+        } catch (error) {
           console.error("configPathExists error:", error);
-        });
-    } else {
-      setValidConfigPath(false);
-    }
+        }
+      }
+
+      if (isMounted) {
+        setValidConfigPath(isValid);
+      }
+    };
+
+    void checkConfig();
 
     return () => {
       isMounted = false;

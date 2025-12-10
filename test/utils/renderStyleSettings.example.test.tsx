@@ -51,7 +51,11 @@ describe("renderStyleSettings Infrastructure Examples", () => {
     it("should render in Custom mode when configured", async () => {
       const { settings } = renderStyleSettings({
         settings: {
-          cli: { managed: false, valePath: "/custom/vale", configPath: "/custom/.vale.ini" },
+          cli: {
+            managed: false,
+            valePath: "/custom/vale",
+            configPath: "/custom/.vale.ini",
+          },
         },
       });
 
@@ -104,7 +108,9 @@ describe("renderStyleSettings Infrastructure Examples", () => {
       });
 
       expect(await configManager.configPathExists()).toBe(false);
-      await expect(configManager.getInstalledStyles()).rejects.toThrow("Failed to read config");
+      await expect(configManager.getInstalledStyles()).rejects.toThrow(
+        "Failed to read config",
+      );
     });
   });
 
@@ -137,7 +143,9 @@ describe("renderStyleSettings Infrastructure Examples", () => {
 
       const { configManager } = renderStyleSettings({
         configManager: {
-          getInstalledStyles: jest.fn().mockRejectedValue(new Error("Network error")),
+          getInstalledStyles: jest
+            .fn()
+            .mockRejectedValue(new Error("Network error")),
         },
         settings: { cli: { managed: false } },
       });
@@ -197,7 +205,7 @@ describe("renderStyleSettings Infrastructure Examples", () => {
         { name: "Vale", description: "Default style for spelling" },
       ];
 
-      const { capturedSettings: initialSettings } = renderStyleSettings({
+      renderStyleSettings({
         installedStyles,
         enabledStyles: ["Vale"],
       });
@@ -210,7 +218,15 @@ describe("renderStyleSettings Infrastructure Examples", () => {
       const settings = getCapturedSettings();
 
       // Find the Vale setting (should exist after data loads)
-      const valeSetting = settings.find((s) => s.name === "Vale");
+      const valeSetting = settings.find(
+        (s: { name: string }) => s.name === "Vale",
+      ) as
+        | {
+            name: string;
+            desc: string;
+            toggleCallback?: () => void;
+          }
+        | undefined;
 
       // Note: Settings are re-created on each render, so we check if at least one exists
       expect(settings.length).toBeGreaterThan(0);
@@ -240,7 +256,11 @@ describe("renderStyleSettings Infrastructure Examples", () => {
       const { configManager } = renderStyleSettings({
         settings: { cli: { managed: true } },
         availableStyles: [
-          { name: "Google", description: "Google style", url: "https://example.com/google.zip" },
+          {
+            name: "Google",
+            description: "Google style",
+            url: "https://example.com/google.zip",
+          },
         ],
       });
 
@@ -350,11 +370,15 @@ describe("renderStyleSettings Infrastructure Examples", () => {
 
       const { configManager } = renderStyleSettings({
         configManager: {
-          enableStyle: jest.fn().mockRejectedValue(new Error("Failed to enable")),
+          enableStyle: jest
+            .fn()
+            .mockRejectedValue(new Error("Failed to enable")),
         },
       });
 
-      await expect(configManager.enableStyle("Vale")).rejects.toThrow("Failed to enable");
+      await expect(configManager.enableStyle("Vale")).rejects.toThrow(
+        "Failed to enable",
+      );
 
       consoleSpy.mockRestore();
     });
@@ -396,7 +420,11 @@ describe("renderStyleSettings Infrastructure Examples", () => {
     it("should handle mixed library and custom styles in Custom mode", async () => {
       const mixedStyles: ValeStyle[] = [
         { name: "Vale", description: "Default" },
-        { name: "Google", description: "Google style", homepage: "https://github.com/errata-ai/Google" },
+        {
+          name: "Google",
+          description: "Google style",
+          homepage: "https://github.com/errata-ai/Google",
+        },
         { name: "CompanyStyle", description: "Custom style" },
       ];
 

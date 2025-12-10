@@ -18,6 +18,16 @@ import { ValeConfigManager } from "../../src/vale/ValeConfigManager";
 import { AppContext, SettingsContext } from "../../src/context";
 import { StyleSettings } from "../../src/settings/StyleSettings";
 import { createMockApp } from "../mocks/obsidian";
+import * as hooks from "../../src/hooks";
+import { ValeConfig } from "../../src/types";
+
+/**
+ * Global interface for test mocking
+ */
+interface GlobalWithMocks {
+  __settingMockEnabled__: boolean;
+  __capturedSettings__: MockSetting[];
+}
 
 /**
  * Mock ValeConfigManager for testing
@@ -33,8 +43,8 @@ export interface MockValeConfigManager extends jest.Mocked<ValeConfigManager> {
   installStyle: jest.MockedFunction<(style: ValeStyle) => Promise<void>>;
   uninstallStyle: jest.MockedFunction<(style: ValeStyle) => Promise<void>>;
   valePathExists: jest.MockedFunction<() => Promise<boolean>>;
-  loadConfig: jest.MockedFunction<() => Promise<any>>;
-  saveConfig: jest.MockedFunction<(config: any) => Promise<void>>;
+  loadConfig: jest.MockedFunction<() => Promise<ValeConfig>>;
+  saveConfig: jest.MockedFunction<(config: ValeConfig) => Promise<void>>;
   getStylesPath: jest.MockedFunction<() => Promise<string | undefined>>;
 }
 
@@ -47,8 +57,10 @@ export class MockSetting {
   private _isHeading = false;
   private _name = "";
   private _desc = "";
-  private _toggleCallback: ((toggle: MockToggleComponent) => void) | null = null;
-  private _buttonCallback: ((button: MockExtraButtonComponent) => void) | null = null;
+  private _toggleCallback: ((toggle: MockToggleComponent) => void) | null =
+    null;
+  private _buttonCallback: ((button: MockExtraButtonComponent) => void) | null =
+    null;
 
   constructor(containerEl: HTMLElement) {
     this.element = containerEl;
@@ -175,29 +187,33 @@ export class MockExtraButtonComponent {
  * Enable Setting capture (uses global from obsidian mock)
  */
 export function enableSettingCapture(): void {
-  (global as any).__settingMockEnabled__ = true;
-  (global as any).__capturedSettings__ = [];
+  const globalWithMocks = global as unknown as GlobalWithMocks;
+  globalWithMocks.__settingMockEnabled__ = true;
+  globalWithMocks.__capturedSettings__ = [];
 }
 
 /**
  * Disable Setting capture
  */
 export function disableSettingCapture(): void {
-  (global as any).__settingMockEnabled__ = false;
+  const globalWithMocks = global as unknown as GlobalWithMocks;
+  globalWithMocks.__settingMockEnabled__ = false;
 }
 
 /**
  * Reset captured settings before each test
  */
 export function resetMockSettings(): void {
-  (global as any).__capturedSettings__ = [];
+  const globalWithMocks = global as unknown as GlobalWithMocks;
+  globalWithMocks.__capturedSettings__ = [];
 }
 
 /**
  * Get all Setting instances created during render
  */
-export function getCapturedSettings(): any[] {
-  return (global as any).__capturedSettings__ || [];
+export function getCapturedSettings(): MockSetting[] {
+  const globalWithMocks = global as unknown as GlobalWithMocks;
+  return globalWithMocks.__capturedSettings__ || [];
 }
 
 /**
@@ -275,7 +291,10 @@ export interface RenderStyleSettingsResult {
   /**
    * Helper to rerender with new props
    */
-  rerender: (settings: ValeSettings, navigate: jest.Mock<void, [string, string]>) => void;
+  rerender: (
+    settings: ValeSettings,
+    navigate: jest.Mock<void, [string, string]>,
+  ) => void;
 
   /**
    * The fully mocked ValeConfigManager instance
@@ -318,17 +337,35 @@ export interface RenderStyleSettingsResult {
   findByRole: ReturnType<typeof getQueriesForElement>["findByRole"];
   findAllByRole: ReturnType<typeof getQueriesForElement>["findAllByRole"];
   getByLabelText: ReturnType<typeof getQueriesForElement>["getByLabelText"];
-  getAllByLabelText: ReturnType<typeof getQueriesForElement>["getAllByLabelText"];
+  getAllByLabelText: ReturnType<
+    typeof getQueriesForElement
+  >["getAllByLabelText"];
   queryByLabelText: ReturnType<typeof getQueriesForElement>["queryByLabelText"];
-  queryAllByLabelText: ReturnType<typeof getQueriesForElement>["queryAllByLabelText"];
+  queryAllByLabelText: ReturnType<
+    typeof getQueriesForElement
+  >["queryAllByLabelText"];
   findByLabelText: ReturnType<typeof getQueriesForElement>["findByLabelText"];
-  findAllByLabelText: ReturnType<typeof getQueriesForElement>["findAllByLabelText"];
-  getByPlaceholderText: ReturnType<typeof getQueriesForElement>["getByPlaceholderText"];
-  getAllByPlaceholderText: ReturnType<typeof getQueriesForElement>["getAllByPlaceholderText"];
-  queryByPlaceholderText: ReturnType<typeof getQueriesForElement>["queryByPlaceholderText"];
-  queryAllByPlaceholderText: ReturnType<typeof getQueriesForElement>["queryAllByPlaceholderText"];
-  findByPlaceholderText: ReturnType<typeof getQueriesForElement>["findByPlaceholderText"];
-  findAllByPlaceholderText: ReturnType<typeof getQueriesForElement>["findAllByPlaceholderText"];
+  findAllByLabelText: ReturnType<
+    typeof getQueriesForElement
+  >["findAllByLabelText"];
+  getByPlaceholderText: ReturnType<
+    typeof getQueriesForElement
+  >["getByPlaceholderText"];
+  getAllByPlaceholderText: ReturnType<
+    typeof getQueriesForElement
+  >["getAllByPlaceholderText"];
+  queryByPlaceholderText: ReturnType<
+    typeof getQueriesForElement
+  >["queryByPlaceholderText"];
+  queryAllByPlaceholderText: ReturnType<
+    typeof getQueriesForElement
+  >["queryAllByPlaceholderText"];
+  findByPlaceholderText: ReturnType<
+    typeof getQueriesForElement
+  >["findByPlaceholderText"];
+  findAllByPlaceholderText: ReturnType<
+    typeof getQueriesForElement
+  >["findAllByPlaceholderText"];
   getByTestId: ReturnType<typeof getQueriesForElement>["getByTestId"];
   getAllByTestId: ReturnType<typeof getQueriesForElement>["getAllByTestId"];
   queryByTestId: ReturnType<typeof getQueriesForElement>["queryByTestId"];
@@ -338,7 +375,9 @@ export interface RenderStyleSettingsResult {
   getByAltText: ReturnType<typeof getQueriesForElement>["getByAltText"];
   getAllByAltText: ReturnType<typeof getQueriesForElement>["getAllByAltText"];
   queryByAltText: ReturnType<typeof getQueriesForElement>["queryByAltText"];
-  queryAllByAltText: ReturnType<typeof getQueriesForElement>["queryAllByAltText"];
+  queryAllByAltText: ReturnType<
+    typeof getQueriesForElement
+  >["queryAllByAltText"];
   findByAltText: ReturnType<typeof getQueriesForElement>["findByAltText"];
   findAllByAltText: ReturnType<typeof getQueriesForElement>["findAllByAltText"];
   getByTitle: ReturnType<typeof getQueriesForElement>["getByTitle"];
@@ -347,12 +386,24 @@ export interface RenderStyleSettingsResult {
   queryAllByTitle: ReturnType<typeof getQueriesForElement>["queryAllByTitle"];
   findByTitle: ReturnType<typeof getQueriesForElement>["findByTitle"];
   findAllByTitle: ReturnType<typeof getQueriesForElement>["findAllByTitle"];
-  getByDisplayValue: ReturnType<typeof getQueriesForElement>["getByDisplayValue"];
-  getAllByDisplayValue: ReturnType<typeof getQueriesForElement>["getAllByDisplayValue"];
-  queryByDisplayValue: ReturnType<typeof getQueriesForElement>["queryByDisplayValue"];
-  queryAllByDisplayValue: ReturnType<typeof getQueriesForElement>["queryAllByDisplayValue"];
-  findByDisplayValue: ReturnType<typeof getQueriesForElement>["findByDisplayValue"];
-  findAllByDisplayValue: ReturnType<typeof getQueriesForElement>["findAllByDisplayValue"];
+  getByDisplayValue: ReturnType<
+    typeof getQueriesForElement
+  >["getByDisplayValue"];
+  getAllByDisplayValue: ReturnType<
+    typeof getQueriesForElement
+  >["getAllByDisplayValue"];
+  queryByDisplayValue: ReturnType<
+    typeof getQueriesForElement
+  >["queryByDisplayValue"];
+  queryAllByDisplayValue: ReturnType<
+    typeof getQueriesForElement
+  >["queryAllByDisplayValue"];
+  findByDisplayValue: ReturnType<
+    typeof getQueriesForElement
+  >["findByDisplayValue"];
+  findAllByDisplayValue: ReturnType<
+    typeof getQueriesForElement
+  >["findAllByDisplayValue"];
 }
 
 /**
@@ -364,7 +415,7 @@ function createMockConfigManager(
     installedStyles?: ValeStyle[];
     availableStyles?: ValeStyle[];
     enabledStyles?: string[];
-  }
+  },
 ): MockValeConfigManager {
   const mock = {
     // Validation methods
@@ -372,9 +423,15 @@ function createMockConfigManager(
     valePathExists: jest.fn().mockResolvedValue(true),
 
     // Style discovery methods
-    getInstalledStyles: jest.fn().mockResolvedValue(defaults?.installedStyles ?? []),
-    getAvailableStyles: jest.fn().mockResolvedValue(defaults?.availableStyles ?? []),
-    getEnabledStyles: jest.fn().mockResolvedValue(defaults?.enabledStyles ?? []),
+    getInstalledStyles: jest
+      .fn()
+      .mockResolvedValue(defaults?.installedStyles ?? []),
+    getAvailableStyles: jest
+      .fn()
+      .mockResolvedValue(defaults?.availableStyles ?? []),
+    getEnabledStyles: jest
+      .fn()
+      .mockResolvedValue(defaults?.enabledStyles ?? []),
 
     // Style management methods
     enableStyle: jest.fn().mockResolvedValue(undefined),
@@ -385,7 +442,7 @@ function createMockConfigManager(
     // Config methods
     loadConfig: jest.fn().mockResolvedValue({
       StylesPath: "styles",
-      "*": { md: { BasedOnStyles: "Vale" } }
+      "*": { md: { BasedOnStyles: "Vale" } },
     }),
     saveConfig: jest.fn().mockResolvedValue(undefined),
     getStylesPath: jest.fn().mockResolvedValue("/mock/styles"),
@@ -439,7 +496,7 @@ function createMockConfigManager(
  * ```
  */
 export function renderStyleSettings(
-  options: RenderStyleSettingsOptions = {}
+  options: RenderStyleSettingsOptions = {},
 ): RenderStyleSettingsResult {
   // Enable Setting capture
   enableSettingCapture();
@@ -466,25 +523,25 @@ export function renderStyleSettings(
   const app = options.app ?? createMockApp();
 
   // Create mock config manager with defaults
-  const configManager = createMockConfigManager(
-    options.configManager,
-    {
-      installedStyles: options.installedStyles,
-      availableStyles: options.availableStyles,
-      enabledStyles: options.enabledStyles,
-    }
-  );
+  const configManager = createMockConfigManager(options.configManager, {
+    installedStyles: options.installedStyles,
+    availableStyles: options.availableStyles,
+    enabledStyles: options.enabledStyles,
+  });
 
   // Mock useConfigManager to return our mock
   const useConfigManagerSpy = jest.fn(() => configManager);
-  jest.spyOn(require("../../src/hooks"), "useConfigManager").mockImplementation(useConfigManagerSpy);
+  jest.spyOn(hooks, "useConfigManager").mockImplementation(useConfigManagerSpy);
 
   // Create container
   const container = document.createElement("div");
   document.body.appendChild(container);
 
   // Render component using React 17 API
-  const renderElement = (settings: ValeSettings, navigate: jest.Mock<void, [string, string]>) => (
+  const renderElement = (
+    settings: ValeSettings,
+    navigate: jest.Mock<void, [string, string]>,
+  ) => (
     <AppContext.Provider value={app}>
       <SettingsContext.Provider value={settings}>
         <StyleSettings settings={settings} navigate={navigate} />
@@ -503,14 +560,17 @@ export function renderStyleSettings(
     container,
     baseElement: document.body,
     debug: (element?: HTMLElement) => {
-      console.log(prettyDOM(element ?? container));
+      console.debug(prettyDOM(element ?? container));
     },
     unmount: () => {
       ReactDOM.unmountComponentAtNode(container);
       document.body.removeChild(container);
       disableSettingCapture();
     },
-    rerender: (newSettings: ValeSettings, newNavigate: jest.Mock<void, [string, string]>) => {
+    rerender: (
+      newSettings: ValeSettings,
+      newNavigate: jest.Mock<void, [string, string]>,
+    ) => {
       ReactDOM.render(renderElement(newSettings, newNavigate), container);
     },
     configManager,
@@ -519,7 +579,7 @@ export function renderStyleSettings(
     app,
     capturedSettings: getCapturedSettings(),
     ...queries,
-  };
+  } as RenderStyleSettingsResult;
 }
 
 /**

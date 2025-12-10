@@ -68,7 +68,7 @@ export const StyleSettings = ({
       new Setting(ref.current)
         .setName("No styles found")
         .setDesc(
-          "Add Vale styles to your StylesPath directory to see them here.",
+          "Add Vale styles to your styles path directory to view them here.",
         );
     }
 

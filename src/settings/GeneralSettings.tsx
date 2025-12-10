@@ -179,7 +179,7 @@ export const GeneralSettings = ({
         ref.current.empty();
 
         new Setting(ref.current)
-          .setName("Enable Vale Server")
+          .setName("Enable Vale server")
           .setDesc("If disabled, you need to have Vale CLI installed.")
           .addToggle((toggle) => {
             const handleChange = async (value: boolean) => {
@@ -196,10 +196,11 @@ export const GeneralSettings = ({
         if (settings.type === "server") {
           new Setting(ref.current)
             .setName("Server URL")
-            .setDesc("Address to a running Vale Server instance.")
+            .setDesc("Address to a running Vale server instance.")
             .addText((text) => {
               const component = text
                 .setValue(settings.server.url)
+                // eslint-disable-next-line obsidianmd/ui/sentence-case -- URL placeholder
                 .setPlaceholder("http://localhost:7777");
 
               component.inputEl.onblur = async (value: FocusEvent) => {
@@ -218,7 +219,7 @@ export const GeneralSettings = ({
           new Setting(ref.current)
             .setName("Use managed Vale CLI")
             .setDesc(
-              "Install Vale to your vault. Disable if you want to use an existing Vale configuration.",
+              "Install Vale to your vault. Disable to use an existing Vale configuration.",
             )
             .addToggle((toggle) => {
               const handleChange = (managed: boolean) => {
@@ -298,9 +299,9 @@ export const GeneralSettings = ({
         <small>
           {"If you found this plugin useful, you can "}
           <a href="https://www.buymeacoffee.com/marcusolsson">
-            buy Marcus a coffee
+            buy him a coffee
           </a>
-          {" as a thank you ☕."}
+          {" as a thank you."}
         </small>
       </div>
       <div ref={ref} />
@@ -327,9 +328,10 @@ export const Onboarding = ({
         need to set up Vale.
       </p>
       <p>
-        <strong>{"If this is your first time using Vale"}</strong>, you can use{" "}
-        <em>managed mode</em> to install the Vale CLI to your vault, for minimal
-        configuration.
+        <strong>{"If this is your first time using Vale"}</strong>
+        {", you can use "}
+        <em>managed mode</em>
+        {" to install the Vale CLI to your vault, for minimal configuration."}
       </p>
       {settings.cli.managed ? (
         <DownloadButton
@@ -355,13 +357,13 @@ export const Onboarding = ({
             })
           }
         >
-          Enable managed mode
+          Enable Managed mode
         </button>
       )}
       <p>
         <strong>{"If you're already using Vale"}</strong>
         {
-          ", you can configure the URL to a running Vale Server, or disable managed Vale CLI to configure the paths to an existing Vale CLI installation."
+          ", you can configure the URL to a running Vale server, or disable managed Vale CLI to configure the paths to an existing Vale CLI installation."
         }
       </p>
     </div>

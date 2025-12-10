@@ -18,7 +18,6 @@ import {
   createMixedStyles,
   createEmptyStyles,
   createValeOnly,
-  mockStyles,
 } from "../mocks/valeStyles";
 
 /**
@@ -121,7 +120,9 @@ describe("StyleSettings - Mode-Specific Logic", () => {
 
         const result = await getStylesToDisplay(mockConfigManager, true);
 
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(mockConfigManager.getInstalledStyles).toHaveBeenCalledTimes(1);
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(mockConfigManager.getAvailableStyles).not.toHaveBeenCalled();
         expect(result).toEqual(installedStyles);
       });
@@ -201,7 +202,9 @@ describe("StyleSettings - Mode-Specific Logic", () => {
 
         const result = await getStylesToDisplay(mockConfigManager, false);
 
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(mockConfigManager.getAvailableStyles).toHaveBeenCalledTimes(1);
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(mockConfigManager.getInstalledStyles).not.toHaveBeenCalled();
         expect(result).toEqual(libraryStyles);
       });
@@ -527,7 +530,9 @@ describe("StyleSettings - Mode-Specific Logic", () => {
     describe("Managed Mode with Library Styles", () => {
       it("should show library styles with install/uninstall capability", async () => {
         const mockConfigManager = {
-          getAvailableStyles: jest.fn().mockResolvedValue(createLibraryStyles()),
+          getAvailableStyles: jest
+            .fn()
+            .mockResolvedValue(createLibraryStyles()),
         } as unknown as jest.Mocked<ValeConfigManager>;
 
         const styles = await getStylesToDisplay(mockConfigManager, false);
@@ -560,7 +565,6 @@ describe("StyleSettings - Mode-Specific Logic", () => {
 
         // Simulate Google being enabled but not in the installed styles list
         const installedStyles = createValeOnly();
-        const enabledStyles = ["Vale", "Google"]; // Google is orphaned
 
         // In the real UI, we iterate over installedStyles and filter out Vale
         // So the orphaned "Google" wouldn't even appear in the UI
@@ -571,11 +575,9 @@ describe("StyleSettings - Mode-Specific Logic", () => {
         );
         expect(stylesWithoutVale.length).toBe(0);
 
-        // Google is in enabledStyles but not in installedStyles
+        // Google would be in enabledStyles but not in installedStyles
         // So it won't be rendered in the UI (correct behavior)
-        expect(
-          stylesWithoutVale.some((s) => s.name === "Google"),
-        ).toBe(false);
+        expect(stylesWithoutVale.some((s) => s.name === "Google")).toBe(false);
       });
     });
   });

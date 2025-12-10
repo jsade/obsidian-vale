@@ -1,6 +1,6 @@
 import eslint from "@eslint/js";
 import tseslint from "typescript-eslint";
-import reactPlugin from "eslint-plugin-react";
+import eslintReact from "@eslint-react/eslint-plugin";
 import obsidianmd from "eslint-plugin-obsidianmd";
 import prettierConfig from "eslint-config-prettier";
 import prettierPlugin from "eslint-plugin-prettier";
@@ -37,7 +37,10 @@ export default defineConfig(
   // TypeScript files configuration
   {
     files: ["**/*.{ts,tsx}"],
-    extends: [...tseslint.configs.recommended],
+    extends: [
+      ...tseslint.configs.recommended,
+      eslintReact.configs["recommended-typescript"],
+    ],
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
@@ -51,12 +54,7 @@ export default defineConfig(
         ...globals.node,
       },
     },
-    plugins: {
-      react: reactPlugin,
-    },
     rules: {
-      ...reactPlugin.configs.recommended.rules,
-      "react/react-in-jsx-scope": "off",
       "@typescript-eslint/no-unused-vars": [
         "warn",
         {
@@ -64,11 +62,6 @@ export default defineConfig(
           varsIgnorePattern: "^_",
         },
       ],
-    },
-    settings: {
-      react: {
-        version: "detect",
-      },
     },
   },
 
@@ -86,18 +79,30 @@ export default defineConfig(
   // Obsidian plugin recommended rules
   ...obsidianmd.configs.recommended,
   {
-    files: ["**/*.ts"],
+    files: ["**/*.ts", "**/*.tsx"],
     languageOptions: {
       parser: tsparser,
       parserOptions: { project: "./tsconfig.json" },
     },
 
-    // You can add your own configuration to override or add rules
     rules: {
-      // example: turn off a rule from the recommended set
-      "obsidianmd/sample-names": "off",
-      // example: add a rule not in the recommended set and set its severity
-      "obsidianmd/prefer-file-manager-trash": "error",
+      "obsidianmd/settings-tab/no-problematic-settings-headings": "error",
+      "obsidianmd/ui/sentence-case": [
+        "error",
+        {
+          brands: ["Vale"],
+          acronyms: ["CLI", "URL"],
+        },
+      ],
+      "obsidianmd/validate-manifest": "error",
+      "obsidianmd/vault/iterate": "error",
+      "obsidianmd/detach-leaves": "error",
+      "obsidianmd/no-plugin-as-component": "error",
+      "obsidianmd/no-static-styles-assignment": "error",
+      "obsidianmd/no-tfile-tfolder-cast": "error",
+      "obsidianmd/no-view-references-in-plugin": "error",
+      "obsidianmd/prefer-abstract-input-suggest": "error",
+      "obsidianmd/settings-tab/no-manual-html-headings": "error",
     },
   },
 
