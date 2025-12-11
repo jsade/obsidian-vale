@@ -1,0 +1,491 @@
+/**
+ * Accessibility Utility Classes
+ *
+ * These classes provide foundational accessibility support.
+ * Import this file in your main CSS to use these utilities.
+ */
+
+/**
+ * Visually Hidden
+ *
+ * Hides content visually but keeps it available to screen readers.
+ * Use this for:
+ * - Skip links
+ * - Screen reader-only instructions
+ * - Supplementary context that's visually apparent but not programmatically available
+ *
+ * Example usage:
+ * <a href="https://example.com" target="_blank">
+ *   Learn more
+ *   <span class="visually-hidden"> (opens in new window)</span>
+ * </a>
+ */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/**
+ * Visually Hidden (Focusable)
+ *
+ * Same as visually-hidden, but becomes visible when focused.
+ * Use this for skip links that should appear when tabbed to.
+ *
+ * Example usage:
+ * <a href="#main-content" class="visually-hidden-focusable">
+ *   Skip to main content
+ * </a>
+ */
+.visually-hidden-focusable:focus,
+.visually-hidden-focusable:active {
+  position: static;
+  width: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/**
+ * Focus Visible Polyfill
+ *
+ * Provides :focus-visible behavior for browsers that don't support it.
+ * Shows focus indicator only for keyboard navigation, not mouse clicks.
+ *
+ * Note: Modern browsers support :focus-visible natively.
+ * This is a fallback for older browsers.
+ */
+.js-focus-visible :focus:not(.focus-visible) {
+  outline: none;
+}
+
+/**
+ * High Contrast Mode Support
+ *
+ * Ensures content remains visible in Windows High Contrast Mode.
+ * Uses transparent borders that become visible in high contrast.
+ */
+@media (prefers-contrast: high) {
+  /* Ensure focus indicators are visible */
+  *:focus {
+    outline: 3px solid;
+    outline-offset: 2px;
+  }
+
+  /* Ensure interactive elements have visible boundaries */
+  button,
+  [role="button"],
+  a,
+  input,
+  select,
+  textarea {
+    border: 1px solid;
+  }
+
+  /* Ensure severity badges are distinguishable */
+  .vale-tooltip__severity,
+  .alert__severity {
+    border: 2px solid;
+  }
+}
+
+/**
+ * Reduced Motion Support
+ *
+ * Respects user's preference for reduced motion.
+ * Disables or reduces animations/transitions.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Keep necessary loading animations but make them simpler */
+  .loader,
+  .loader-cube {
+    animation: none;
+  }
+
+  /* Show static loading indicator instead */
+  .loader::before,
+  .loader-cube::before {
+    content: "Loading...";
+    position: absolute;
+    color: var(--text-normal);
+  }
+}
+
+/**
+ * Focus Indicator Utilities
+ *
+ * Consistent focus styling across all interactive elements.
+ * Use these classes or inherit the base styles.
+ */
+.focus-ring {
+  outline: 2px solid var(--background-modifier-border-focus);
+  outline-offset: 2px;
+}
+
+/* Apply to all interactive elements by default */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role="button"]:focus-visible,
+[role="tab"]:focus-visible,
+[role="link"]:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--background-modifier-border-focus);
+  outline-offset: 2px;
+}
+
+/* Remove default focus outline only when using custom focus-visible */
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible),
+input:focus:not(:focus-visible),
+select:focus:not(:focus-visible),
+textarea:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/**
+ * Touch Target Size Utilities
+ *
+ * Ensures minimum 44x44px touch targets (WCAG 2.5.5 Level AAA)
+ * or 24x24px (WCAG 2.5.8 Level AA).
+ */
+.touch-target-44 {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.touch-target-24 {
+  min-width: 24px;
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/**
+ * Screen Reader Announcements
+ *
+ * Live regions for dynamic content announcements.
+ * Place these in your component root and update their content
+ * when you need to announce changes.
+ */
+.sr-only-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/**
+ * Screen Reader Only
+ *
+ * Alternative class name for visually-hidden, commonly used as "sr-only".
+ * Use this for test utilities and programmatic content hiding.
+ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Polite announcements (non-critical updates) */
+.sr-announcer-polite {
+  composes: sr-only-live;
+}
+
+.sr-announcer-polite[aria-live] {
+  /* Ensure aria-live="polite" is set in markup */
+}
+
+/* Assertive announcements (critical updates) */
+.sr-announcer-assertive {
+  composes: sr-only-live;
+}
+
+.sr-announcer-assertive[aria-live] {
+  /* Ensure aria-live="assertive" is set in markup */
+}
+
+/**
+ * Skip Link
+ *
+ * Allows keyboard users to skip repetitive navigation.
+ * Place at the top of your settings page.
+ *
+ * Example usage:
+ * <a href="#main-content" class="skip-link">
+ *   Skip to main content
+ * </a>
+ */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--background-primary);
+  color: var(--text-normal);
+  padding: 8px 16px;
+  text-decoration: none;
+  border: 2px solid var(--interactive-accent);
+  border-radius: 4px;
+  z-index: 9999;
+}
+
+.skip-link:focus {
+  top: 8px;
+  left: 8px;
+}
+
+/**
+ * Loading State Indicators
+ *
+ * Ensures loading states are properly communicated.
+ */
+[aria-busy="true"] {
+  /* Visual indicator that content is loading */
+  cursor: wait;
+  pointer-events: none;
+}
+
+[aria-busy="true"]::after {
+  /* Optional: add loading spinner */
+  content: "";
+  /* Add your spinner styles here */
+}
+
+/**
+ * Error State Indicators
+ *
+ * Ensures error states are visually distinct.
+ */
+[aria-invalid="true"] {
+  border-color: var(--text-error);
+  border-width: 2px;
+}
+
+[aria-invalid="true"]:focus {
+  outline-color: var(--text-error);
+}
+
+/* Error message styling */
+[role="alert"].error-message {
+  color: var(--text-error);
+  padding: 8px 12px;
+  margin-top: 4px;
+  border-left: 3px solid var(--text-error);
+  background-color: rgba(var(--background-modifier-error-rgb), 0.1);
+}
+
+/**
+ * Disabled State
+ *
+ * Consistent disabled state across all interactive elements.
+ */
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Ensure disabled elements are still keyboard accessible for reading */
+[aria-disabled="true"]:not(:disabled) {
+  /* Keep in tab order but prevent interaction */
+  pointer-events: none;
+}
+
+/**
+ * Required Field Indicator
+ *
+ * Visual indicator for required form fields.
+ */
+.required-indicator::after {
+  content: " *";
+  color: var(--text-error);
+  font-weight: bold;
+  margin-left: 4px;
+}
+
+/* Also add aria-required to the input */
+[aria-required="true"] + label::after,
+label[for] [aria-required="true"]::after {
+  content: " *";
+  color: var(--text-error);
+  font-weight: bold;
+}
+
+/**
+ * Tooltip Accessibility
+ *
+ * Ensures tooltips are accessible to keyboard and screen reader users.
+ */
+.tooltip[role="tooltip"] {
+  /* Tooltip should be focusable or associated with focusable element */
+  z-index: var(--layer-tooltip);
+}
+
+/* Ensure tooltip content is announced */
+[aria-describedby][aria-haspopup="true"] {
+  /* Element that triggers tooltip */
+}
+
+/**
+ * Modal/Dialog Accessibility
+ *
+ * Ensures modals trap focus and are properly labeled.
+ */
+[role="dialog"],
+[role="alertdialog"] {
+  /* Ensure modal has aria-labelledby or aria-label */
+}
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: var(--layer-modal);
+}
+
+/**
+ * List Accessibility
+ *
+ * Ensures lists are properly structured for screen readers.
+ */
+[role="list"] {
+  /* List container */
+}
+
+[role="listitem"] {
+  /* List item */
+}
+
+/* For custom lists (not using ul/ol) */
+.custom-list[role="list"] {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/**
+ * Tab Navigation Accessibility
+ *
+ * Ensures tab navigation is keyboard accessible and properly announced.
+ */
+[role="tablist"] {
+  /* Tab container */
+  display: flex;
+  gap: 0;
+}
+
+[role="tab"] {
+  /* Individual tab */
+}
+
+[role="tab"][aria-selected="true"] {
+  /* Selected tab - ensure visual distinction */
+  font-weight: bold;
+}
+
+[role="tabpanel"] {
+  /* Tab content panel */
+}
+
+[role="tabpanel"][hidden] {
+  /* Hidden panels should be completely removed from flow */
+  display: none;
+}
+
+/**
+ * Color Contrast Utilities
+ *
+ * Helper classes for ensuring sufficient contrast.
+ * Use these when you need guaranteed contrast.
+ */
+.high-contrast-text {
+  /* Ensures 7:1 contrast (Level AAA) */
+  color: var(--text-normal);
+  background-color: var(--background-primary);
+}
+
+.sufficient-contrast-text {
+  /* Ensures 4.5:1 contrast (Level AA) */
+  color: var(--text-normal);
+  background-color: var(--background-secondary);
+}
+
+/**
+ * Link Hover Utilities
+ *
+ * Provides hover states for links without inline styles.
+ */
+.link-hover-underline {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+.link-hover-underline:hover {
+  text-decoration: underline;
+}
+
+/**
+ * Print Styles
+ *
+ * Ensures content is accessible when printed.
+ */
+@media print {
+  /* Show hidden content that might be important */
+  .visually-hidden {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+
+  /* Show link URLs */
+  a[href]::after {
+    content: " (" attr(href) ")";
+  }
+
+  /* Remove focus indicators in print */
+  *:focus {
+    outline: none;
+  }
+}

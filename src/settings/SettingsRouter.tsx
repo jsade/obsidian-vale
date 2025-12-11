@@ -63,21 +63,34 @@ export const SettingsRouter = ({ plugin }: Props): React.ReactElement => {
     setPage(newPage);
   };
 
-  // Render the current page content
+  // Render the current page content with proper tabpanel ARIA attributes
   const renderPage = () => {
     switch (page) {
       case "General":
         return (
-          <GeneralSettings
-            settings={settings}
-            onSettingsChange={onSettingsChange}
-          />
+          <div
+            role="tabpanel"
+            id="panel-general"
+            aria-labelledby="tab-general"
+            tabIndex={0}
+          >
+            <GeneralSettings
+              settings={settings}
+              onSettingsChange={onSettingsChange}
+            />
+          </div>
         );
       case "Styles":
         if (!shouldShowStyles) {
           // Show feedback when Styles tab is accessed but config path is invalid
           return (
-            <div className="vale-settings-feedback">
+            <div
+              role="tabpanel"
+              id="panel-styles"
+              aria-labelledby="tab-styles"
+              tabIndex={0}
+              className="vale-settings-feedback"
+            >
               <p>
                 Configure a valid Vale config path in General settings to manage
                 styles.
@@ -85,8 +98,18 @@ export const SettingsRouter = ({ plugin }: Props): React.ReactElement => {
             </div>
           );
         }
-        return <StyleSettings settings={settings} navigate={navigate} />;
+        return (
+          <div
+            role="tabpanel"
+            id="panel-styles"
+            aria-labelledby="tab-styles"
+            tabIndex={0}
+          >
+            <StyleSettings settings={settings} navigate={navigate} />
+          </div>
+        );
       case "Rules":
+        // Rules page doesn't use tab pattern (accessed via gear icon)
         return (
           <RuleSettings settings={settings} style={style} navigate={navigate} />
         );

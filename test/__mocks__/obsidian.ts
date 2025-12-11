@@ -84,6 +84,9 @@ export class Setting {
         this._icon = icon;
         return this;
       },
+      setTooltip: function (_tooltip: string) {
+        return this;
+      },
       onClick: function (cb: unknown) {
         this._onClick = cb;
         return this;

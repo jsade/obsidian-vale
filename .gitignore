@@ -1,6 +1,7 @@
 # IDE and tools
 .claude
 CLAUDE.md
+AGENTS.md
 
 # npm
 node_modules
@@ -36,10 +37,10 @@ coverage
 
 # test documentation
 test/**/*.md
+src/**/*.md
 
 # local
 docs
 local
 .env
 .envrc
-AGENTS.md

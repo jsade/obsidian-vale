@@ -1,7 +1,9 @@
 import { ItemView, MarkdownView, WorkspaceLeaf } from "obsidian";
 import * as React from "react";
-import * as ReactDOM from "react-dom";
+import { createRoot, Root } from "react-dom/client";
 import { ValeApp } from "./components/ValeApp";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+import { ErrorFallback } from "./components/ErrorFallback";
 import { AppContext, SettingsContext } from "./context";
 import { timed } from "./debug";
 import { EventBus } from "./EventBus";
@@ -15,6 +17,7 @@ export class ValeView extends ItemView {
   private settings: ValeSettings;
   private runner: ValeRunner;
   private eventBus: EventBus;
+  private root: Root | null = null;
 
   private ready = false;
   private unregisterReady: (() => void) | null = null;
@@ -60,19 +63,27 @@ export class ValeView extends ItemView {
     });
 
     return timed("ValeResultsView.onOpen()", async () => {
-      ReactDOM.render(
-        <AppContext.Provider value={this.app}>
-          <SettingsContext.Provider value={this.settings}>
-            <div className="obsidian-vale">
-              <ValeApp
-                runner={this.runner}
-                eventBus={this.eventBus}
-                onAlertClick={this.onAlertClick}
-              />
-            </div>
-          </SettingsContext.Provider>
-        </AppContext.Provider>,
-        this.containerEl.children[1],
+      // Create root for React 18
+      const container = this.containerEl.children[1];
+      this.root = createRoot(container);
+
+      // Render with error boundary
+      this.root.render(
+        <React.StrictMode>
+          <ErrorBoundary fallback={ErrorFallback}>
+            <AppContext.Provider value={this.app}>
+              <SettingsContext.Provider value={this.settings}>
+                <div className="obsidian-vale">
+                  <ValeApp
+                    runner={this.runner}
+                    eventBus={this.eventBus}
+                    onAlertClick={this.onAlertClick}
+                  />
+                </div>
+              </SettingsContext.Provider>
+            </AppContext.Provider>
+          </ErrorBoundary>
+        </React.StrictMode>,
       );
     });
   }
@@ -84,7 +95,10 @@ export class ValeView extends ItemView {
     }
 
     return timed("ValeResultsView.onClose()", async () => {
-      ReactDOM.unmountComponentAtNode(this.containerEl.children[1]);
+      if (this.root) {
+        this.root.unmount();
+        this.root = null;
+      }
     });
   }
 

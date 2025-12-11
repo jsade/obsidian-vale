@@ -51,6 +51,7 @@ export const RuleSettings = ({
           onClick={() => {
             navigate("General", "");
           }}
+          ariaLabel="Go back to Styles"
         />
         <span>Back to Vale settings</span>
       </div>

@@ -22,6 +22,7 @@ export const StyleSettings = ({
 
   React.useEffect(() => {
     // Clear previous error state before loading (prevents stale errors after config fixes)
+    // eslint-disable-next-line @eslint-react/hooks-extra/no-direct-set-state-in-use-effect -- Intentionally setting state at start of effect to clear stale errors
     setLoadError(null);
 
     // Early return if configManager not available yet
@@ -150,9 +151,12 @@ export const StyleSettings = ({
 
         if (enabledStyles.contains(style.name)) {
           setting.addExtraButton((button) =>
-            button.setIcon("gear").onClick(() => {
-              navigate("Rules", style.name);
-            }),
+            button
+              .setIcon("gear")
+              .setTooltip("Configure rules")
+              .onClick(() => {
+                navigate("Rules", style.name);
+              }),
           );
         }
 

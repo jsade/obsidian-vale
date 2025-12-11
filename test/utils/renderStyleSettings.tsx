@@ -8,9 +8,8 @@
  * - Type-safe interfaces for all test options
  */
 
-import React from "react";
-import ReactDOM from "react-dom";
-import { act } from "react-dom/test-utils";
+import React, { act } from "react";
+import { createRoot, Root } from "react-dom/client";
 import { getQueriesForElement, prettyDOM } from "@testing-library/dom";
 import { App } from "obsidian";
 import { ValeSettings, ValeStyle, DEFAULT_SETTINGS } from "../../src/types";
@@ -549,8 +548,11 @@ export function renderStyleSettings(
     </AppContext.Provider>
   );
 
+  // Create root for React 18
+  let root: Root;
   act(() => {
-    ReactDOM.render(renderElement(settings, navigate), container);
+    root = createRoot(container);
+    root.render(renderElement(settings, navigate));
   });
 
   // Get queries for the container
@@ -563,7 +565,9 @@ export function renderStyleSettings(
       console.debug(prettyDOM(element ?? container));
     },
     unmount: () => {
-      ReactDOM.unmountComponentAtNode(container);
+      act(() => {
+        root.unmount();
+      });
       document.body.removeChild(container);
       disableSettingCapture();
     },
@@ -571,7 +575,9 @@ export function renderStyleSettings(
       newSettings: ValeSettings,
       newNavigate: jest.Mock<void, [string, string]>,
     ) => {
-      ReactDOM.render(renderElement(newSettings, newNavigate), container);
+      act(() => {
+        root.render(renderElement(newSettings, newNavigate));
+      });
     },
     configManager,
     navigate,
