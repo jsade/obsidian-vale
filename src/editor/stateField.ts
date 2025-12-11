@@ -75,7 +75,7 @@ export const valeAlertMap = new Map<string, ValeAlert>();
  *
  * @remarks
  * - Vale uses 1-based line numbers; CM6 uses 0-based
- * - Vale Span is [start, end] with 1-based byte offsets within the line
+ * - Vale Span is [start, end) with 1-based byte offsets (end is exclusive)
  * - CM6 positions are 0-based character offsets from document start
  * - Handles multi-byte UTF-8 characters correctly
  *
@@ -92,49 +92,61 @@ function alertToOffsets(
   const line = state.doc.line(lineNumber + 1); // doc.line is 1-based
 
   // Vale Span is [start, end] with 1-based byte offsets within the line
-  // We need to convert these to 0-based character offsets
+  // Both start and end are INCLUSIVE (end points TO the last byte, not after it)
+  // We need to convert these to 0-based character offsets with exclusive end for CM6
   const lineText = line.text;
+
   // Convert from 1-based to 0-based byte offsets
+  // spanStart: 0-based position of first byte (inclusive)
+  // spanEnd: 0-based position of last byte (inclusive) - we'll convert to exclusive for CM6
   const spanStart = alert.Span[0] - 1;
   const spanEnd = alert.Span[1] - 1;
 
   // Check if span is completely beyond the line length
   const lineBytes = new TextEncoder().encode(lineText).length;
-  if (spanStart >= lineBytes || spanEnd > lineBytes) {
+  if (spanStart >= lineBytes || spanEnd >= lineBytes) {
     // Return invalid range that will be caught by the validation below
     return { from: -1, to: -1 };
   }
 
   // Convert byte offsets to character offsets
+  // We need to find which characters contain the start and end bytes
   const encoder = new TextEncoder();
-  let charStart = 0;
-  let charEnd = 0;
+  let charStart = -1;
+  let charEnd = -1;
   let byteCount = 0;
 
-  // Find character position for span start
+  // Find character positions for span start and end
   for (let i = 0; i < lineText.length; i++) {
     const char = lineText[i];
     const charBytes = encoder.encode(char).length;
+    const charByteStart = byteCount;
+    const charByteEnd = byteCount + charBytes - 1; // Inclusive end of this char's bytes
 
-    if (byteCount === spanStart) {
+    // Start: find the character that contains the spanStart byte
+    if (charStart === -1 && charByteStart <= spanStart && spanStart <= charByteEnd) {
       charStart = i;
     }
-    if (byteCount === spanEnd) {
-      charEnd = i;
-      break;
+
+    // End: find the character that contains the spanEnd byte
+    // Since Vale's end is inclusive, we want to include this entire character
+    if (charEnd === -1 && charByteStart <= spanEnd && spanEnd <= charByteEnd) {
+      charEnd = i + 1; // CM6 uses exclusive end, so +1 to include this character
     }
 
     byteCount += charBytes;
 
-    // If we've passed the end byte, use current position
-    if (byteCount > spanEnd && charEnd === 0) {
-      charEnd = i;
+    // Early exit if we found both
+    if (charStart !== -1 && charEnd !== -1) {
       break;
     }
   }
 
-  // If we never found the end, use the line length
-  if (charEnd === 0 || charEnd < charStart) {
+  // Handle edge cases
+  if (charStart === -1) {
+    charStart = 0;
+  }
+  if (charEnd === -1) {
     charEnd = lineText.length;
   }
 
@@ -275,6 +287,14 @@ export const valeStateField = StateField.define<DecorationSet>({
       if (effect.is(selectValeAlert)) {
         const alertId = effect.value;
         const alert = valeAlertMap.get(alertId);
+
+        if (!alert) {
+          console.warn(
+            `[Vale] selectValeAlert: Alert not found in valeAlertMap. ` +
+              `alertId="${alertId}", map size=${valeAlertMap.size}. ` +
+              `This may indicate the alert was created in a different editor.`,
+          );
+        }
 
         if (alert) {
           // Remove previous selection decorations
