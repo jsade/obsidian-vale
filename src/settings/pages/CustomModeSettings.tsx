@@ -18,18 +18,6 @@ import {
 import { getExamplePaths } from "../../utils/platformDefaults";
 
 /**
- * Props for CustomModeSettings component.
- */
-export interface CustomModeSettingsProps {
-  /**
-   * Whether to show advanced options (help text section).
-   * When false, the help text is hidden for a minimal UI.
-   * @default true
-   */
-  showAdvanced?: boolean;
-}
-
-/**
  * CustomModeSettings - Configuration for custom Vale paths
  *
  * Provides text inputs for:
@@ -41,7 +29,6 @@ export interface CustomModeSettingsProps {
  * - Debounced validation (500ms delay)
  * - Both paths saved together to avoid stale closures
  * - Clear validation feedback (spinner, checkmark, error)
- * - Progressive disclosure via showAdvanced prop
  *
  * Architecture:
  * - Uses Obsidian Setting API for text inputs
@@ -53,8 +40,6 @@ export interface CustomModeSettingsProps {
  * - H1 (Visibility): Real-time validation feedback
  * - H5 (Error Prevention): Validates paths before saving
  * - H6 (Recognition): Shows example paths and current values
- * - H7 (Flexibility): Advanced help for power users
- * - H8 (Minimalist Design): Basic view hides help text
  * - H10 (Help): Clear error messages with suggestions
  *
  * Accessibility:
@@ -64,12 +49,10 @@ export interface CustomModeSettingsProps {
  *
  * @example
  * ```tsx
- * {!settings.cli.managed && <CustomModeSettings showAdvanced={false} />}
+ * {!settings.cli.managed && <CustomModeSettings />}
  * ```
  */
-export const CustomModeSettings: React.FC<CustomModeSettingsProps> = ({
-  showAdvanced = true,
-}) => {
+export const CustomModeSettings: React.FC = () => {
   const { settings, updateSettings, setValidation } = useSettings();
   const configManager = useConfigManager(settings);
 
@@ -457,23 +440,21 @@ export const CustomModeSettings: React.FC<CustomModeSettingsProps> = ({
         </div>
       )}
 
-      {/* Help text with platform-specific examples - shown only in advanced mode */}
-      {showAdvanced && (
-        <div className="vale-custom-mode-help vale-advanced-content">
-          <p className="vale-help-text">
-            <strong>Tip:</strong> Paths can be absolute or relative to your
-            vault root.
-          </p>
-          <p className="vale-help-text">
-            Example paths for your system:
-            <br />
-            Vale: <code>{examplePaths.valePath}</code>
-            <br />
-            Config: <code>{examplePaths.configPath}</code> or{" "}
-            <code>.vale.ini</code>
-          </p>
-        </div>
-      )}
+      {/* Help text with platform-specific examples */}
+      <div className="vale-custom-mode-help">
+        <p className="vale-help-text">
+          <strong>Tip:</strong> Paths can be absolute or relative to your vault
+          root.
+        </p>
+        <p className="vale-help-text">
+          Example paths for your system:
+          <br />
+          Vale: <code>{examplePaths.valePath}</code>
+          <br />
+          Config: <code>{examplePaths.configPath}</code> or{" "}
+          <code>.vale.ini</code>
+        </p>
+      </div>
     </div>
   );
 };

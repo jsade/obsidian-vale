@@ -89,7 +89,7 @@ describe("CM6 Vale Extension Integration", () => {
     it("should add decorations when alerts are dispatched", () => {
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4], // "This"
+        Span: [1, 5], // "This"
         Match: "This",
         Severity: "error",
       });
@@ -107,7 +107,7 @@ describe("CM6 Vale Extension Integration", () => {
     it("should render decorations with correct CSS classes", () => {
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4], // "This"
+        Span: [1, 5], // "This"
         Match: "This",
         Severity: "error",
       });
@@ -128,7 +128,7 @@ describe("CM6 Vale Extension Integration", () => {
     it("should clear decorations when clearAllValeMarks is dispatched", () => {
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5],
         Match: "This",
         Severity: "error",
       });
@@ -154,19 +154,19 @@ describe("CM6 Vale Extension Integration", () => {
       const alerts = [
         createMockValeAlert({
           Line: 1,
-          Span: [0, 4], // "This"
+          Span: [1, 5], // "This"
           Match: "This",
           Severity: "error",
         }),
         createMockValeAlert({
           Line: 1,
-          Span: [10, 14], // "test"
+          Span: [11, 15], // "test" (1-based positions 11-14, exclusive end)
           Match: "test",
           Severity: "warning",
         }),
         createMockValeAlert({
           Line: 1,
-          Span: [20, 28], // "document"
+          Span: [16, 24], // "document" (1-based positions 16-23, exclusive end)
           Match: "document",
           Severity: "suggestion",
         }),
@@ -195,7 +195,7 @@ describe("CM6 Vale Extension Integration", () => {
     it("should update decorations when document is edited", () => {
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4], // "test"
+        Span: [1, 5], // "test"
         Match: "test",
         Severity: "error",
       });
@@ -217,7 +217,7 @@ describe("CM6 Vale Extension Integration", () => {
     it("should remove decorations when text is deleted", () => {
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4], // "test"
+        Span: [1, 5], // "test"
         Match: "test",
         Severity: "error",
       });
@@ -240,7 +240,7 @@ describe("CM6 Vale Extension Integration", () => {
       const alerts1 = [
         createMockValeAlert({
           Line: 1,
-          Span: [0, 4],
+          Span: [1, 5],
           Match: "test",
           Severity: "error",
         }),
@@ -249,7 +249,7 @@ describe("CM6 Vale Extension Integration", () => {
       const alerts2 = [
         createMockValeAlert({
           Line: 1,
-          Span: [5, 13],
+          Span: [6, 14], // "document" (1-based positions 6-13, exclusive end)
           Match: "document",
           Severity: "warning",
         }),
@@ -304,7 +304,7 @@ describe("CM6 Vale Extension Integration", () => {
       // Add an alert to verify Vale extension still works
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5],
         Match: "test",
         Severity: "error",
       });
@@ -345,7 +345,7 @@ describe("CM6 Vale Extension Integration", () => {
 
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4], // "word"
+        Span: [1, 5], // "word"
         Match: "word",
         Severity: "error",
       });
@@ -384,7 +384,7 @@ describe("CM6 Vale Extension Integration", () => {
 
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5],
         Match: "test",
         Severity: "error",
       });

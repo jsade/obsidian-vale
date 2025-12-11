@@ -42,6 +42,15 @@ export default class ValePlugin extends Plugin {
   };
   private unregisterCheckListener: (() => void) | undefined;
 
+  /**
+   * Stores the EditorView that was active when a Vale check was triggered.
+   * This is critical for CM6 integration: we must dispatch effects to the SAME
+   * EditorView instance where alerts were created, not just any available view.
+   * Without this, alerts could be dispatched to a different editor when the user
+   * has multiple files open or when focus changes during the async check.
+   */
+  private lastCheckedView: EditorView | null = null;
+
   // onload runs when plugin becomes enabled.
   async onload(): Promise<void> {
     await this.loadSettings();
@@ -129,6 +138,7 @@ export default class ValePlugin extends Plugin {
         this.runner,
         this.eventBus,
         this.onAlertClick,
+        this.onCheckStart,
       );
     });
 
@@ -310,6 +320,20 @@ export default class ValePlugin extends Plugin {
     throw new Error("Unsupported platform");
   }
 
+  /**
+   * Callback invoked when a Vale check starts.
+   * Stores the EditorView so we dispatch effects to the correct editor instance.
+   */
+  onCheckStart = (editorView: EditorView | null): void => {
+    this.lastCheckedView = editorView;
+    if (!editorView) {
+      console.warn(
+        "[Vale] onCheckStart: No EditorView available. " +
+          "Effects may be dispatched to the wrong editor.",
+      );
+    }
+  };
+
   // onResult creates markers for every alert after each new check.
   onResult = (alerts: ValeAlert[]): void => {
     this.alerts = alerts;
@@ -329,11 +353,21 @@ export default class ValePlugin extends Plugin {
   };
 
   clearAlertMarkers = (): void => {
-    this.withEditorView((view) => {
-      view.dispatch({
+    // Use the stored EditorView from when the check started.
+    // This ensures we dispatch to the same editor that was checked.
+    if (this.lastCheckedView) {
+      this.lastCheckedView.dispatch({
         effects: clearAllValeMarks.of(),
       });
-    });
+    } else {
+      // Fallback to withEditorView for commands like "Toggle alerts"
+      // that may be called without a prior check.
+      this.withEditorView((view) => {
+        view.dispatch({
+          effects: clearAllValeMarks.of(),
+        });
+      });
+    }
   };
 
   markAlerts = (): void => {
@@ -341,28 +375,57 @@ export default class ValePlugin extends Plugin {
       return;
     }
 
-    this.withEditorView((view) => {
-      view.dispatch({
+    // Use the stored EditorView from when the check started.
+    // This ensures we dispatch to the same editor that was checked.
+    if (this.lastCheckedView) {
+      this.lastCheckedView.dispatch({
         effects: addValeMarks.of(this.alerts),
       });
-    });
+    } else {
+      // Fallback to withEditorView for commands like "Toggle alerts"
+      // that may be called without a prior check.
+      console.warn(
+        "[Vale] markAlerts: No lastCheckedView available. " +
+          "Using fallback which may dispatch to wrong editor.",
+      );
+      this.withEditorView((view) => {
+        view.dispatch({
+          effects: addValeMarks.of(this.alerts),
+        });
+      });
+    }
   };
 
   // onAlertClick highlights an alert in the editor when the user clicks one of
   // the cards in the results view.
   onAlertClick = (alert: ValeAlert): void => {
-    const view = this.app.workspace.getActiveViewOfType(MarkdownView);
-    if (!view) {
+    // Use the stored EditorView from when the check started.
+    // This ensures we interact with the same editor that was checked.
+    const editorView = this.lastCheckedView;
+
+    if (!editorView) {
+      console.warn(
+        "[Vale] onAlertClick: No lastCheckedView available. " +
+          "Cannot scroll to alert.",
+      );
       return;
     }
 
-    this.withEditorView((editorView) => {
-      // Use the scrollToAlert utility to handle scrolling and highlighting
-      scrollToAlert(editorView, view.editor, alert, true);
+    // Get the MarkdownView to access the editor for scrollToAlert.
+    // This is needed for the Editor abstraction that scrollToAlert uses.
+    const markdownView = this.getMarkdownView();
+    if (!markdownView) {
+      console.warn(
+        "[Vale] onAlertClick: No MarkdownView found. Cannot scroll to alert.",
+      );
+      return;
+    }
 
-      // Dispatch to EventBus for UI panel highlighting
-      this.eventBus.dispatch("select-alert", alert);
-    });
+    // Use the scrollToAlert utility to handle scrolling and highlighting
+    scrollToAlert(editorView, markdownView.editor, alert, true);
+
+    // Dispatch to EventBus for UI panel highlighting
+    this.eventBus.dispatch("select-alert", alert);
   };
 
   // onMarkerClick determines whether the user clicks on an existing marker in
@@ -391,11 +454,44 @@ export default class ValePlugin extends Plugin {
     this.eventBus.dispatch("select-alert", alert);
   };
 
+  // getMarkdownView finds a markdown view, preferring the active one but
+  // falling back to any open markdown leaf. This is needed when focus is
+  // on the Vale panel but we need to interact with the editor.
+  getMarkdownView(): MarkdownView | null {
+    // First try the active view
+    const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
+    if (activeView) {
+      return activeView;
+    }
+
+    // Fall back to any markdown leaf in the workspace
+    const leaves = this.app.workspace.getLeavesOfType("markdown");
+    for (const leaf of leaves) {
+      if (leaf.view instanceof MarkdownView) {
+        return leaf.view;
+      }
+    }
+
+    console.warn(
+      "[Vale] getMarkdownView: No markdown view found. " +
+        "Active view type: " +
+        this.app.workspace.getActiveViewOfType(MarkdownView)?.getViewType() +
+        ", total leaves: " +
+        leaves.length,
+    );
+    return null;
+  }
+
   // withEditorView is a convenience function for making sure that a
   // function runs with a valid CM6 EditorView.
+  // NOTE: This is a FALLBACK method. For check results, prefer using
+  // lastCheckedView to ensure effects go to the correct editor.
   withEditorView(callback: (view: EditorView) => void): void {
-    const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
+    const markdownView = this.getMarkdownView();
     if (!markdownView) {
+      console.warn(
+        "[Vale] withEditorView: No markdown view found. Callback not executed.",
+      );
       return;
     }
 
@@ -407,6 +503,10 @@ export default class ValePlugin extends Plugin {
     const editorView = (markdownView.editor as EditorWithCM)?.cm;
 
     if (!editorView) {
+      console.warn(
+        "[Vale] withEditorView: MarkdownView found but EditorView (cm) is null. " +
+          "Editor may not be fully initialized.",
+      );
       return;
     }
 

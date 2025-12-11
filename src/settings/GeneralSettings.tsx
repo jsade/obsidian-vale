@@ -295,15 +295,6 @@ export const GeneralSettings = ({
       {onboarding && (
         <Onboarding settings={settings} onSettingsChange={onSettingsChange} />
       )}
-      <div className="card" style={{ marginBottom: "2rem" }}>
-        <small>
-          {"If you found this plugin useful, you can "}
-          <a href="https://www.buymeacoffee.com/marcusolsson">
-            buy him a coffee
-          </a>
-          {" as a thank you."}
-        </small>
-      </div>
       <div ref={ref} />
     </>
   );

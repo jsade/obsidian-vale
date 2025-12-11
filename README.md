@@ -4,6 +4,9 @@ Obsidian Vale is a [Vale](https://vale.sh/) linter client plugin for [Obsidian](
 
 ![Screenshot](screenshot.png)
 
+
+> **2025-10-22**: The original [obsidian-vale](https://github.com/marcusolsson/obsidian-vale) project was created by [Marcus Olsson](https://github.com/marcusolsson) and was archived Jun 1, 2023.
+
 ## Features
 
 - **Real-time linting**: Vale analyzes your prose as you write
@@ -11,23 +14,9 @@ Obsidian Vale is a [Vale](https://vale.sh/) linter client plugin for [Obsidian](
 - **Click-to-navigate**: Click underlines to jump to panel details, or click panel alerts to highlight in editor
 - **Smart underlines**: Decorations automatically update and stay positioned as you edit
 - **Multiple severity levels**: Error, warning, and suggestion styles
-- **Interactive tooltips**: Hover over underlined text for details and suggested fixes (Planned for future release)
+- **Interactive tooltips**: Hover over underlined text for details and suggested fixes
 - **Custom rules**: Use Vale's extensive style library or create your own
 - **Managed or custom Vale**: Let the plugin manage Vale or use your own installation
-- **Obsidian compatibility**: 1.5+
-
-## Notice
-> [!IMPORTANT]
-> 
-> **2025-10-22**
-> 
-> The original [obsidian-vale](https://github.com/marcusolsson/obsidian-vale) project was created by [Marcus Olsson](https://github.com/marcusolsson) and is already archived.
-> 
-> I needed to use [Vale](https://vale.sh/) to complement my [Obsidian](https://obsidian.md/) obsession, and updated the project to work with the latest available Obsidian version at the time (v1.10.1).
-> 
-> While I might not maintain this repo actively, perhaps it can now help other Obsidian obsessors.
-> 
-> *@jsade* 👋
 
 ## Installation
 
@@ -46,7 +35,7 @@ Obsidian Vale is a [Vale](https://vale.sh/) linter client plugin for [Obsidian](
 
 ## Getting started
 
-### Easy install
+### Installing vale
 
 The plugin can automatically download and configure Vale for you:
 
@@ -56,7 +45,7 @@ The plugin can automatically download and configure Vale for you:
 4. Go to **Style Settings** and toggle ON desired style packages (each style automatically downloads and installs when enabled)
 5. Configure rules in **Rule Configuration** as needed
 
-### Using an existing Vale installation
+### Using an existing vale installation
 
 If you already have Vale installed:
 
@@ -67,32 +56,34 @@ If you already have Vale installed:
 
 ## Usage
 
-### Check Document
+### Check document
 
+- **Edit mode**: Ensure your note is active and in Edit mode
 - **Command Palette**: `Vale: Check document` (or use configured hotkey)
 - **Ribbon Icon**: Click the Vale icon in the left sidebar to run a check
 
-Underlined text indicates issues (click any underline to view details in the panel):
+Underlined squiggly text indicates issues (click any underline to view details in the panel):
+
 - **Red underline**: Errors
 - **Orange underline**: Warnings
 - **Purple underline**: Suggestions
 
-### View Details and Fix Issues
+### View details and fix issues
 
-**Method 1: Hover Tooltip** (Planned for future release)
+**Method 1: Hover Tooltip**
 - Hover over underlined text to see a tooltip with:
-  - Issue description
-  - Suggested fixes (click to apply)
-  - Actions (ignore, disable rule)
+	- Issue description
+	- Suggested fixes (click to apply)
+	- Actions (ignore, disable rule)
 
 **Method 2: Results Panel**
 - Open the Vale panel from the sidebar:
-  - Use `Vale: Check document` command to run check and open panel
-  - Use `Vale: Open Vale panel` command to just open the panel
+	- Use `Vale: Check document` command to run check and open panel
+	- Use `Vale: Open Vale panel` command to just open the panel
 - Click an alert to jump to its location in the editor
 - Review all issues in one place
 
-### Interactive Navigation
+### Interactive navigation
 
 The plugin provides seamless bidirectional navigation between the editor and results panel:
 
@@ -106,43 +97,22 @@ The plugin provides seamless bidirectional navigation between the editor and res
 - The underline is temporarily highlighted to show exactly where the issue is
 - Makes it easy to review and fix issues one by one
 
-**Selection Sync**
-- Only one alert is selected at a time across both editor and panel
-- The selection stays synchronized as you navigate
-- Click anywhere in the editor (not on an underline) to deselect all alerts
-
-**Smart Underlines During Editing**
-- Underlines automatically update their positions as you edit text
-- The plugin intelligently tracks where issues are, even as content changes
-- No need to re-run checks just because you moved text around
-
-**Method 3: Context Menu** (Planned for future release)
-- Right-click on underlined text
-- Select from Vale suggestions submenu
-- Quick access to ignore or disable rule
-
-### Auto-Check (Planned for future release)
-
-Automatic checking will be available in a future version:
-- Checks document after you stop typing (configurable delay)
-- Only checks changed sections (efficient for large documents)
-- Can be toggled on/off per document
-
-### Clear Alerts
+### Clear alerts
 
 - **Command Palette**: `Vale: Clear alerts`
 - Removes all underlines without fixing issues
 - Useful when you want to focus on writing
 
-### Toggle Alerts
+### Toggle alerts
 
 - **Command Palette**: `Vale: Toggle alerts`
 - Hides or shows all alert underlines
 - Alerts remain in the panel even when hidden
 
-### Status Bar
+### Status bar
 
 The status bar (bottom of window) shows real-time check status:
+
 - **"Vale: Ready"** - Plugin is ready to check documents
 - **"Vale: Checking..."** - A check is currently running
 - **"Vale: No issues"** - Check complete with no issues found
@@ -150,51 +120,27 @@ The status bar (bottom of window) shows real-time check status:
 
 ## Configuration
 
-### Vale Settings
+### Vale settings
 
 Configure Vale integration:
+
 - **Mode**: Managed (plugin handles Vale) or Custom (use your Vale)
 - **Vale binary path**: Location of Vale executable (custom mode)
 - **Config path**: Location of `.vale.ini` (custom mode)
 
-### Editor Settings
+### Editor settings
 
 Customize editor behavior:
+
 - **Status bar**: Shows check status and issue count at the bottom of the window
 
-Note: Auto-check settings will be available in a future release.
-
-### Rule Configuration
+### Rule configuration
 
 Fine-tune Vale rules:
+
 - **Enable/disable styles**: Toggle entire style packages
 - **Configure individual rules**: Set severity or disable specific rules
 - **Manage exceptions**: Add words to dictionary, ignore patterns
-
-## Vale Resources
-
-Vale is a powerful, open-source prose linter:
-
-- [Vale Documentation](https://vale.sh/)
-- [Official Style Library](https://vale.sh/library)
-- [Creating Custom Rules](https://vale.sh/docs/styles)
-
-### Style Management: Managed vs Custom Mode
-
-The Styles settings page behaves differently depending on which mode you are using:
-
-| Action              | Managed Mode                               | Custom Mode                                   |
-| ------------------- | ------------------------------------------ | --------------------------------------------- |
-| **Styles shown**    | Official Vale style library (8 styles)     | Styles installed in your StylesPath directory |
-| **Toggle ON**       | Downloads, installs, and enables the style | Enables the style in `.vale.ini` only         |
-| **Toggle OFF**      | Disables and uninstalls the style          | Disables the style in `.vale.ini` only        |
-| **Section heading** | "Vale styles"                              | "Installed Styles"                            |
-
-**Managed mode** is ideal if you want the plugin to handle everything for you. Toggling a style ON downloads it from the official repository, installs it, and configures your `.vale.ini` automatically.
-
-**Custom mode** gives you full control. The plugin reads your existing StylesPath directory and displays whatever styles you have installed there. Toggling styles ON or OFF only updates the `BasedOnStyles` setting in your `.vale.ini`; it does not download or delete style files. To add new styles in Custom mode, download them from [Vale's style library](https://vale.sh/library) and place them in your StylesPath directory.
-
-> **Note**: If no styles appear in Custom mode, ensure your `.vale.ini` has a valid `StylesPath` pointing to a directory containing Vale style folders.
 
 ## Troubleshooting
 
@@ -216,7 +162,6 @@ The Styles settings page behaves differently depending on which mode you are usi
 ### Slow performance
 
 **Symptom**: Typing lags, Obsidian becomes unresponsive during checks
-
 **Solutions**:
 1. **Use manual checking**: Only run checks when needed using the command or ribbon icon
 2. **Reduce active rules**: Disable unnecessary styles in Rule Configuration
@@ -225,9 +170,7 @@ The Styles settings page behaves differently depending on which mode you are usi
 ### Underlines in wrong places
 
 **Symptom**: Underlines don't move correctly when editing text
-
 **Cause**: Known edge case when edits occur during Vale check
-
 **Solution**:
 1. Clear alerts and re-check document
 2. This is rare and typically self-corrects
@@ -236,9 +179,7 @@ The Styles settings page behaves differently depending on which mode you are usi
 ### Code blocks getting underlined
 
 **Symptom**: Vale underlines text in code blocks or inline code
-
 **Cause**: Vale configuration or style issue
-
 **Solution**:
 1. Check your `.vale.ini` includes `TokenIgnores` for code:
    ```ini
@@ -247,51 +188,34 @@ The Styles settings page behaves differently depending on which mode you are usi
    ```
 2. Ensure Vale styles respect code syntax (most do by default)
 
-## Development
+### Style management: managed vs custom mode
 
-### Building from Source
+The Styles settings page behaves differently depending on which mode you are using:
 
-```bash
-# Clone repository
-git clone https://github.com/jsade/obsidian-vale.git
-cd obsidian-vale
+| Action              | Managed Mode                               | Custom Mode                                   |
+| ------------------- | ------------------------------------------ | --------------------------------------------- |
+| **Styles shown**    | Official Vale style library (8 styles)     | Styles installed in your StylesPath directory |
+| **Toggle ON**       | Downloads, installs, and enables the style | Enables the style in `.vale.ini` only         |
+| **Toggle OFF**      | Disables and uninstalls the style          | Disables the style in `.vale.ini` only        |
+| **Section heading** | "Vale styles"                              | "Installed Styles"                            |
 
-# Install dependencies
-yarn install
+**Managed mode** is ideal if you want the plugin to handle everything for you. Toggling a style ON downloads it from the official repository, installs it, and configures your `.vale.ini` automatically.
 
-# Build for development (with watch)
-yarn dev
+**Custom mode** gives you full control. The plugin reads your existing StylesPath directory and displays whatever styles you have installed there. Toggling styles ON or OFF only updates the `BasedOnStyles` setting in your `.vale.ini`; it does not download or delete style files. To add new styles in Custom mode, download them from [Vale's style library](https://vale.sh/library) and place them in your StylesPath directory.
 
-# Build for production
-yarn build
+> **Note**: If no styles appear in Custom mode, ensure your `.vale.ini` has a valid `StylesPath` pointing to a directory containing Vale style folders.
 
-# Lint code
-yarn lint
+## Vale resources
 
-# Format code
-yarn format
-```
+Vale is a powerful, open-source prose linter:
 
-### Testing
-
-```bash
-# Run tests
-yarn test
-
-# Manual testing
-# 1. Build with `yarn dev`
-# 2. Copy main.js, manifest.json, styles.css to test vault
-# 3. Reload Obsidian
-# 4. Test functionality
-```
+- [Vale Documentation](https://vale.sh/)
+- [Official Style Library](https://vale.sh/library)
+- [Creating Custom Rules](https://vale.sh/docs/styles)
 
 ## License
 
 MIT License - see [LICENSE](LICENSE) file for details.
-
-## Support
-
-- **Issues**: [GitHub Issues](https://github.com/jsade/obsidian-vale/issues)
 
 ## Acknowledgments
 
@@ -299,7 +223,3 @@ MIT License - see [LICENSE](LICENSE) file for details.
 - [Vale](https://vale.sh/) - The amazing prose linter that powers this plugin
 - [Obsidian](https://obsidian.md/) - The knowledge base that works on local Markdown files
 - All contributors and users who provided feedback and bug reports
-
----
-
-**Note**: This plugin requires Vale to function. Vale is a separate tool that must be installed (automatically in Managed mode, or manually in Custom mode). See [Vale](https://vale.sh/).

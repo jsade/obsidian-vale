@@ -1,18 +1,6 @@
 import * as React from "react";
 
 /**
- * Props for ManagedModeSettings component.
- */
-export interface ManagedModeSettingsProps {
-  /**
-   * Whether to show advanced options (info card).
-   * When false, the info card is hidden for a minimal UI.
-   * @default true
-   */
-  showAdvanced?: boolean;
-}
-
-/**
  * ManagedModeSettings - Configuration for managed Vale CLI
  *
  * In managed mode, the plugin automatically:
@@ -27,13 +15,10 @@ export interface ManagedModeSettingsProps {
  * - Pure React component (no Obsidian Settings)
  * - Read-only information display
  * - Links to docs for more info
- * - Supports progressive disclosure via showAdvanced prop
  *
  * Nielsen Heuristic Alignment:
  * - H1 (Visibility): Shows what managed mode provides
  * - H6 (Recognition): Clear explanation of managed features
- * - H7 (Flexibility): Advanced info for power users
- * - H8 (Minimalist Design): Basic view hides info card
  * - H10 (Help): Links to documentation
  *
  * Accessibility:
@@ -43,20 +28,12 @@ export interface ManagedModeSettingsProps {
  *
  * @example
  * ```tsx
- * {settings.cli.managed && <ManagedModeSettings showAdvanced={false} />}
+ * {settings.cli.managed && <ManagedModeSettings />}
  * ```
  */
-export const ManagedModeSettings: React.FC<ManagedModeSettingsProps> = ({
-  showAdvanced = true,
-}) => {
-  // In basic mode, show nothing - managed mode is self-explanatory
-  if (!showAdvanced) {
-    return null;
-  }
-
-  // In advanced mode, show the info card with details about managed mode
+export const ManagedModeSettings: React.FC = () => {
   return (
-    <div className="vale-managed-mode-info vale-advanced-content">
+    <div className="vale-managed-mode-info">
       <div className="vale-info-card">
         <h3 className="vale-info-card__title">Managed Vale CLI</h3>
         <p className="vale-info-card__description">

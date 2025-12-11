@@ -72,6 +72,7 @@ export function createMockSettingsContext(
       ...overrides?.validation,
     },
     setValidation: overrides?.setValidation ?? jest.fn(),
+    version: "1.0.0",
   };
 }
 

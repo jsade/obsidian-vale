@@ -46,6 +46,7 @@ type MockedPlugin = {
   saveSettings: jest.Mock<Promise<void>>;
   configManager: jest.Mocked<ValeConfigManager>;
   app: App;
+  manifest: { version: string };
 };
 
 /**
@@ -93,6 +94,7 @@ function createMockPlugin(
         adapter: { basePath: "/mock/vault" },
       },
     } as unknown as App,
+    manifest: { version: "1.0.0" },
   };
 }
 
@@ -1197,7 +1199,10 @@ describe("Vale Detection Banner UI", () => {
     await waitFor(() => {
       expect(screen.getByText(/Vale found/)).toBeInTheDocument();
       expect(screen.getByText(/Homebrew/)).toBeInTheDocument();
-      expect(screen.getByText("/opt/homebrew/bin/vale")).toBeInTheDocument();
+      // Path appears in both detection banner and help text, so use getAllByText
+      expect(
+        screen.getAllByText("/opt/homebrew/bin/vale").length,
+      ).toBeGreaterThan(0);
     });
 
     // Buttons should be present

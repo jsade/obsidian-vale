@@ -37,6 +37,7 @@ type MockedPlugin = {
   loadData: jest.Mock<Promise<ValeSettings | null>>;
   configManager: jest.Mocked<ValeConfigManager>;
   app: App;
+  manifest: { version: string };
 };
 
 /**
@@ -94,6 +95,7 @@ function createMockPlugin(
         adapter: { basePath: "/mock/vault" },
       },
     } as unknown as App,
+    manifest: { version: "1.0.0" },
   };
 }
 

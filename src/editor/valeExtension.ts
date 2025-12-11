@@ -23,7 +23,7 @@ import { valeHoverTooltip } from "./tooltip";
  *
  * @remarks
  * **Styling Approach**:
- * - Uses wavy underlines for errors, warnings, and suggestions
+ * - Different underline styles per severity (wavy/dashed/dotted)
  * - Different colors for each severity level
  * - Hover states for better interactivity
  * - Compatible with light and dark themes
@@ -31,8 +31,8 @@ import { valeHoverTooltip } from "./tooltip";
  * **CSS Classes**:
  * - `.vale-underline`: Base class for all Vale underlines
  * - `.vale-error`: Red wavy underline for errors
- * - `.vale-warning`: Orange wavy underline for warnings
- * - `.vale-suggestion`: Purple wavy underline for suggestions
+ * - `.vale-warning`: Yellow dashed underline for warnings
+ * - `.vale-suggestion`: Accent-colored dotted underline for suggestions
  * - `.vale-selected`: Background highlight for selected alerts
  * - `.vale-highlight`: Subtle background for hovered alerts
  *
@@ -40,23 +40,31 @@ import { valeHoverTooltip } from "./tooltip";
  */
 const valeBaseTheme = EditorView.baseTheme({
   ".vale-underline": {
-    textDecoration: "underline",
-    textDecorationStyle: "wavy",
+    textDecorationLine: "underline",
     textDecorationSkipInk: "none",
     cursor: "pointer",
   },
-  ".vale-error": {
+  ".vale-underline.vale-error": {
     textDecorationColor: "var(--text-error)",
+    textDecorationStyle: "wavy",
+    textUnderlineOffset: "3px",
+    textDecorationThickness: "2px",
   },
-  ".vale-warning": {
-    textDecorationColor: "var(--text-warning)",
+  ".vale-underline.vale-warning": {
+    textDecorationColor: "var(--color-yellow)",
+    textDecorationStyle: "dashed",
+    textUnderlineOffset: "2px",
+    textDecorationThickness: "2px",
   },
-  ".vale-suggestion": {
+  ".vale-underline.vale-suggestion": {
     textDecorationColor: "var(--text-accent)",
+    textDecorationStyle: "dotted",
+    textUnderlineOffset: "2px",
+    textDecorationThickness: "2px",
   },
   ".vale-selected": {
     backgroundColor: "var(--background-modifier-hover)",
-    outline: "2px solid var(--background-modifier-border)",
+    outline: "1px solid var(--background-modifier-border)",
     outlineOffset: "1px",
   },
   ".vale-highlight": {

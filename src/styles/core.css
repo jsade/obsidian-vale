@@ -267,34 +267,13 @@
    Editor Underlines
    ============================================ */
 
+/* Vale underline styles are defined in valeExtension.ts (CM6 baseTheme)
+   using text-decoration properties for wavy/dashed/dotted effects.
+
+   Only highlight backgrounds are defined here. */
+
 .vale-underline-highlight {
   background-color: var(--text-highlight-bg);
-}
-.vale-underline {
-  box-shadow: inset 0 -1px rgba(137, 129, 243, 0.6);
-}
-.vale-underline:hover {
-  cursor: pointer;
-  box-shadow: inset 0 -2px rgba(137, 129, 243, 0.9);
-}
-
-.vale-underline.vale-error {
-  box-shadow: inset 0 -1px rgba(218, 97, 92, 0.6);
-}
-.vale-underline.vale-error:hover {
-  box-shadow: inset 0 -2px rgba(218, 97, 92, 0.9);
-}
-.vale-underline.vale-warning {
-  box-shadow: inset 0 -1px rgba(233, 179, 95, 0.6);
-}
-.vale-underline.vale-warning:hover {
-  box-shadow: inset 0 -2px rgba(233, 179, 95, 0.9);
-}
-.vale-underline.vale-suggestion {
-  box-shadow: inset 0 -1px rgba(137, 129, 243, 0.6);
-}
-.vale-underline.vale-suggestion:hover {
-  box-shadow: inset 0 -2px rgba(137, 129, 243, 0.9);
 }
 
 /* ============================================

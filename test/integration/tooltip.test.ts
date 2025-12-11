@@ -118,7 +118,7 @@ describe("Tooltip Integration Tests", () => {
       it("should find alert at correct position after adding to editor", () => {
         const alert = createMockValeAlert({
           Line: 1,
-          Span: [0, 4], // "This"
+          Span: [1, 5], // "This"
           Match: "This",
           Severity: "error",
           Check: "Vale.Spelling",
@@ -138,7 +138,7 @@ describe("Tooltip Integration Tests", () => {
       it("should return null when no alert at position", () => {
         const alert = createMockValeAlert({
           Line: 1,
-          Span: [0, 4], // "This"
+          Span: [1, 5], // "This"
           Match: "This",
           Severity: "error",
         });
@@ -159,7 +159,7 @@ describe("Tooltip Integration Tests", () => {
       it("should find alert at exact start position", () => {
         const alert = createMockValeAlert({
           Line: 1,
-          Span: [0, 4], // "This"
+          Span: [1, 5], // "This"
           Match: "This",
           Severity: "error",
         });
@@ -174,7 +174,7 @@ describe("Tooltip Integration Tests", () => {
       it("should find alert at exact end position", () => {
         const alert = createMockValeAlert({
           Line: 1,
-          Span: [0, 4], // "This"
+          Span: [1, 5], // "This"
           Match: "This",
           Severity: "error",
         });
@@ -202,7 +202,7 @@ describe("Tooltip Integration Tests", () => {
       it("should generate tooltip content with correct data", () => {
         const alert = createMockValeAlert({
           Line: 1,
-          Span: [0, 4],
+          Span: [1, 5],
           Match: "This",
           Severity: "error",
           Check: "Vale.Spelling",
@@ -222,7 +222,7 @@ describe("Tooltip Integration Tests", () => {
       it("should include severity badge in tooltip content", () => {
         const alert = createMockValeAlert({
           Line: 1,
-          Span: [0, 4],
+          Span: [1, 5],
           Match: "This",
           Severity: "error",
           Check: "Vale.Spelling",
@@ -240,7 +240,7 @@ describe("Tooltip Integration Tests", () => {
       it("should include check name in tooltip content", () => {
         const alert = createMockValeAlert({
           Line: 1,
-          Span: [0, 4],
+          Span: [1, 5],
           Match: "This",
           Severity: "error",
           Check: "Vale.Spelling",
@@ -258,7 +258,7 @@ describe("Tooltip Integration Tests", () => {
       it("should include message in tooltip content", () => {
         const alert = createMockValeAlert({
           Line: 1,
-          Span: [0, 4],
+          Span: [1, 5],
           Match: "This",
           Severity: "error",
           Check: "Vale.Spelling",
@@ -276,7 +276,7 @@ describe("Tooltip Integration Tests", () => {
       it("should include matched text in tooltip content", () => {
         const alert = createMockValeAlert({
           Line: 1,
-          Span: [0, 4],
+          Span: [1, 5],
           Match: "This",
           Severity: "error",
           Check: "Vale.Spelling",
@@ -294,7 +294,7 @@ describe("Tooltip Integration Tests", () => {
       it("should include link when available", () => {
         const alert = createMockValeAlert({
           Line: 1,
-          Span: [0, 4],
+          Span: [1, 5],
           Match: "This",
           Severity: "error",
           Check: "Vale.Spelling",
@@ -317,7 +317,7 @@ describe("Tooltip Integration Tests", () => {
       it("should handle alert with no link", () => {
         const alert = createMockValeAlert({
           Line: 1,
-          Span: [0, 4],
+          Span: [1, 5],
           Match: "This",
           Severity: "error",
           Check: "Vale.Spelling",
@@ -348,7 +348,7 @@ describe("Tooltip Integration Tests", () => {
 
       const alert1 = createMockValeAlert({
         Line: 1,
-        Span: [0, 4], // "This"
+        Span: [1, 5], // "This"
         Match: "This",
         Check: "Vale.Alert1",
         Severity: "error",
@@ -356,7 +356,7 @@ describe("Tooltip Integration Tests", () => {
 
       const alert2 = createMockValeAlert({
         Line: 1,
-        Span: [10, 14], // "test"
+        Span: [11, 15], // "test" (1-based positions 11-14, exclusive end)
         Match: "test",
         Check: "Vale.Alert2",
         Severity: "warning",
@@ -364,7 +364,7 @@ describe("Tooltip Integration Tests", () => {
 
       const alert3 = createMockValeAlert({
         Line: 1,
-        Span: [15, 23], // "document"
+        Span: [16, 24], // "document" (1-based positions 16-23, exclusive end)
         Match: "document",
         Check: "Vale.Alert3",
         Severity: "suggestion",
@@ -426,7 +426,7 @@ describe("Tooltip Integration Tests", () => {
 
       const alert1 = createMockValeAlert({
         Line: 1,
-        Span: [13, 18], // "error" in line 1
+        Span: [14, 19], // "error" in line 1 (1-based positions 14-18, exclusive end)
         Match: "error",
         Check: "Vale.Line1",
         Severity: "error",
@@ -434,7 +434,7 @@ describe("Tooltip Integration Tests", () => {
 
       const alert2 = createMockValeAlert({
         Line: 2,
-        Span: [13, 20], // "warning" in line 2
+        Span: [14, 21], // "warning" in line 2 (1-based positions 14-20, exclusive end)
         Match: "warning",
         Check: "Vale.Line2",
         Severity: "warning",
@@ -442,7 +442,7 @@ describe("Tooltip Integration Tests", () => {
 
       const alert3 = createMockValeAlert({
         Line: 3,
-        Span: [11, 21], // "suggestion" in line 3
+        Span: [16, 26], // "suggestion" in line 3 (1-based positions 16-25, exclusive end)
         Match: "suggestion",
         Check: "Vale.Line3",
         Severity: "suggestion",
@@ -451,16 +451,19 @@ describe("Tooltip Integration Tests", () => {
       view.dispatch({ effects: addValeMarks.of([alert1, alert2, alert3]) });
 
       // Verify we can find alerts on different lines
-      // Line 1: Position ~15 should be in "error"
-      const found1 = getAlertAtPosition(view, 15);
+      // Line 1: "Line one has error" - "error" at positions 14-18 (1-based)
+      // Document position: 13 (0-indexed from doc start)
+      const found1 = getAlertAtPosition(view, 14);
       expect(found1?.Check).toBe("Vale.Line1");
 
-      // Line 2: Position ~34 should be in "warning"
-      const found2 = getAlertAtPosition(view, 34);
+      // Line 2: "Line two has warning" starts at position 19 (after newline)
+      // "warning" at positions 14-20 within line 2 = doc positions 32-38
+      const found2 = getAlertAtPosition(view, 33);
       expect(found2?.Check).toBe("Vale.Line2");
 
-      // Line 3: Position ~54 should be in "suggestion"
-      const found3 = getAlertAtPosition(view, 54);
+      // Line 3: "Line three has suggestion" starts at position 40 (after newline)
+      // "suggestion" at positions 16-25 within line 3 = doc positions 55-64
+      const found3 = getAlertAtPosition(view, 56);
       expect(found3?.Check).toBe("Vale.Line3");
     });
 
@@ -477,13 +480,15 @@ describe("Tooltip Integration Tests", () => {
       });
 
       // Create alerts manually for single-line document
+      // Document: "word0 word1 word2 word3 word4..."
+      // Each "wordX " is 6 chars (word0=5 + space=1)
       const alerts: ValeAlert[] = [];
       for (let i = 0; i < 5; i++) {
-        const startPos = i * 12; // Each "wordX " is ~12 chars (including space)
+        const startPos = i * 6 + 1; // 1-based: word0 at 1, word1 at 7, word2 at 13...
         alerts.push(
           createMockValeAlert({
             Line: 1,
-            Span: [startPos, startPos + 5],
+            Span: [startPos, startPos + 5], // 5-char word, exclusive end
             Match: `word${i}`,
             Check: `Vale.Test${i}`,
             Severity: "error",
@@ -497,13 +502,13 @@ describe("Tooltip Integration Tests", () => {
       const decorations = view.state.field(valeStateField);
       expect(decorations.size).toBeGreaterThan(0);
 
-      // Test first alert
+      // Test first alert (word0 at positions 1-5)
       const firstAlert = getAlertAtPosition(view, 1);
       expect(firstAlert).toBeTruthy();
       expect(firstAlert?.Check).toBe("Vale.Test0");
 
-      // Test another alert
-      const thirdAlert = getAlertAtPosition(view, 25);
+      // Test third alert (word2 at positions 13-17)
+      const thirdAlert = getAlertAtPosition(view, 13);
       expect(thirdAlert).toBeTruthy();
     });
   });
@@ -522,7 +527,7 @@ describe("Tooltip Integration Tests", () => {
     it("should maintain tooltip data after adding alerts", () => {
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5],
         Match: "This",
         Severity: "error",
       });
@@ -537,7 +542,7 @@ describe("Tooltip Integration Tests", () => {
     it("should clear alerts when clearAllValeMarks dispatched", () => {
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5],
         Match: "This",
         Severity: "error",
       });
@@ -559,7 +564,7 @@ describe("Tooltip Integration Tests", () => {
     it("should update alert positions after text insertion before alert", () => {
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [5, 7], // "is"
+        Span: [6, 8], // "is" (1-based positions 6-7, exclusive end)
         Match: "is",
         Severity: "error",
       });
@@ -580,7 +585,7 @@ describe("Tooltip Integration Tests", () => {
     it("should handle document edits that overlap alert range", () => {
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4], // "This"
+        Span: [1, 5], // "This"
         Match: "This",
         Severity: "error",
       });
@@ -603,7 +608,7 @@ describe("Tooltip Integration Tests", () => {
     it("should handle deletion of text containing alerts", () => {
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4], // "This"
+        Span: [1, 5], // "This"
         Match: "This",
         Severity: "error",
       });
@@ -623,7 +628,7 @@ describe("Tooltip Integration Tests", () => {
     it("should handle insertion within document without affecting alerts", () => {
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4], // "This"
+        Span: [1, 5], // "This"
         Match: "This",
         Severity: "error",
       });
@@ -644,7 +649,7 @@ describe("Tooltip Integration Tests", () => {
     it("should handle rapid document changes", () => {
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4], // "This"
+        Span: [1, 5], // "This"
         Match: "This",
         Severity: "error",
       });
@@ -678,7 +683,7 @@ describe("Tooltip Integration Tests", () => {
 
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5],
         Match: "test",
         Severity: "error",
       });
@@ -704,7 +709,7 @@ describe("Tooltip Integration Tests", () => {
 
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5],
         Match: "test",
         Severity: "error",
       });
@@ -730,7 +735,7 @@ describe("Tooltip Integration Tests", () => {
 
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5],
         Match: "test",
         Severity: "error",
       });
@@ -757,7 +762,7 @@ describe("Tooltip Integration Tests", () => {
 
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5],
         Match: "test",
         Severity: "error",
       });
@@ -783,7 +788,7 @@ describe("Tooltip Integration Tests", () => {
 
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5],
         Match: "test",
         Severity: "error",
       });
@@ -811,7 +816,7 @@ describe("Tooltip Integration Tests", () => {
 
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5],
         Match: "test",
         Severity: "error",
       });
@@ -835,7 +840,7 @@ describe("Tooltip Integration Tests", () => {
 
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4], // "Test"
+        Span: [1, 5], // "Test"
         Match: "Test",
         Severity: "error",
       });
@@ -858,15 +863,15 @@ describe("Tooltip Integration Tests", () => {
 
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [14, 20], // "ending"
+        Span: [15, 21], // "ending" (1-based positions 15-20, exclusive end)
         Match: "ending",
         Severity: "error",
       });
 
       view.dispatch({ effects: addValeMarks.of([alert]) });
 
-      // Position near end
-      const foundAlert = getAlertAtPosition(view, 15);
+      // Position near end (now at 14 since span starts at 15)
+      const foundAlert = getAlertAtPosition(view, 16);
       expect(foundAlert).toBeTruthy();
       expect(foundAlert?.Match).toBe("ending");
     });
@@ -921,7 +926,7 @@ describe("Tooltip Integration Tests", () => {
 
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 5], // "Hello"
+        Span: [1, 6], // "Hello"
         Match: "Hello",
         Severity: "error",
       });
@@ -944,7 +949,7 @@ describe("Tooltip Integration Tests", () => {
 
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 5], // "Hello"
+        Span: [1, 6], // "Hello"
         Match: "Hello",
         Severity: "error",
       });
@@ -967,7 +972,7 @@ describe("Tooltip Integration Tests", () => {
 
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 5], // "café" (note: é is 2 bytes in UTF-8)
+        Span: [1, 6], // "café" (note: é is 2 bytes in UTF-8)
         Match: "café",
         Severity: "error",
       });
@@ -990,7 +995,7 @@ describe("Tooltip Integration Tests", () => {
 
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [10, 30], // "very long phrase that"
+        Span: [11, 32], // "very long phrase that" (1-based positions 11-31, exclusive end)
         Match: "very long phrase that",
         Severity: "warning",
       });
@@ -1014,7 +1019,7 @@ describe("Tooltip Integration Tests", () => {
 
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 1], // "a"
+        Span: [1, 2], // "a"
         Match: "a",
         Severity: "error",
       });
@@ -1037,7 +1042,7 @@ describe("Tooltip Integration Tests", () => {
 
       const alert1 = createMockValeAlert({
         Line: 1,
-        Span: [0, 4], // "word"
+        Span: [1, 5], // "word"
         Match: "word",
         Check: "Vale.Alert1",
         Severity: "error",
@@ -1045,7 +1050,7 @@ describe("Tooltip Integration Tests", () => {
 
       const alert2 = createMockValeAlert({
         Line: 1,
-        Span: [10, 14], // "word"
+        Span: [11, 15], // "word" (1-based positions 11-14, exclusive end)
         Match: "word",
         Check: "Vale.Alert2",
         Severity: "warning",
@@ -1103,21 +1108,21 @@ describe("Tooltip Integration Tests", () => {
     it("should generate different severity badges", () => {
       const errorAlert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5],
         Match: "test",
         Severity: "error",
       });
 
       const warningAlert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5],
         Match: "test",
         Severity: "warning",
       });
 
       const suggestionAlert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5],
         Match: "test",
         Severity: "suggestion",
       });
@@ -1135,7 +1140,7 @@ describe("Tooltip Integration Tests", () => {
     it("should safely handle special characters in message", () => {
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5],
         Match: "test",
         Message: "Use <strong>emphasis</strong> instead",
         Severity: "error",
@@ -1151,7 +1156,7 @@ describe("Tooltip Integration Tests", () => {
     it("should handle empty match text", () => {
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 0],
+        Span: [1, 1],
         Match: "",
         Severity: "error",
         Message: "Test message",
@@ -1165,7 +1170,7 @@ describe("Tooltip Integration Tests", () => {
     it("should include all CSS classes for styling", () => {
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5],
         Match: "test",
         Severity: "error",
         Link: "https://example.com",
@@ -1208,7 +1213,7 @@ describe("Tooltip Integration Tests", () => {
       const longMessage = "This is a very long message ".repeat(20);
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5],
         Match: "test",
         Message: longMessage,
         Severity: "error",
@@ -1222,7 +1227,7 @@ describe("Tooltip Integration Tests", () => {
       const longCheck = "Very.Long.Check.Name.With.Multiple.Parts";
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5],
         Match: "test",
         Check: longCheck,
         Severity: "error",
@@ -1247,7 +1252,7 @@ describe("Tooltip Integration Tests", () => {
     it("should work correctly with state field decorations", () => {
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5],
         Match: "test",
         Severity: "error",
       });
@@ -1267,13 +1272,13 @@ describe("Tooltip Integration Tests", () => {
       const alerts = [
         createMockValeAlert({
           Line: 1,
-          Span: [0, 4],
+          Span: [1, 5],
           Match: "test",
           Check: "Vale.Alert1",
         }),
         createMockValeAlert({
           Line: 1,
-          Span: [5, 13],
+          Span: [6, 14], // "document" (1-based positions 6-13 in "test document", exclusive end)
           Match: "document",
           Check: "Vale.Alert2",
         }),
@@ -1292,7 +1297,7 @@ describe("Tooltip Integration Tests", () => {
     it("should clear alert map when clearing decorations", () => {
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5],
         Match: "test",
         Severity: "error",
       });
@@ -1328,7 +1333,7 @@ describe("Tooltip Integration Tests", () => {
 
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5],
         Match: "test",
         Severity: "error",
       });
@@ -1361,14 +1366,14 @@ describe("Tooltip Integration Tests", () => {
 
       const alert1 = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5],
         Match: "test",
         Check: "Vale.View1",
       });
 
       const alert2 = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5],
         Match: "test",
         Check: "Vale.View2",
       });
@@ -1400,7 +1405,7 @@ describe("Tooltip Integration Tests", () => {
 
         const alert = createMockValeAlert({
           Line: 1,
-          Span: [0, 4],
+          Span: [1, 5],
           Match: "test",
         });
 

@@ -5,18 +5,6 @@ import { ManagedModeSettings } from "./ManagedModeSettings";
 import { CustomModeSettings } from "./CustomModeSettings";
 
 /**
- * Props for CliSettings component.
- */
-export interface CliSettingsProps {
-  /**
-   * Whether to show advanced options.
-   * Passed to child components to control visibility of help text and info cards.
-   * @default false
-   */
-  showAdvanced?: boolean;
-}
-
-/**
  * CliSettings - Container for CLI mode configuration
  *
  * Provides:
@@ -29,14 +17,11 @@ export interface CliSettingsProps {
  * - Uses Obsidian Setting API for the managed mode toggle
  * - Delegates to focused subcomponents for each mode
  * - React manages conditional rendering based on managed flag
- * - Passes showAdvanced to children for progressive disclosure
  *
  * Nielsen Heuristic Alignment:
  * - H2 (Real World Match): Clear "managed" vs "custom" terminology
  * - H5 (Error Prevention): Toggle prevents accidental mode changes
  * - H6 (Recognition): Shows current mode clearly
- * - H7 (Flexibility): Advanced options for power users
- * - H8 (Minimalist Design): Basic view hides help text
  * - H10 (Help): Descriptive toggle text explains implications
  *
  * Accessibility:
@@ -45,12 +30,10 @@ export interface CliSettingsProps {
  *
  * @example
  * ```tsx
- * {settings.type === "cli" && <CliSettings showAdvanced={showAdvanced} />}
+ * {settings.type === "cli" && <CliSettings />}
  * ```
  */
-export const CliSettings: React.FC<CliSettingsProps> = ({
-  showAdvanced = false,
-}) => {
+export const CliSettings: React.FC = () => {
   const { settings, updateSettings, setValidation } = useSettings();
 
   // Ref: Container for the managed mode toggle Setting
@@ -115,11 +98,7 @@ export const CliSettings: React.FC<CliSettingsProps> = ({
       <div ref={containerRef} />
 
       {/* Conditional rendering based on managed flag */}
-      {settings.cli.managed ? (
-        <ManagedModeSettings showAdvanced={showAdvanced} />
-      ) : (
-        <CustomModeSettings showAdvanced={showAdvanced} />
-      )}
+      {settings.cli.managed ? <ManagedModeSettings /> : <CustomModeSettings />}
     </div>
   );
 };

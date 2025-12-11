@@ -35,6 +35,8 @@ export interface SettingsContextValue {
   validation: ValidationState;
   /** Set validation state (used by validation hooks) */
   setValidation: React.Dispatch<React.SetStateAction<ValidationState>>;
+  /** Plugin version from manifest.json */
+  version: string;
 }
 
 const DEFAULT_VALIDATION_STATE: ValidationState = {
@@ -202,8 +204,15 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({
       resetToDefaults,
       validation,
       setValidation,
+      version: plugin.manifest.version,
     }),
-    [settings, updateSettings, resetToDefaults, validation],
+    [
+      settings,
+      updateSettings,
+      resetToDefaults,
+      validation,
+      plugin.manifest.version,
+    ],
   );
 
   return (

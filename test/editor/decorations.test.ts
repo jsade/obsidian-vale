@@ -163,7 +163,7 @@ describe("Decoration Factory Functions", () => {
     it("should create unique alert IDs for different alerts", () => {
       const alert1 = createMockValeAlert({
         Line: 1,
-        Span: [0, 5],
+        Span: [1, 6],
         Check: "Vale.A",
       });
       const alert2 = createMockValeAlert({
@@ -305,12 +305,12 @@ describe("Decoration Factory Functions", () => {
     it("should generate different IDs for different line numbers", () => {
       const alert1 = createMockValeAlert({
         Line: 1,
-        Span: [0, 5],
+        Span: [1, 6],
         Check: "Vale.Test",
       });
       const alert2 = createMockValeAlert({
         Line: 2,
-        Span: [0, 5],
+        Span: [1, 6],
         Check: "Vale.Test",
       });
 
@@ -323,7 +323,7 @@ describe("Decoration Factory Functions", () => {
     it("should generate different IDs for different spans", () => {
       const alert1 = createMockValeAlert({
         Line: 1,
-        Span: [0, 5],
+        Span: [1, 6],
         Check: "Vale.Test",
       });
       const alert2 = createMockValeAlert({
@@ -341,12 +341,12 @@ describe("Decoration Factory Functions", () => {
     it("should generate different IDs for different checks", () => {
       const alert1 = createMockValeAlert({
         Line: 1,
-        Span: [0, 5],
+        Span: [1, 6],
         Check: "Vale.A",
       });
       const alert2 = createMockValeAlert({
         Line: 1,
-        Span: [0, 5],
+        Span: [1, 6],
         Check: "Vale.B",
       });
 
@@ -359,25 +359,25 @@ describe("Decoration Factory Functions", () => {
     it("should handle check names with special characters", () => {
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 5],
+        Span: [1, 6],
         Check: "Google.WordList",
       });
 
       const id = generateAlertId(alert);
 
-      expect(id).toBe("1:0:5:Google.WordList");
+      expect(id).toBe("1:1:6:Google.WordList");
     });
 
     it("should handle large line numbers and spans", () => {
       const alert = createMockValeAlert({
         Line: 9999,
-        Span: [5000, 5100],
+        Span: [5001, 5101], // 1-based positions
         Check: "Vale.Test",
       });
 
       const id = generateAlertId(alert);
 
-      expect(id).toBe("9999:5000:5100:Vale.Test");
+      expect(id).toBe("9999:5001:5101:Vale.Test");
     });
   });
 
@@ -496,7 +496,7 @@ describe("Decoration Factory Functions", () => {
     it("should handle alert at line 1 (first line)", () => {
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 5],
+        Span: [1, 6],
         Check: "Vale.First",
       });
 
@@ -504,7 +504,7 @@ describe("Decoration Factory Functions", () => {
 
       expect(decoration).toBeDefined();
       expect(getDecorationAttribute(decoration.spec, "data-alert-id")).toBe(
-        "1:0:5:Vale.First",
+        "1:1:6:Vale.First",
       );
     });
 
@@ -521,16 +521,16 @@ describe("Decoration Factory Functions", () => {
       expect(extractedId).toContain(longCheckName);
     });
 
-    it("should handle alert with span starting at position 0", () => {
+    it("should handle alert with span starting at position 1", () => {
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 10],
+        Span: [1, 11],
         Check: "Vale.Start",
       });
 
       const id = generateAlertId(alert);
 
-      expect(id).toBe("1:0:10:Vale.Start");
+      expect(id).toBe("1:1:11:Vale.Start");
     });
   });
 });

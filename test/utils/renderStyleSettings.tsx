@@ -557,6 +557,7 @@ export function renderStyleSettings(
     resetToDefaults: jest.fn().mockResolvedValue(undefined),
     validation: defaultValidation,
     setValidation: jest.fn(),
+    version: "1.0.0",
   });
 
   // Render component using React 18 API

@@ -1,4 +1,5 @@
 import { ItemView, MarkdownView, WorkspaceLeaf } from "obsidian";
+import { EditorView } from "@codemirror/view";
 import * as React from "react";
 import { createRoot, Root } from "react-dom/client";
 import { ValeApp } from "./components/ValeApp";
@@ -9,6 +10,14 @@ import { timed } from "./debug";
 import { EventBus } from "./EventBus";
 import { ValeAlert, ValeSettings } from "./types";
 import { ValeRunner } from "./vale/ValeRunner";
+
+/**
+ * Interface to access the CM6 EditorView from Obsidian's Editor.
+ * This property exists but may not be in official types.
+ */
+interface EditorWithCM {
+  cm?: EditorView;
+}
 
 export const VIEW_TYPE_VALE = "vale";
 
@@ -24,6 +33,7 @@ export class ValeView extends ItemView {
   private targetView: MarkdownView | null = null;
 
   private onAlertClick: (alert: ValeAlert) => void;
+  private onCheckStart: (editorView: EditorView | null) => void;
 
   constructor(
     leaf: WorkspaceLeaf,
@@ -31,12 +41,14 @@ export class ValeView extends ItemView {
     runner: ValeRunner,
     eventBus: EventBus,
     onAlertClick: (alert: ValeAlert) => void,
+    onCheckStart: (editorView: EditorView | null) => void,
   ) {
     super(leaf);
     this.settings = settings;
     this.runner = runner;
     this.eventBus = eventBus;
     this.onAlertClick = onAlertClick;
+    this.onCheckStart = onCheckStart;
   }
 
   getViewType(): string {
@@ -113,6 +125,12 @@ export class ValeView extends ItemView {
     // Only run the check if there's an active Markdown document and the view
     // is ready to accept check requests.
     if (view && view.file && this.ready) {
+      // Capture the EditorView BEFORE dispatching the check.
+      // This is critical for CM6 integration: alerts must be dispatched to
+      // the same EditorView where they were created.
+      const editorView = (view.editor as EditorWithCM)?.cm ?? null;
+      this.onCheckStart(editorView);
+
       this.eventBus.dispatch("check", {
         text: view.editor.getValue(),
         format: "." + view.file.extension,

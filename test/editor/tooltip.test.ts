@@ -618,7 +618,7 @@ describe("Tooltip", () => {
       it("should find alert at position within range", () => {
         const alert: ValeAlert = createMockValeAlert({
           Line: 1,
-          Span: [0, 3],
+          Span: [1, 4],
           Match: "teh",
         });
 
@@ -635,7 +635,7 @@ describe("Tooltip", () => {
       it("should return null when no alert at position", () => {
         const alert: ValeAlert = createMockValeAlert({
           Line: 1,
-          Span: [0, 3],
+          Span: [1, 4],
           Match: "teh",
         });
 
@@ -671,14 +671,14 @@ describe("Tooltip", () => {
         const alert1: ValeAlert = createMockValeAlert({
           Check: "Vale.Spelling",
           Line: 1,
-          Span: [0, 3],
+          Span: [1, 4],
           Match: "teh",
         });
 
         const alert2: ValeAlert = createMockValeAlert({
           Check: "Vale.Terms",
           Line: 1,
-          Span: [0, 3],
+          Span: [1, 4],
           Match: "teh",
         });
 
@@ -695,7 +695,7 @@ describe("Tooltip", () => {
         const alert1: ValeAlert = createMockValeAlert({
           Check: "Vale.First",
           Line: 1,
-          Span: [0, 4],
+          Span: [1, 5],
           Match: "test",
         });
 
@@ -722,7 +722,7 @@ describe("Tooltip", () => {
       it("should handle position at document start", () => {
         const alert: ValeAlert = createMockValeAlert({
           Line: 1,
-          Span: [0, 4],
+          Span: [1, 5],
           Match: "test",
         });
 
@@ -775,7 +775,7 @@ describe("Tooltip", () => {
       it("should handle position beyond document length", () => {
         const alert: ValeAlert = createMockValeAlert({
           Line: 1,
-          Span: [0, 4],
+          Span: [1, 5],
           Match: "test",
         });
 
@@ -790,7 +790,7 @@ describe("Tooltip", () => {
       it("should handle negative position", () => {
         const alert: ValeAlert = createMockValeAlert({
           Line: 1,
-          Span: [0, 4],
+          Span: [1, 5],
           Match: "test",
         });
 
@@ -805,13 +805,13 @@ describe("Tooltip", () => {
       it("should handle alerts on multiple lines", () => {
         const alert1: ValeAlert = createMockValeAlert({
           Line: 1,
-          Span: [0, 4],
+          Span: [1, 5],
           Match: "test",
         });
 
         const alert2: ValeAlert = createMockValeAlert({
           Line: 2,
-          Span: [0, 4],
+          Span: [1, 5],
           Match: "word",
         });
 
@@ -831,7 +831,7 @@ describe("Tooltip", () => {
       it("should return null after decorations cleared", () => {
         const alert: ValeAlert = createMockValeAlert({
           Line: 1,
-          Span: [0, 4],
+          Span: [1, 5],
           Match: "test",
         });
 

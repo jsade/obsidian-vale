@@ -477,11 +477,11 @@ describe("State Effects", () => {
   });
 
   describe("Edge Cases", () => {
-    it("should handle addValeMarks with alerts at position 0", () => {
-      const alert = createMockValeAlert({ Line: 1, Span: [0, 5] });
+    it("should handle addValeMarks with alerts at position 1", () => {
+      const alert = createMockValeAlert({ Line: 1, Span: [1, 6] });
       const effect = addValeMarks.of([alert]);
 
-      expect(effect.value[0].Span[0]).toBe(0);
+      expect(effect.value[0].Span[0]).toBe(1);
     });
 
     it("should handle clearValeMarksInRange with from=0, to=0", () => {

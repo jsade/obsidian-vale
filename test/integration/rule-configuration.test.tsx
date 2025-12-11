@@ -37,6 +37,7 @@ type MockedPlugin = {
   saveSettings: jest.Mock<Promise<void>>;
   configManager: jest.Mocked<ValeConfigManager>;
   app: App;
+  manifest: { version: string };
 };
 
 /**
@@ -102,6 +103,7 @@ function createMockPlugin(
         adapter: { basePath: "/mock/vault" },
       },
     } as unknown as App,
+    manifest: { version: "1.0.0" },
   };
 }
 
@@ -120,6 +122,7 @@ function createMockUseSettings(plugin: MockedPlugin) {
       errors: {},
     },
     setValidation: jest.fn(),
+    version: "1.0.0",
   };
 }
 
@@ -990,6 +993,7 @@ describe("Rule Configuration - Full Navigation Flow", () => {
         errors: {},
       },
       setValidation: jest.fn(),
+      version: "1.0.0",
     });
 
     renderSettingsRouter(plugin);

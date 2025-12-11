@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Removed
+
+- Removed Vale Studio from settings and documentation
+
 ### Added
 
 - Basic/Advanced mode toggle in General Settings for cleaner interface

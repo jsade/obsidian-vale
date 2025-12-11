@@ -885,24 +885,20 @@ describe("StateField", () => {
       expect(state).toBeDefined();
     });
 
-    it("should handle alert with from === to", () => {
+    it("should handle single-character span", () => {
       let state = createTestState("test");
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [3, 3], // 1-based: zero-length span
-        Check: "Vale.ZeroLength",
+        Span: [3, 4], // 1-based exclusive: character at position 3 = "s" (positions 3 to 4, exclusive)
+        Check: "Vale.SingleChar",
       });
-
-      const consoleWarn = jest.spyOn(console, "warn").mockImplementation();
 
       state = state.update({
         effects: addValeMarks.of([alert]),
       }).state;
 
-      // Zero-length spans should be skipped
-      expect(countDecorations(state)).toBe(0);
-
-      consoleWarn.mockRestore();
+      // Vale's Span uses exclusive end, so [3, 4) is a single character
+      expect(countDecorations(state)).toBe(1);
     });
 
     it("should handle very long document", () => {

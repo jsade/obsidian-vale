@@ -37,6 +37,7 @@ type MockedPlugin = {
   saveSettings: jest.Mock<Promise<void>>;
   configManager: jest.Mocked<ValeConfigManager>;
   app: App;
+  manifest: { version: string };
 };
 
 /**
@@ -91,6 +92,7 @@ function createMockPlugin(
         adapter: { basePath: "/mock/vault" },
       },
     } as unknown as App,
+    manifest: { version: "1.0.0" },
   };
 }
 
@@ -136,6 +138,7 @@ function renderSettingsRouter(
       errors: {},
     },
     setValidation: jest.fn(),
+    version: "1.0.0",
   });
 
   return render(<SettingsRouter plugin={plugin as unknown as ValePlugin} />);
