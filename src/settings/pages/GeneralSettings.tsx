@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Setting } from "obsidian";
 import { useSettings } from "../../context/SettingsContext";
 import { useConfigManager } from "../../hooks";
 import { CliSettings } from "./CliSettings";
@@ -24,11 +25,14 @@ import { OnboardingBanner } from "./OnboardingBanner";
  * - H10 (Help): Onboarding guidance for first-time users
  */
 export const GeneralSettings: React.FC = () => {
-  const { settings, version } = useSettings();
+  const { settings, updateSettings, version } = useSettings();
   const configManager = useConfigManager(settings);
 
   // Check if this is first-time setup (Vale not installed in managed mode)
   const [showOnboarding, setShowOnboarding] = React.useState<boolean>(false);
+
+  // Ref: Container for the toolbar button toggle Setting
+  const toolbarToggleRef = React.useRef<HTMLDivElement>(null);
 
   // Effect: Check if Vale is installed (for onboarding banner)
   // Always check for CLI mode (server mode is hidden from UI)
@@ -55,10 +59,52 @@ export const GeneralSettings: React.FC = () => {
     };
   }, [configManager]);
 
+  /**
+   * Effect: Create the toolbar button toggle Setting.
+   * Recreates when the setting value changes.
+   *
+   * Note: We capture the ref value in a local variable to avoid stale closure
+   * bugs - the ref.current may be null by the time cleanup runs.
+   */
+  React.useEffect(() => {
+    const el = toolbarToggleRef.current;
+    if (!el) {
+      return;
+    }
+
+    // Clear previous Setting
+    el.empty();
+
+    // Create toolbar button toggle Setting using Obsidian's API
+    // Default to true if the setting doesn't exist (backward compatibility)
+    const showButton = settings.showEditorToolbarButton !== false;
+
+    new Setting(el)
+      .setName("Show editor toolbar button")
+      .setDesc(
+        "Display a Vale check button in the editor header, next to the more options menu.",
+      )
+      .addToggle((toggle) => {
+        return toggle.setValue(showButton).onChange((value: boolean) => {
+          void updateSettings({
+            showEditorToolbarButton: value,
+          });
+        });
+      });
+
+    // Cleanup: Clear on unmount (uses captured local variable, not ref.current)
+    return () => {
+      el.empty();
+    };
+  }, [settings.showEditorToolbarButton, updateSettings]);
+
   return (
     <div className="vale-general-settings">
       {/* Onboarding banner for first-time users */}
       {showOnboarding && <OnboardingBanner />}
+
+      {/* Editor toolbar button toggle */}
+      <div ref={toolbarToggleRef} />
 
       {/* CLI settings - always shown (server mode hidden from UI) */}
       <CliSettings />

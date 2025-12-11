@@ -57,7 +57,7 @@ const valeBaseTheme = EditorView.baseTheme({
     textDecorationThickness: "2px",
   },
   ".vale-underline.vale-suggestion": {
-    textDecorationColor: "var(--text-accent)",
+    textDecorationColor: "var(--color-cyan)",
     textDecorationStyle: "dotted",
     textUnderlineOffset: "2px",
     textDecorationThickness: "2px",

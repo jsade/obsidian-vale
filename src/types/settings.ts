@@ -53,6 +53,9 @@ export interface ValeSettings {
 
   /** CLI configuration (used when type === "cli") */
   cli: CliSettings;
+
+  /** Whether to show the Vale check button in the editor toolbar */
+  showEditorToolbarButton: boolean;
 }
 
 /**
@@ -92,6 +95,7 @@ export const DEFAULT_SETTINGS: ValeSettings = {
     valePath: "",
     configPath: "",
   },
+  showEditorToolbarButton: true,
 };
 
 /**
