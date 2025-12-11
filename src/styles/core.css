@@ -10,6 +10,16 @@
  * This file was extracted from the root styles.css during CSS consolidation.
  */
 
+/**
+ * Vale Alert Severity Colors - Single Source of Truth
+ * Used by: CM6 underlines, React panel, tooltips.
+ */
+:root {
+  --vale-color-error: var(--text-error);
+  --vale-color-warning: var(--color-yellow);
+  --vale-color-suggestion: var(--color-cyan);
+}
+
 /* ============================================
    Vale Panel Container
    ============================================ */
@@ -28,13 +38,13 @@
 
   /* Severity */
   --vale-alert-severity-suggestion-color: rgba(0, 0, 0, 0.87);
-  --vale-alert-severity-suggestion-background-color: #8981f3;
+  --vale-alert-severity-suggestion-background-color: var(--vale-color-suggestion);
   --vale-alert-severity-suggestion-border-color: transparent;
   --vale-alert-severity-warning-color: rgba(0, 0, 0, 0.87);
-  --vale-alert-severity-warning-background-color: #e9b35f;
+  --vale-alert-severity-warning-background-color: var(--vale-color-warning);
   --vale-alert-severity-warning-border-color: transparent;
   --vale-alert-severity-error-color: rgba(0, 0, 0, 0.87);
-  --vale-alert-severity-error-background-color: #da615c;
+  --vale-alert-severity-error-background-color: var(--vale-color-error);
   --vale-alert-severity-error-border-color: transparent;
 
   /* Check name */
@@ -313,18 +323,18 @@
 }
 
 .vale-tooltip__severity--error {
-  background-color: rgba(218, 97, 92, 0.2);
-  color: var(--vale-alert-error, #da615c);
+  background-color: color-mix(in srgb, var(--vale-color-error) 20%, transparent);
+  color: var(--vale-color-error);
 }
 
 .vale-tooltip__severity--warning {
-  background-color: rgba(233, 179, 95, 0.2);
-  color: var(--vale-alert-warning, #e9b35f);
+  background-color: color-mix(in srgb, var(--vale-color-warning) 20%, transparent);
+  color: var(--vale-color-warning);
 }
 
 .vale-tooltip__severity--suggestion {
-  background-color: rgba(137, 129, 243, 0.2);
-  color: var(--vale-alert-suggestion, #8981f3);
+  background-color: color-mix(in srgb, var(--vale-color-suggestion) 20%, transparent);
+  color: var(--vale-color-suggestion);
 }
 
 /* Check Name */

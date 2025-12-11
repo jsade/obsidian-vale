@@ -45,19 +45,19 @@ const valeBaseTheme = EditorView.baseTheme({
     cursor: "pointer",
   },
   ".vale-underline.vale-error": {
-    textDecorationColor: "var(--text-error)",
+    textDecorationColor: "var(--vale-color-error, var(--text-error))",
     textDecorationStyle: "wavy",
     textUnderlineOffset: "3px",
     textDecorationThickness: "2px",
   },
   ".vale-underline.vale-warning": {
-    textDecorationColor: "var(--color-yellow)",
+    textDecorationColor: "var(--vale-color-warning, var(--color-yellow))",
     textDecorationStyle: "dashed",
     textUnderlineOffset: "2px",
     textDecorationThickness: "2px",
   },
   ".vale-underline.vale-suggestion": {
-    textDecorationColor: "var(--color-cyan)",
+    textDecorationColor: "var(--vale-color-suggestion, var(--color-cyan))",
     textDecorationStyle: "dotted",
     textUnderlineOffset: "2px",
     textDecorationThickness: "2px",
