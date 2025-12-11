@@ -1,0 +1,331 @@
+/**
+ * Vale Navigation Components Styles
+ *
+ * Matches Obsidian's native styling using only CSS variables.
+ * Supports light/dark themes, high contrast mode, and reduced motion preferences.
+ */
+
+/* ============================================
+   TabBar Component
+   ============================================ */
+
+.vale-tabbar {
+  display: flex;
+  gap: 0;
+  margin-bottom: var(--size-4-6);
+  border-bottom: 1px solid var(--background-modifier-border);
+  position: relative;
+}
+
+.vale-tabbar__tab {
+  /* Reset button styles */
+  padding: var(--size-4-3) var(--size-4-4);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+
+  /* Typography */
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+  font-weight: var(--font-medium);
+  line-height: var(--line-height-tight);
+
+  /* Transition */
+  transition: color 0.15s ease, border-color 0.15s ease;
+
+  /* Remove default button styles */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.vale-tabbar__tab:hover:not(:disabled) {
+  color: var(--text-normal);
+}
+
+.vale-tabbar__tab.is-active {
+  color: var(--text-accent);
+  border-bottom-color: var(--text-accent);
+}
+
+.vale-tabbar__tab:disabled,
+.vale-tabbar__tab.is-disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  color: var(--text-faint);
+}
+
+/* Focus state for keyboard navigation */
+.vale-tabbar__tab:focus-visible {
+  outline: 2px solid var(--background-modifier-border-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-s);
+}
+
+.vale-tabbar__tab:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .vale-tabbar__tab {
+    border: 1px solid transparent;
+  }
+
+  .vale-tabbar__tab:focus-visible {
+    outline-width: 3px;
+    outline-offset: 3px;
+  }
+
+  .vale-tabbar__tab.is-active {
+    border: 1px solid currentColor;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .vale-tabbar__tab {
+    transition-duration: 0.01ms;
+  }
+}
+
+/* ============================================
+   BackButton Component
+   ============================================ */
+
+.vale-back-button {
+  /* Layout */
+  display: inline-flex;
+  align-items: center;
+  gap: var(--size-4-2);
+  padding: var(--size-4-2) var(--size-4-3);
+  margin-bottom: var(--size-4-4);
+
+  /* Reset button styles */
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  cursor: pointer;
+
+  /* Typography */
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+  font-weight: var(--font-normal);
+
+  /* Transition */
+  transition: color 0.15s ease, background-color 0.15s ease;
+
+  /* Remove default button styles */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.vale-back-button:hover:not(:disabled) {
+  color: var(--text-normal);
+  background-color: var(--background-modifier-hover);
+}
+
+.vale-back-button:active:not(:disabled) {
+  background-color: var(--background-modifier-active-hover);
+}
+
+.vale-back-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  color: var(--text-faint);
+}
+
+.vale-back-button__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--icon-size);
+  height: var(--icon-size);
+  color: currentColor;
+}
+
+.vale-back-button__label {
+  /* Text label */
+  color: currentColor;
+}
+
+/* Focus state for keyboard navigation */
+.vale-back-button:focus-visible {
+  outline: 2px solid var(--background-modifier-border-focus);
+  outline-offset: 2px;
+  border-color: var(--background-modifier-border-focus);
+}
+
+.vale-back-button:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .vale-back-button {
+    border: 1px solid var(--background-modifier-border);
+  }
+
+  .vale-back-button:focus-visible {
+    outline-width: 3px;
+    outline-offset: 3px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .vale-back-button {
+    transition-duration: 0.01ms;
+  }
+}
+
+/* ============================================
+   Breadcrumb Component
+   ============================================ */
+
+.vale-breadcrumb {
+  margin-bottom: var(--size-4-4);
+}
+
+.vale-breadcrumb__list {
+  /* Reset list styles */
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--size-4-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vale-breadcrumb__item {
+  /* Reset list item styles */
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+  margin: 0;
+  padding: 0;
+}
+
+.vale-breadcrumb__link {
+  /* Reset button styles */
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  padding: var(--size-4-1) var(--size-4-2);
+
+  /* Typography */
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  font-weight: var(--font-normal);
+  text-decoration: none;
+
+  /* Transition */
+  transition: color 0.15s ease, background-color 0.15s ease;
+
+  /* Remove default button styles */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.vale-breadcrumb__link:hover {
+  color: var(--text-normal);
+  background-color: var(--background-modifier-hover);
+  text-decoration: underline;
+}
+
+.vale-breadcrumb__link:active {
+  background-color: var(--background-modifier-active-hover);
+}
+
+.vale-breadcrumb__current {
+  /* Current page indicator */
+  padding: var(--size-4-1) var(--size-4-2);
+  color: var(--text-normal);
+  font-size: var(--font-ui-smaller);
+  font-weight: var(--font-medium);
+}
+
+.vale-breadcrumb__separator {
+  /* Separator between items */
+  color: var(--text-faint);
+  font-size: var(--font-ui-smaller);
+  user-select: none;
+  margin: 0 var(--size-4-1);
+}
+
+/* Focus state for keyboard navigation */
+.vale-breadcrumb__link:focus-visible {
+  outline: 2px solid var(--background-modifier-border-focus);
+  outline-offset: 2px;
+}
+
+.vale-breadcrumb__link:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .vale-breadcrumb__link {
+    border: 1px solid transparent;
+  }
+
+  .vale-breadcrumb__link:hover {
+    border-color: currentColor;
+  }
+
+  .vale-breadcrumb__link:focus-visible {
+    outline-width: 3px;
+    outline-offset: 3px;
+  }
+
+  .vale-breadcrumb__current {
+    border-bottom: 2px solid currentColor;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .vale-breadcrumb__link {
+    transition-duration: 0.01ms;
+  }
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .vale-tabbar__tab {
+    padding: var(--size-4-2) var(--size-4-3);
+    font-size: var(--font-ui-smaller);
+  }
+
+  .vale-back-button {
+    padding: var(--size-4-2) var(--size-4-2);
+  }
+
+  .vale-breadcrumb__list {
+    gap: var(--size-4-1);
+  }
+}
+
+/* ============================================
+   Print Styles
+   ============================================ */
+
+@media print {
+  .vale-tabbar,
+  .vale-back-button {
+    display: none;
+  }
+
+  .vale-breadcrumb__separator {
+    margin: 0 0.25em;
+  }
+}

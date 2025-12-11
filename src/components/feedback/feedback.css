@@ -1,0 +1,516 @@
+/**
+ * Feedback Component Styles
+ *
+ * Styles for all feedback components using only Obsidian CSS variables.
+ * Includes support for reduced motion and high contrast modes.
+ */
+
+/* ============================================================================
+   Loading Spinner
+   ========================================================================= */
+
+.vale-loading-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.vale-loading-spinner__icon {
+  display: block;
+}
+
+.vale-loading-spinner__svg {
+  display: block;
+  animation: vale-spinner-rotate 1.5s linear infinite;
+}
+
+.vale-loading-spinner__circle {
+  stroke: var(--interactive-accent);
+  stroke-linecap: round;
+  stroke-dasharray: 90, 150;
+  stroke-dashoffset: 0;
+  animation: vale-spinner-dash 1.5s ease-in-out infinite;
+}
+
+/* Size variants */
+.vale-loading-spinner--small .vale-loading-spinner__svg {
+  width: 16px;
+  height: 16px;
+}
+
+.vale-loading-spinner--medium .vale-loading-spinner__svg {
+  width: 24px;
+  height: 24px;
+}
+
+.vale-loading-spinner--large .vale-loading-spinner__svg {
+  width: 40px;
+  height: 40px;
+}
+
+/* Animations */
+@keyframes vale-spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes vale-spinner-dash {
+  0% {
+    stroke-dasharray: 1, 150;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -124;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .vale-loading-spinner__svg {
+    animation: none;
+  }
+
+  .vale-loading-spinner__circle {
+    animation: none;
+    stroke-dasharray: 75, 150;
+  }
+
+  /* Show static indicator */
+  .vale-loading-spinner::after {
+    content: "Loading...";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 4px;
+    font-size: var(--font-ui-smaller);
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+}
+
+/* ============================================================================
+   Progress Bar
+   ========================================================================= */
+
+.vale-progress-bar {
+  width: 100%;
+}
+
+.vale-progress-bar__label {
+  margin-bottom: 0.5rem;
+  font-size: var(--font-ui-small);
+  color: var(--text-normal);
+  font-weight: var(--font-medium);
+}
+
+.vale-progress-bar__container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.vale-progress-bar__track {
+  flex: 1;
+  height: 8px;
+  background: var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  overflow: hidden;
+  position: relative;
+}
+
+.vale-progress-bar__fill {
+  height: 100%;
+  background: var(--interactive-accent);
+  transition: width 300ms ease-out;
+  border-radius: var(--radius-s);
+}
+
+.vale-progress-bar__percentage {
+  font-size: var(--font-ui-small);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  min-width: 3ch;
+  text-align: right;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .vale-progress-bar__fill {
+    transition-duration: 50ms;
+  }
+}
+
+/* ============================================================================
+   Validation Feedback
+   ========================================================================= */
+
+.vale-validation-feedback {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-s);
+  font-size: var(--font-ui-small);
+  margin-top: 0.25rem;
+}
+
+.vale-validation-feedback__icon {
+  font-size: 1em;
+  line-height: 1;
+}
+
+.vale-validation-feedback__message {
+  line-height: 1.4;
+}
+
+/* Status variants */
+.vale-validation-feedback--validating {
+  color: var(--text-muted);
+  background: var(--background-secondary);
+}
+
+.vale-validation-feedback--validating .vale-validation-feedback__icon {
+  animation: vale-validation-pulse 1.5s ease-in-out infinite;
+}
+
+.vale-validation-feedback--valid {
+  color: var(--text-success);
+  background: rgba(var(--color-green-rgb), 0.1);
+}
+
+.vale-validation-feedback--error {
+  color: var(--text-error);
+  background: rgba(var(--color-red-rgb), 0.1);
+}
+
+/* Pulse animation for validating state */
+@keyframes vale-validation-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .vale-validation-feedback--validating .vale-validation-feedback__icon {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* ============================================================================
+   Toast
+   ========================================================================= */
+
+.vale-toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--background-primary);
+  border-radius: var(--radius-m);
+  border: 1px solid var(--background-modifier-border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  min-width: 280px;
+  max-width: 480px;
+  animation: vale-toast-slide-in 300ms ease-out;
+}
+
+.vale-toast__content {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.vale-toast__icon {
+  font-size: 1.25em;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.vale-toast__message {
+  flex: 1;
+  font-size: var(--font-ui-small);
+  color: var(--text-normal);
+  line-height: 1.5;
+}
+
+.vale-toast__close {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-s);
+  font-size: 1.5em;
+  line-height: 1;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.vale-toast__close:hover {
+  background: var(--background-modifier-hover);
+  color: var(--text-normal);
+}
+
+.vale-toast__close:focus-visible {
+  outline: 2px solid var(--background-modifier-border-focus);
+  outline-offset: 2px;
+}
+
+/* Toast type variants */
+.vale-toast--success {
+  border-left: 3px solid var(--color-green);
+}
+
+.vale-toast--success .vale-toast__icon {
+  color: var(--color-green);
+}
+
+.vale-toast--error {
+  border-left: 3px solid var(--color-red);
+}
+
+.vale-toast--error .vale-toast__icon {
+  color: var(--color-red);
+}
+
+.vale-toast--warning {
+  border-left: 3px solid var(--color-yellow);
+}
+
+.vale-toast--warning .vale-toast__icon {
+  color: var(--color-yellow);
+}
+
+.vale-toast--info {
+  border-left: 3px solid var(--interactive-accent);
+}
+
+.vale-toast--info .vale-toast__icon {
+  color: var(--interactive-accent);
+}
+
+/* Toast animations */
+@keyframes vale-toast-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .vale-toast {
+    animation: vale-toast-fade-in 150ms ease-out;
+  }
+
+  @keyframes vale-toast-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+/* ============================================================================
+   Error Message
+   ========================================================================= */
+
+.vale-error-message {
+  padding: 1rem;
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-left: 3px solid var(--text-error);
+  border-radius: var(--radius-s);
+  margin: 1rem 0;
+}
+
+.vale-error-message__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.vale-error-message__icon {
+  color: var(--text-error);
+  font-size: 1.25em;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.vale-error-message__title {
+  margin: 0;
+  font-size: var(--font-ui-medium);
+  font-weight: var(--font-semibold);
+  color: var(--text-error);
+  line-height: 1.4;
+}
+
+.vale-error-message__description {
+  margin: 0 0 0.75rem 0;
+  font-size: var(--font-ui-small);
+  color: var(--text-normal);
+  line-height: 1.5;
+}
+
+.vale-error-message__details {
+  margin: 0.75rem 0;
+  border-top: 1px solid var(--background-modifier-border);
+  padding-top: 0.75rem;
+}
+
+.vale-error-message__details-summary {
+  cursor: pointer;
+  font-size: var(--font-ui-small);
+  color: var(--text-muted);
+  list-style: none;
+  user-select: none;
+  padding: 0.25rem 0;
+  transition: color 150ms ease;
+}
+
+.vale-error-message__details-summary::-webkit-details-marker {
+  display: none;
+}
+
+.vale-error-message__details-summary::before {
+  content: "▶";
+  display: inline-block;
+  margin-right: 0.5rem;
+  transition: transform 150ms ease;
+  font-size: 0.75em;
+}
+
+.vale-error-message__details[open] .vale-error-message__details-summary::before {
+  transform: rotate(90deg);
+}
+
+.vale-error-message__details-summary:hover {
+  color: var(--text-normal);
+}
+
+.vale-error-message__details-summary:focus-visible {
+  outline: 2px solid var(--background-modifier-border-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-s);
+}
+
+.vale-error-message__details-content {
+  margin: 0.5rem 0 0 0;
+  padding: 0.75rem;
+  background: var(--background-primary);
+  border-radius: var(--radius-s);
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.vale-error-message__details-content code {
+  font-family: var(--font-monospace);
+  font-size: inherit;
+  color: inherit;
+}
+
+.vale-error-message__actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.vale-error-message__action-button {
+  padding: 0.375rem 0.75rem;
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+  border: none;
+  border-radius: var(--radius-s);
+  font-size: var(--font-ui-small);
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  transition: background-color 150ms ease, opacity 150ms ease;
+}
+
+.vale-error-message__action-button:hover {
+  background: var(--interactive-accent-hover);
+}
+
+.vale-error-message__action-button:active {
+  opacity: 0.8;
+}
+
+.vale-error-message__action-button:focus-visible {
+  outline: 2px solid var(--background-modifier-border-focus);
+  outline-offset: 2px;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .vale-error-message__details-summary::before {
+    transition: none;
+  }
+
+  .vale-error-message__action-button {
+    transition-duration: 50ms;
+  }
+}
+
+/* ============================================================================
+   High Contrast Mode Support
+   ========================================================================= */
+
+@media (prefers-contrast: high) {
+  .vale-validation-feedback,
+  .vale-toast,
+  .vale-error-message {
+    border-width: 2px;
+  }
+
+  .vale-progress-bar__track {
+    border: 1px solid;
+  }
+
+  .vale-toast__close:focus-visible,
+  .vale-error-message__details-summary:focus-visible,
+  .vale-error-message__action-button:focus-visible {
+    outline-width: 3px;
+  }
+}
+
+/* ============================================================================
+   Dark Theme Adjustments
+   ========================================================================= */
+
+body.theme-dark .vale-toast {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+body.theme-dark .vale-error-message__details-content {
+  background: rgba(0, 0, 0, 0.2);
+}

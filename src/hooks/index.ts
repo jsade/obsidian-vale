@@ -26,3 +26,6 @@ export {
   useConfigValidation,
   type ConfigValidationResult,
 } from "./useConfigValidation";
+
+// Export Obsidian Setting hook
+export { useObsidianSetting, type SettingConfig } from "./useObsidianSetting";
