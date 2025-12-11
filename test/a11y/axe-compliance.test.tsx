@@ -41,8 +41,46 @@ import { BackButton } from "../../src/components/navigation/BackButton";
 
 // Settings Components
 import { CollapsibleSection } from "../../src/components/settings/CollapsibleSection";
+import { SettingGroup } from "../../src/components/settings/SettingGroup";
 
-// Mock Obsidian's setIcon function for BackButton
+// Mock Obsidian's Setting class for SettingGroup
+const mockSettingClass = jest
+  .fn()
+  .mockImplementation((containerEl: HTMLElement) => {
+    const settingItem = document.createElement("div");
+    settingItem.className = "setting-item";
+
+    const nameEl = document.createElement("div");
+    nameEl.className = "setting-item-name";
+
+    const descEl = document.createElement("div");
+    descEl.className = "setting-item-description";
+
+    settingItem.appendChild(nameEl);
+    settingItem.appendChild(descEl);
+    containerEl.appendChild(settingItem);
+
+    return {
+      nameEl,
+      descEl,
+      setHeading: function () {
+        settingItem.classList.add("setting-item-heading");
+        return this;
+      },
+      setName: function (name: string) {
+        const h3 = document.createElement("h3");
+        h3.textContent = name;
+        nameEl.appendChild(h3);
+        return this;
+      },
+      setDesc: function (desc: string) {
+        descEl.textContent = desc;
+        return this;
+      },
+    };
+  });
+
+// Mock Obsidian module
 jest.mock("obsidian", () => ({
   setIcon: jest.fn((element: HTMLElement, _iconId: string) => {
     // Create a minimal mock SVG icon
@@ -51,6 +89,55 @@ jest.mock("obsidian", () => ({
     svg.setAttribute("height", "16");
     element.appendChild(svg);
   }),
+  Setting: class MockSetting {
+    public nameEl: HTMLElement;
+    public descEl: HTMLElement;
+    private containerEl: HTMLElement;
+    private _isHeading = false;
+
+    constructor(containerEl: HTMLElement) {
+      this.containerEl = containerEl;
+
+      const settingItem = document.createElement("div");
+      settingItem.className = "setting-item";
+
+      this.nameEl = document.createElement("div");
+      this.nameEl.className = "setting-item-name";
+
+      this.descEl = document.createElement("div");
+      this.descEl.className = "setting-item-description";
+
+      settingItem.appendChild(this.nameEl);
+      settingItem.appendChild(this.descEl);
+      this.containerEl.appendChild(settingItem);
+    }
+
+    setHeading(): this {
+      this._isHeading = true;
+      const settingItem = this.containerEl.querySelector(".setting-item");
+      if (settingItem) {
+        settingItem.classList.add("setting-item-heading");
+      }
+      return this;
+    }
+
+    setName(name: string): this {
+      if (this._isHeading) {
+        this.nameEl.innerHTML = "";
+        const heading = document.createElement("h3");
+        heading.textContent = name;
+        this.nameEl.appendChild(heading);
+      } else {
+        this.nameEl.textContent = name;
+      }
+      return this;
+    }
+
+    setDesc(desc: string): this {
+      this.descEl.textContent = desc;
+      return this;
+    }
+  },
 }));
 
 describe("Axe-core Accessibility Compliance", () => {
@@ -423,6 +510,318 @@ describe("Axe-core Accessibility Compliance", () => {
         const results = await axe(container);
         expect(results).toHaveNoViolations();
       });
+    });
+
+    describe("SettingGroup", () => {
+      it("passes axe checks with title only", async () => {
+        const { container } = render(
+          <SettingGroup title="General Settings">
+            <div>Setting content</div>
+          </SettingGroup>,
+        );
+        const results = await axe(container);
+        expect(results).toHaveNoViolations();
+      });
+
+      it("passes axe checks with title and description", async () => {
+        const { container } = render(
+          <SettingGroup
+            title="Server Configuration"
+            description="Configure Vale server connection settings"
+          >
+            <div>Server settings here</div>
+          </SettingGroup>,
+        );
+        const results = await axe(container);
+        expect(results).toHaveNoViolations();
+      });
+
+      it("passes axe checks with multiple children", async () => {
+        const { container } = render(
+          <SettingGroup title="Advanced Options">
+            <div>Option 1</div>
+            <div>Option 2</div>
+            <div>Option 3</div>
+          </SettingGroup>,
+        );
+        const results = await axe(container);
+        expect(results).toHaveNoViolations();
+      });
+
+      it("passes axe checks with nested interactive elements", async () => {
+        const { container } = render(
+          <SettingGroup title="Interactive Settings">
+            <button type="button">Action 1</button>
+            <input
+              type="text"
+              placeholder="Enter value"
+              aria-label="Value input"
+            />
+            <button type="button">Action 2</button>
+          </SettingGroup>,
+        );
+        const results = await axe(container);
+        expect(results).toHaveNoViolations();
+      });
+    });
+  });
+
+  describe("All Loading States", () => {
+    it("passes axe checks for initial loading", async () => {
+      const { container } = render(
+        <div aria-busy="true">
+          <LoadingSpinner label="Loading Vale configuration" />
+        </div>,
+      );
+      const results = await axe(container);
+      expect(results).toHaveNoViolations();
+    });
+
+    it("passes axe checks for inline validation loading", async () => {
+      const { container } = render(
+        <div>
+          <label htmlFor="path-input">Vale Path</label>
+          <input
+            id="path-input"
+            type="text"
+            defaultValue="/usr/local/bin/vale"
+            aria-describedby="validation-status"
+          />
+          <div id="validation-status">
+            <ValidationFeedback
+              status="validating"
+              message="Verifying path..."
+            />
+          </div>
+        </div>,
+      );
+      const results = await axe(container);
+      expect(results).toHaveNoViolations();
+    });
+
+    it("passes axe checks for progress loading", async () => {
+      const { container } = render(
+        <div>
+          <ProgressBar
+            value={45}
+            label="Installing Vale binary"
+            showPercentage
+          />
+          <p>Please wait while Vale is being installed...</p>
+        </div>,
+      );
+      const results = await axe(container);
+      expect(results).toHaveNoViolations();
+    });
+  });
+
+  describe("All Error States", () => {
+    it("passes axe checks for critical error", async () => {
+      const { container } = render(
+        <ErrorMessage
+          title="Critical Error"
+          description="Vale binary not found. Please install Vale or update the path."
+          actions={[
+            { label: "Download Vale", onClick: jest.fn() },
+            { label: "Update Path", onClick: jest.fn() },
+          ]}
+        />,
+      );
+      const results = await axe(container);
+      expect(results).toHaveNoViolations();
+    });
+
+    it("passes axe checks for validation error", async () => {
+      const { container } = render(
+        <div>
+          <label htmlFor="config-input">Config Path</label>
+          <input
+            id="config-input"
+            type="text"
+            aria-invalid="true"
+            aria-describedby="config-error"
+          />
+          <div id="config-error">
+            <ValidationFeedback
+              status="error"
+              message="Configuration file not found"
+            />
+          </div>
+        </div>,
+      );
+      const results = await axe(container);
+      expect(results).toHaveNoViolations();
+    });
+
+    it("passes axe checks for toast error notification", async () => {
+      const { container } = render(
+        <Toast
+          type="error"
+          message="Failed to connect to Vale server"
+          onClose={jest.fn()}
+          duration={0}
+        />,
+      );
+      const results = await axe(container);
+      expect(results).toHaveNoViolations();
+    });
+
+    it("passes axe checks for error with technical details", async () => {
+      const { container } = render(
+        <ErrorMessage
+          title="Parse Error"
+          description="Failed to parse .vale.ini configuration file"
+          details={`Error at line 15: unexpected token 'BasedOnStyles'
+Expected: section header or key=value pair
+Got: BasedOnStyles = Vale, Google
+
+Suggestion: Ensure BasedOnStyles is within a [*] or [*.md] section`}
+          actions={[{ label: "View Documentation", onClick: jest.fn() }]}
+        />,
+      );
+      const results = await axe(container);
+      expect(results).toHaveNoViolations();
+    });
+  });
+
+  describe("All Empty States", () => {
+    it("passes axe checks for empty styles list", async () => {
+      const { container } = render(
+        <div>
+          <h2>Installed Styles</h2>
+          <p>No styles installed. Click below to install official styles.</p>
+          <button type="button">Browse Available Styles</button>
+        </div>,
+      );
+      const results = await axe(container);
+      expect(results).toHaveNoViolations();
+    });
+
+    it("passes axe checks for empty rules list", async () => {
+      const { container } = render(
+        <div>
+          <h2>Style Rules</h2>
+          <p>No rules found in this style.</p>
+          <BackButton label="Back to Styles" onClick={jest.fn()} />
+        </div>,
+      );
+      const results = await axe(container);
+      expect(results).toHaveNoViolations();
+    });
+
+    it("passes axe checks for empty search results", async () => {
+      const { container } = render(
+        <div>
+          <label htmlFor="search-input">Search Styles</label>
+          <input id="search-input" type="search" defaultValue="nonexistent" />
+          <p role="status">No styles match your search criteria.</p>
+        </div>,
+      );
+      const results = await axe(container);
+      expect(results).toHaveNoViolations();
+    });
+  });
+
+  describe("Settings Page Layouts", () => {
+    it("passes axe checks for General settings page", async () => {
+      const tabs: TabItem[] = [
+        { id: "general", label: "General" },
+        { id: "styles", label: "Styles" },
+      ];
+
+      const { container } = render(
+        <div>
+          <TabBar
+            tabs={tabs}
+            activeTab="general"
+            onTabChange={jest.fn()}
+            ariaLabel="Settings tabs"
+          />
+          <div id="panel-general" role="tabpanel" aria-labelledby="tab-general">
+            <SettingGroup
+              title="Mode Selection"
+              description="Choose how Vale runs"
+            >
+              <div>CLI vs Server mode toggle</div>
+            </SettingGroup>
+            <SettingGroup title="CLI Configuration">
+              <div>Binary path input</div>
+              <div>Config path input</div>
+            </SettingGroup>
+          </div>
+          <div
+            id="panel-styles"
+            role="tabpanel"
+            aria-labelledby="tab-styles"
+            hidden
+          >
+            <p>Styles content</p>
+          </div>
+        </div>,
+      );
+      const results = await axe(container);
+      expect(results).toHaveNoViolations();
+    });
+
+    it("passes axe checks for Styles settings page", async () => {
+      const tabs: TabItem[] = [
+        { id: "general", label: "General" },
+        { id: "styles", label: "Styles" },
+      ];
+
+      const { container } = render(
+        <div>
+          <TabBar
+            tabs={tabs}
+            activeTab="styles"
+            onTabChange={jest.fn()}
+            ariaLabel="Settings tabs"
+          />
+          <div
+            id="panel-general"
+            role="tabpanel"
+            aria-labelledby="tab-general"
+            hidden
+          >
+            <p>General content</p>
+          </div>
+          <div id="panel-styles" role="tabpanel" aria-labelledby="tab-styles">
+            <h2>Available Styles</h2>
+            <CollapsibleSection title="Official Styles" defaultExpanded>
+              <div>Vale style toggle</div>
+              <div>Google style toggle</div>
+              <div>Microsoft style toggle</div>
+            </CollapsibleSection>
+          </div>
+        </div>,
+      );
+      const results = await axe(container);
+      expect(results).toHaveNoViolations();
+    });
+
+    it("passes axe checks for Rules detail page", async () => {
+      const breadcrumbItems: BreadcrumbItem[] = [
+        { label: "Styles", onClick: jest.fn() },
+        { label: "Google" },
+      ];
+
+      const { container } = render(
+        <div>
+          <BackButton label="Back to Styles" onClick={jest.fn()} />
+          <Breadcrumb items={breadcrumbItems} ariaLabel="Navigation" />
+          <h2>Google Style Rules</h2>
+          <SettingGroup title="Heading Rules">
+            <div>Headings rule toggle</div>
+            <div>HeadingPunctuation rule toggle</div>
+          </SettingGroup>
+          <SettingGroup title="Punctuation Rules">
+            <div>Semicolons rule toggle</div>
+            <div>Quotes rule toggle</div>
+          </SettingGroup>
+        </div>,
+      );
+      const results = await axe(container);
+      expect(results).toHaveNoViolations();
     });
   });
 

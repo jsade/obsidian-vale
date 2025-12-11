@@ -1,0 +1,813 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Settings Components Snapshots CollapsibleSection renders collapsed state (default) 1`] = `
+<div>
+  <div
+    class="vale-collapsible vale-collapsible--collapsed"
+  >
+    <button
+      aria-controls="collapsible-:r0:-content"
+      aria-expanded="false"
+      class="vale-collapsible__header"
+      id="collapsible-:r0:"
+      type="button"
+    >
+      <span
+        aria-hidden="true"
+        class="vale-collapsible__icon"
+      >
+        <svg
+          class="vale-collapsible__chevron"
+          height="16"
+          viewBox="0 0 24 24"
+          width="16"
+        >
+          <path
+            d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"
+            fill="currentColor"
+          />
+        </svg>
+      </span>
+      <span
+        class="vale-collapsible__title-group"
+      >
+        <span
+          class="vale-collapsible__title"
+        >
+          Advanced Options
+        </span>
+      </span>
+    </button>
+    <div
+      aria-labelledby="collapsible-:r0:"
+      class="vale-collapsible__content-wrapper"
+      id="collapsible-:r0:-content"
+      role="region"
+      style="height: 0px;"
+    >
+      <div
+        class="vale-collapsible__content"
+      >
+        <p>
+          Content inside collapsible section
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Settings Components Snapshots CollapsibleSection renders controlled mode (expanded=false) 1`] = `
+<div>
+  <div
+    class="vale-collapsible vale-collapsible--collapsed"
+  >
+    <button
+      aria-controls="collapsible-:r6:-content"
+      aria-expanded="false"
+      class="vale-collapsible__header"
+      id="collapsible-:r6:"
+      type="button"
+    >
+      <span
+        aria-hidden="true"
+        class="vale-collapsible__icon"
+      >
+        <svg
+          class="vale-collapsible__chevron"
+          height="16"
+          viewBox="0 0 24 24"
+          width="16"
+        >
+          <path
+            d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"
+            fill="currentColor"
+          />
+        </svg>
+      </span>
+      <span
+        class="vale-collapsible__title-group"
+      >
+        <span
+          class="vale-collapsible__title"
+        >
+          Controlled Section
+        </span>
+      </span>
+    </button>
+    <div
+      aria-labelledby="collapsible-:r6:"
+      class="vale-collapsible__content-wrapper"
+      id="collapsible-:r6:-content"
+      role="region"
+      style="height: 0px;"
+    >
+      <div
+        class="vale-collapsible__content"
+      >
+        <p>
+          Controlled content
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Settings Components Snapshots CollapsibleSection renders controlled mode (expanded=true) 1`] = `
+<div>
+  <div
+    class="vale-collapsible vale-collapsible--expanded"
+  >
+    <button
+      aria-controls="collapsible-:r5:-content"
+      aria-expanded="true"
+      class="vale-collapsible__header"
+      id="collapsible-:r5:"
+      type="button"
+    >
+      <span
+        aria-hidden="true"
+        class="vale-collapsible__icon"
+      >
+        <svg
+          class="vale-collapsible__chevron"
+          height="16"
+          viewBox="0 0 24 24"
+          width="16"
+        >
+          <path
+            d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"
+            fill="currentColor"
+          />
+        </svg>
+      </span>
+      <span
+        class="vale-collapsible__title-group"
+      >
+        <span
+          class="vale-collapsible__title"
+        >
+          Controlled Section
+        </span>
+      </span>
+    </button>
+    <div
+      aria-labelledby="collapsible-:r5:"
+      class="vale-collapsible__content-wrapper"
+      id="collapsible-:r5:-content"
+      role="region"
+      style="height: auto;"
+    >
+      <div
+        class="vale-collapsible__content"
+      >
+        <p>
+          Controlled content
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Settings Components Snapshots CollapsibleSection renders expanded state (defaultExpanded=true) 1`] = `
+<div>
+  <div
+    class="vale-collapsible vale-collapsible--expanded"
+  >
+    <button
+      aria-controls="collapsible-:r1:-content"
+      aria-expanded="true"
+      class="vale-collapsible__header"
+      id="collapsible-:r1:"
+      type="button"
+    >
+      <span
+        aria-hidden="true"
+        class="vale-collapsible__icon"
+      >
+        <svg
+          class="vale-collapsible__chevron"
+          height="16"
+          viewBox="0 0 24 24"
+          width="16"
+        >
+          <path
+            d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"
+            fill="currentColor"
+          />
+        </svg>
+      </span>
+      <span
+        class="vale-collapsible__title-group"
+      >
+        <span
+          class="vale-collapsible__title"
+        >
+          Advanced Options
+        </span>
+      </span>
+    </button>
+    <div
+      aria-labelledby="collapsible-:r1:"
+      class="vale-collapsible__content-wrapper"
+      id="collapsible-:r1:-content"
+      role="region"
+      style="height: auto;"
+    >
+      <div
+        class="vale-collapsible__content"
+      >
+        <p>
+          Content inside collapsible section
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Settings Components Snapshots CollapsibleSection renders with complex children 1`] = `
+<div>
+  <div
+    class="vale-collapsible vale-collapsible--expanded"
+  >
+    <button
+      aria-controls="collapsible-:r7:-content"
+      aria-expanded="true"
+      class="vale-collapsible__header"
+      id="collapsible-:r7:"
+      type="button"
+    >
+      <span
+        aria-hidden="true"
+        class="vale-collapsible__icon"
+      >
+        <svg
+          class="vale-collapsible__chevron"
+          height="16"
+          viewBox="0 0 24 24"
+          width="16"
+        >
+          <path
+            d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"
+            fill="currentColor"
+          />
+        </svg>
+      </span>
+      <span
+        class="vale-collapsible__title-group"
+      >
+        <span
+          class="vale-collapsible__title"
+        >
+          Complex Content
+        </span>
+      </span>
+    </button>
+    <div
+      aria-labelledby="collapsible-:r7:"
+      class="vale-collapsible__content-wrapper"
+      id="collapsible-:r7:-content"
+      role="region"
+      style="height: auto;"
+    >
+      <div
+        class="vale-collapsible__content"
+      >
+        <div
+          class="setting-item"
+        >
+          <div
+            class="setting-item-name"
+          >
+            Setting 1
+          </div>
+          <div
+            class="setting-item-control"
+          >
+            <button
+              type="button"
+            >
+              Action
+            </button>
+          </div>
+        </div>
+        <div
+          class="setting-item"
+        >
+          <div
+            class="setting-item-name"
+          >
+            Setting 2
+          </div>
+          <div
+            class="setting-item-control"
+          >
+            <input
+              type="text"
+              value="value"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Settings Components Snapshots CollapsibleSection renders with custom className 1`] = `
+<div>
+  <div
+    class="vale-collapsible vale-collapsible--collapsed my-custom-section"
+  >
+    <button
+      aria-controls="collapsible-:r3:-content"
+      aria-expanded="false"
+      class="vale-collapsible__header"
+      id="collapsible-:r3:"
+      type="button"
+    >
+      <span
+        aria-hidden="true"
+        class="vale-collapsible__icon"
+      >
+        <svg
+          class="vale-collapsible__chevron"
+          height="16"
+          viewBox="0 0 24 24"
+          width="16"
+        >
+          <path
+            d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"
+            fill="currentColor"
+          />
+        </svg>
+      </span>
+      <span
+        class="vale-collapsible__title-group"
+      >
+        <span
+          class="vale-collapsible__title"
+        >
+          Settings
+        </span>
+      </span>
+    </button>
+    <div
+      aria-labelledby="collapsible-:r3:"
+      class="vale-collapsible__content-wrapper"
+      id="collapsible-:r3:-content"
+      role="region"
+      style="height: 0px;"
+    >
+      <div
+        class="vale-collapsible__content"
+      >
+        <p>
+          Content
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Settings Components Snapshots CollapsibleSection renders with custom id 1`] = `
+<div>
+  <div
+    class="vale-collapsible vale-collapsible--collapsed"
+  >
+    <button
+      aria-controls="my-custom-id-content"
+      aria-expanded="false"
+      class="vale-collapsible__header"
+      id="my-custom-id"
+      type="button"
+    >
+      <span
+        aria-hidden="true"
+        class="vale-collapsible__icon"
+      >
+        <svg
+          class="vale-collapsible__chevron"
+          height="16"
+          viewBox="0 0 24 24"
+          width="16"
+        >
+          <path
+            d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"
+            fill="currentColor"
+          />
+        </svg>
+      </span>
+      <span
+        class="vale-collapsible__title-group"
+      >
+        <span
+          class="vale-collapsible__title"
+        >
+          Settings
+        </span>
+      </span>
+    </button>
+    <div
+      aria-labelledby="my-custom-id"
+      class="vale-collapsible__content-wrapper"
+      id="my-custom-id-content"
+      role="region"
+      style="height: 0px;"
+    >
+      <div
+        class="vale-collapsible__content"
+      >
+        <p>
+          Content
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Settings Components Snapshots CollapsibleSection renders with description 1`] = `
+<div>
+  <div
+    class="vale-collapsible vale-collapsible--collapsed"
+  >
+    <button
+      aria-controls="collapsible-:r2:-content"
+      aria-expanded="false"
+      class="vale-collapsible__header"
+      id="collapsible-:r2:"
+      type="button"
+    >
+      <span
+        aria-hidden="true"
+        class="vale-collapsible__icon"
+      >
+        <svg
+          class="vale-collapsible__chevron"
+          height="16"
+          viewBox="0 0 24 24"
+          width="16"
+        >
+          <path
+            d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"
+            fill="currentColor"
+          />
+        </svg>
+      </span>
+      <span
+        class="vale-collapsible__title-group"
+      >
+        <span
+          class="vale-collapsible__title"
+        >
+          Advanced Options
+        </span>
+        <span
+          class="vale-collapsible__description"
+        >
+          Configure additional settings for power users
+        </span>
+      </span>
+    </button>
+    <div
+      aria-labelledby="collapsible-:r2:"
+      class="vale-collapsible__content-wrapper"
+      id="collapsible-:r2:-content"
+      role="region"
+      style="height: 0px;"
+    >
+      <div
+        class="vale-collapsible__content"
+      >
+        <p>
+          Content inside collapsible section
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Settings Components Snapshots CollapsibleSection renders with long title 1`] = `
+<div>
+  <div
+    class="vale-collapsible vale-collapsible--collapsed"
+  >
+    <button
+      aria-controls="collapsible-:r8:-content"
+      aria-expanded="false"
+      class="vale-collapsible__header"
+      id="collapsible-:r8:"
+      type="button"
+    >
+      <span
+        aria-hidden="true"
+        class="vale-collapsible__icon"
+      >
+        <svg
+          class="vale-collapsible__chevron"
+          height="16"
+          viewBox="0 0 24 24"
+          width="16"
+        >
+          <path
+            d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"
+            fill="currentColor"
+          />
+        </svg>
+      </span>
+      <span
+        class="vale-collapsible__title-group"
+      >
+        <span
+          class="vale-collapsible__title"
+        >
+          This is a very long section title that should wrap properly on smaller screens
+        </span>
+      </span>
+    </button>
+    <div
+      aria-labelledby="collapsible-:r8:"
+      class="vale-collapsible__content-wrapper"
+      id="collapsible-:r8:-content"
+      role="region"
+      style="height: 0px;"
+    >
+      <div
+        class="vale-collapsible__content"
+      >
+        <p>
+          Content
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Settings Components Snapshots SettingDivider renders default divider 1`] = `
+<div>
+  <hr
+    aria-hidden="true"
+    class="vale-setting-divider"
+    style="height: 1px; background-color: var(--background-modifier-border); margin-top: 16px; margin-bottom: 16px;"
+  />
+</div>
+`;
+
+exports[`Settings Components Snapshots SettingDivider renders multiple dividers 1`] = `
+<div>
+  <div>
+    <div>
+      Section 1
+    </div>
+    <hr
+      aria-hidden="true"
+      class="vale-setting-divider"
+      style="height: 1px; background-color: var(--background-modifier-border); margin-top: 16px; margin-bottom: 16px;"
+    />
+    <div>
+      Section 2
+    </div>
+    <hr
+      aria-hidden="true"
+      class="vale-setting-divider"
+      style="height: 1px; background-color: var(--background-modifier-border); margin-top: 8px; margin-bottom: 8px;"
+    />
+    <div>
+      Section 3
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Settings Components Snapshots SettingDivider renders with custom className 1`] = `
+<div>
+  <hr
+    aria-hidden="true"
+    class="vale-setting-divider my-divider"
+    style="height: 1px; background-color: var(--background-modifier-border); margin-top: 16px; margin-bottom: 16px;"
+  />
+</div>
+`;
+
+exports[`Settings Components Snapshots SettingDivider renders with custom spacing 1`] = `
+<div>
+  <hr
+    aria-hidden="true"
+    class="vale-setting-divider"
+    style="height: 1px; background-color: var(--background-modifier-border); margin-top: 24px; margin-bottom: 24px;"
+  />
+</div>
+`;
+
+exports[`Settings Components Snapshots SettingDivider renders with zero spacing 1`] = `
+<div>
+  <hr
+    aria-hidden="true"
+    class="vale-setting-divider"
+    style="height: 1px; background-color: var(--background-modifier-border); margin-top: 0px; margin-bottom: 0px;"
+  />
+</div>
+`;
+
+exports[`Settings Components Snapshots SettingGroup renders nested groups 1`] = `
+<div>
+  <div
+    aria-labelledby="vale-setting-group-5-heading"
+    class="vale-setting-group"
+    role="group"
+  >
+    <div>
+      <div
+        class="setting-item setting-item-heading"
+      >
+        <div
+          class="setting-item-name"
+          id="vale-setting-group-5-heading"
+        >
+          Parent Group
+        </div>
+      </div>
+    </div>
+    <div
+      class="vale-setting-group-content"
+    >
+      <div>
+        Intro content
+      </div>
+      <div
+        aria-labelledby="vale-setting-group-6-heading"
+        class="vale-setting-group"
+        role="group"
+      >
+        <div>
+          <div
+            class="setting-item setting-item-heading"
+          >
+            <div
+              class="setting-item-name"
+              id="vale-setting-group-6-heading"
+            >
+              Nested Group
+            </div>
+          </div>
+        </div>
+        <div
+          class="vale-setting-group-content"
+        >
+          <div>
+            Nested content
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Settings Components Snapshots SettingGroup renders with custom className 1`] = `
+<div>
+  <div
+    aria-labelledby="vale-setting-group-3-heading"
+    class="vale-setting-group custom-group"
+    role="group"
+  >
+    <div>
+      <div
+        class="setting-item setting-item-heading"
+      >
+        <div
+          class="setting-item-name"
+          id="vale-setting-group-3-heading"
+        >
+          Settings
+        </div>
+      </div>
+    </div>
+    <div
+      class="vale-setting-group-content"
+    >
+      <div>
+        Content
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Settings Components Snapshots SettingGroup renders with multiple children 1`] = `
+<div>
+  <div
+    aria-labelledby="vale-setting-group-4-heading"
+    class="vale-setting-group"
+    role="group"
+  >
+    <div>
+      <div
+        class="setting-item setting-item-heading"
+      >
+        <div
+          class="setting-item-name"
+          id="vale-setting-group-4-heading"
+        >
+          Multiple Settings
+        </div>
+      </div>
+    </div>
+    <div
+      class="vale-setting-group-content"
+    >
+      <div
+        class="setting-item"
+      >
+        Setting 1
+      </div>
+      <div
+        class="setting-item"
+      >
+        Setting 2
+      </div>
+      <div
+        class="setting-item"
+      >
+        Setting 3
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Settings Components Snapshots SettingGroup renders with title and description 1`] = `
+<div>
+  <div
+    aria-labelledby="vale-setting-group-2-heading"
+    class="vale-setting-group"
+    role="group"
+  >
+    <div>
+      <div
+        class="setting-item setting-item-heading"
+      >
+        <div
+          class="setting-item-name"
+          id="vale-setting-group-2-heading"
+        >
+          Server Configuration
+        </div>
+        <div
+          class="setting-item-description"
+        >
+          Configure Vale server connection settings
+        </div>
+      </div>
+    </div>
+    <div
+      class="vale-setting-group-content"
+    >
+      <div
+        data-testid="child"
+      >
+        Child content
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Settings Components Snapshots SettingGroup renders with title only 1`] = `
+<div>
+  <div
+    aria-labelledby="vale-setting-group-1-heading"
+    class="vale-setting-group"
+    role="group"
+  >
+    <div>
+      <div
+        class="setting-item setting-item-heading"
+      >
+        <div
+          class="setting-item-name"
+          id="vale-setting-group-1-heading"
+        >
+          Basic Settings
+        </div>
+      </div>
+    </div>
+    <div
+      class="vale-setting-group-content"
+    >
+      <div
+        data-testid="child"
+      >
+        Child content
+      </div>
+    </div>
+  </div>
+</div>
+`;

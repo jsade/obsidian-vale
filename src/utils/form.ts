@@ -206,7 +206,9 @@ export function useFormField<T>(
    * Effect: Trigger validation when value changes (with debouncing).
    */
   React.useEffect(() => {
-    // Clear any pending validation
+    // Clear any pending validation (defensive: handles concurrent mode edge cases
+    // where effect re-runs before cleanup, e.g., React 18 strict mode double-mount)
+    /* istanbul ignore if -- @preserve defensive code for React concurrent mode */
     if (validationTimeoutRef.current) {
       clearTimeout(validationTimeoutRef.current);
       validationTimeoutRef.current = null;
@@ -243,7 +245,9 @@ export function useFormField<T>(
         abortControllerRef.current = null;
       }
 
-      // Clear any pending timeout
+      // Clear any pending timeout (defensive: handles case where value-dependent
+      // effect returned early without cleanup, e.g., validator became undefined)
+      /* istanbul ignore if -- @preserve defensive code for effect cleanup edge cases */
       if (validationTimeoutRef.current) {
         clearTimeout(validationTimeoutRef.current);
         validationTimeoutRef.current = null;

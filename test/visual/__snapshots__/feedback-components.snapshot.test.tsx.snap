@@ -1,0 +1,1082 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Feedback Components Snapshots ErrorMessage renders full error state with all props 1`] = `
+<div>
+  <div
+    class="vale-error-message"
+    role="alert"
+  >
+    <div
+      class="vale-error-message__header"
+    >
+      <span
+        aria-hidden="true"
+        class="vale-error-message__icon"
+      >
+        ⚠
+      </span>
+      <h3
+        class="vale-error-message__title"
+      >
+        Configuration Error
+      </h3>
+    </div>
+    <p
+      class="vale-error-message__description"
+    >
+      Your Vale configuration file contains errors.
+    </p>
+    <details
+      class="vale-error-message__details"
+    >
+      <summary
+        class="vale-error-message__details-summary"
+      >
+        Show
+         technical details
+      </summary>
+      <pre
+        class="vale-error-message__details-content"
+      >
+        <code>
+          Error: Missing StylesPath directive
+  at line 1
+  in /path/to/.vale.ini
+        </code>
+      </pre>
+    </details>
+    <div
+      class="vale-error-message__actions"
+    >
+      <button
+        class="vale-error-message__action-button"
+        type="button"
+      >
+        Edit Config
+      </button>
+      <button
+        class="vale-error-message__action-button"
+        type="button"
+      >
+        Reset to Default
+      </button>
+      <button
+        class="vale-error-message__action-button"
+        type="button"
+      >
+        Learn More
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Feedback Components Snapshots ErrorMessage renders minimal error (title and description only) 1`] = `
+<div>
+  <div
+    class="vale-error-message"
+    role="alert"
+  >
+    <div
+      class="vale-error-message__header"
+    >
+      <span
+        aria-hidden="true"
+        class="vale-error-message__icon"
+      >
+        ⚠
+      </span>
+      <h3
+        class="vale-error-message__title"
+      >
+        Something went wrong
+      </h3>
+    </div>
+    <p
+      class="vale-error-message__description"
+    >
+      An unexpected error occurred.
+    </p>
+  </div>
+</div>
+`;
+
+exports[`Feedback Components Snapshots ErrorMessage renders with action buttons 1`] = `
+<div>
+  <div
+    class="vale-error-message"
+    role="alert"
+  >
+    <div
+      class="vale-error-message__header"
+    >
+      <span
+        aria-hidden="true"
+        class="vale-error-message__icon"
+      >
+        ⚠
+      </span>
+      <h3
+        class="vale-error-message__title"
+      >
+        Style not found
+      </h3>
+    </div>
+    <p
+      class="vale-error-message__description"
+    >
+      The requested style could not be loaded.
+    </p>
+    <div
+      class="vale-error-message__actions"
+    >
+      <button
+        class="vale-error-message__action-button"
+        type="button"
+      >
+        Retry
+      </button>
+      <button
+        class="vale-error-message__action-button"
+        type="button"
+      >
+        Go Back
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Feedback Components Snapshots ErrorMessage renders with technical details 1`] = `
+<div>
+  <div
+    class="vale-error-message"
+    role="alert"
+  >
+    <div
+      class="vale-error-message__header"
+    >
+      <span
+        aria-hidden="true"
+        class="vale-error-message__icon"
+      >
+        ⚠
+      </span>
+      <h3
+        class="vale-error-message__title"
+      >
+        Connection failed
+      </h3>
+    </div>
+    <p
+      class="vale-error-message__description"
+    >
+      Unable to connect to Vale server.
+    </p>
+    <details
+      class="vale-error-message__details"
+    >
+      <summary
+        class="vale-error-message__details-summary"
+      >
+        Show
+         technical details
+      </summary>
+      <pre
+        class="vale-error-message__details-content"
+      >
+        <code>
+          ECONNREFUSED 127.0.0.1:7777
+        </code>
+      </pre>
+    </details>
+  </div>
+</div>
+`;
+
+exports[`Feedback Components Snapshots ErrorMessage renders with title and description 1`] = `
+<div>
+  <div
+    class="vale-error-message"
+    role="alert"
+  >
+    <div
+      class="vale-error-message__header"
+    >
+      <span
+        aria-hidden="true"
+        class="vale-error-message__icon"
+      >
+        ⚠
+      </span>
+      <h3
+        class="vale-error-message__title"
+      >
+        Failed to load styles
+      </h3>
+    </div>
+    <p
+      class="vale-error-message__description"
+    >
+      The styles directory could not be found.
+    </p>
+  </div>
+</div>
+`;
+
+exports[`Feedback Components Snapshots LoadingSpinner renders large size correctly 1`] = `
+<div>
+  <div
+    aria-busy="true"
+    aria-live="polite"
+    class="vale-loading-spinner vale-loading-spinner--large"
+    role="status"
+  >
+    <div
+      aria-hidden="true"
+      class="vale-loading-spinner__icon"
+    >
+      <svg
+        class="vale-loading-spinner__svg"
+        viewBox="0 0 50 50"
+      >
+        <circle
+          class="vale-loading-spinner__circle"
+          cx="25"
+          cy="25"
+          fill="none"
+          r="20"
+          stroke-width="4"
+        />
+      </svg>
+    </div>
+    <span
+      class="visually-hidden"
+    >
+      Loading
+    </span>
+  </div>
+</div>
+`;
+
+exports[`Feedback Components Snapshots LoadingSpinner renders medium size correctly 1`] = `
+<div>
+  <div
+    aria-busy="true"
+    aria-live="polite"
+    class="vale-loading-spinner vale-loading-spinner--medium"
+    role="status"
+  >
+    <div
+      aria-hidden="true"
+      class="vale-loading-spinner__icon"
+    >
+      <svg
+        class="vale-loading-spinner__svg"
+        viewBox="0 0 50 50"
+      >
+        <circle
+          class="vale-loading-spinner__circle"
+          cx="25"
+          cy="25"
+          fill="none"
+          r="20"
+          stroke-width="4"
+        />
+      </svg>
+    </div>
+    <span
+      class="visually-hidden"
+    >
+      Loading
+    </span>
+  </div>
+</div>
+`;
+
+exports[`Feedback Components Snapshots LoadingSpinner renders small size correctly 1`] = `
+<div>
+  <div
+    aria-busy="true"
+    aria-live="polite"
+    class="vale-loading-spinner vale-loading-spinner--small"
+    role="status"
+  >
+    <div
+      aria-hidden="true"
+      class="vale-loading-spinner__icon"
+    >
+      <svg
+        class="vale-loading-spinner__svg"
+        viewBox="0 0 50 50"
+      >
+        <circle
+          class="vale-loading-spinner__circle"
+          cx="25"
+          cy="25"
+          fill="none"
+          r="20"
+          stroke-width="4"
+        />
+      </svg>
+    </div>
+    <span
+      class="visually-hidden"
+    >
+      Loading
+    </span>
+  </div>
+</div>
+`;
+
+exports[`Feedback Components Snapshots LoadingSpinner renders with custom label 1`] = `
+<div>
+  <div
+    aria-busy="true"
+    aria-live="polite"
+    class="vale-loading-spinner vale-loading-spinner--medium"
+    role="status"
+  >
+    <div
+      aria-hidden="true"
+      class="vale-loading-spinner__icon"
+    >
+      <svg
+        class="vale-loading-spinner__svg"
+        viewBox="0 0 50 50"
+      >
+        <circle
+          class="vale-loading-spinner__circle"
+          cx="25"
+          cy="25"
+          fill="none"
+          r="20"
+          stroke-width="4"
+        />
+      </svg>
+    </div>
+    <span
+      class="visually-hidden"
+    >
+      Loading Vale styles
+    </span>
+  </div>
+</div>
+`;
+
+exports[`Feedback Components Snapshots LoadingSpinner renders with default props 1`] = `
+<div>
+  <div
+    aria-busy="true"
+    aria-live="polite"
+    class="vale-loading-spinner vale-loading-spinner--medium"
+    role="status"
+  >
+    <div
+      aria-hidden="true"
+      class="vale-loading-spinner__icon"
+    >
+      <svg
+        class="vale-loading-spinner__svg"
+        viewBox="0 0 50 50"
+      >
+        <circle
+          class="vale-loading-spinner__circle"
+          cx="25"
+          cy="25"
+          fill="none"
+          r="20"
+          stroke-width="4"
+        />
+      </svg>
+    </div>
+    <span
+      class="visually-hidden"
+    >
+      Loading
+    </span>
+  </div>
+</div>
+`;
+
+exports[`Feedback Components Snapshots ProgressBar clamps value above 100 to 100 1`] = `
+<div>
+  <div
+    class="vale-progress-bar"
+  >
+    <div
+      class="vale-progress-bar__label"
+      id=":r8:"
+    >
+      Progress
+    </div>
+    <div
+      class="vale-progress-bar__container"
+    >
+      <div
+        aria-labelledby=":r8:"
+        aria-valuemax="100"
+        aria-valuemin="0"
+        aria-valuenow="100"
+        class="vale-progress-bar__track"
+        role="progressbar"
+      >
+        <div
+          class="vale-progress-bar__fill"
+          style="width: 100%;"
+        />
+      </div>
+      <div
+        aria-hidden="true"
+        class="vale-progress-bar__percentage"
+      >
+        100
+        %
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Feedback Components Snapshots ProgressBar clamps value below 0 to 0 1`] = `
+<div>
+  <div
+    class="vale-progress-bar"
+  >
+    <div
+      class="vale-progress-bar__label"
+      id=":r7:"
+    >
+      Progress
+    </div>
+    <div
+      class="vale-progress-bar__container"
+    >
+      <div
+        aria-labelledby=":r7:"
+        aria-valuemax="100"
+        aria-valuemin="0"
+        aria-valuenow="0"
+        class="vale-progress-bar__track"
+        role="progressbar"
+      >
+        <div
+          class="vale-progress-bar__fill"
+          style="width: 0%;"
+        />
+      </div>
+      <div
+        aria-hidden="true"
+        class="vale-progress-bar__percentage"
+      >
+        0
+        %
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Feedback Components Snapshots ProgressBar renders at 0% progress correctly 1`] = `
+<div>
+  <div
+    class="vale-progress-bar"
+  >
+    <div
+      class="vale-progress-bar__label"
+      id=":r0:"
+    >
+      Downloading
+    </div>
+    <div
+      class="vale-progress-bar__container"
+    >
+      <div
+        aria-labelledby=":r0:"
+        aria-valuemax="100"
+        aria-valuemin="0"
+        aria-valuenow="0"
+        class="vale-progress-bar__track"
+        role="progressbar"
+      >
+        <div
+          class="vale-progress-bar__fill"
+          style="width: 0%;"
+        />
+      </div>
+      <div
+        aria-hidden="true"
+        class="vale-progress-bar__percentage"
+      >
+        0
+        %
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Feedback Components Snapshots ProgressBar renders at 25% progress correctly 1`] = `
+<div>
+  <div
+    class="vale-progress-bar"
+  >
+    <div
+      class="vale-progress-bar__label"
+      id=":r1:"
+    >
+      Downloading
+    </div>
+    <div
+      class="vale-progress-bar__container"
+    >
+      <div
+        aria-labelledby=":r1:"
+        aria-valuemax="100"
+        aria-valuemin="0"
+        aria-valuenow="25"
+        class="vale-progress-bar__track"
+        role="progressbar"
+      >
+        <div
+          class="vale-progress-bar__fill"
+          style="width: 25%;"
+        />
+      </div>
+      <div
+        aria-hidden="true"
+        class="vale-progress-bar__percentage"
+      >
+        25
+        %
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Feedback Components Snapshots ProgressBar renders at 50% progress correctly 1`] = `
+<div>
+  <div
+    class="vale-progress-bar"
+  >
+    <div
+      class="vale-progress-bar__label"
+      id=":r2:"
+    >
+      Downloading
+    </div>
+    <div
+      class="vale-progress-bar__container"
+    >
+      <div
+        aria-labelledby=":r2:"
+        aria-valuemax="100"
+        aria-valuemin="0"
+        aria-valuenow="50"
+        class="vale-progress-bar__track"
+        role="progressbar"
+      >
+        <div
+          class="vale-progress-bar__fill"
+          style="width: 50%;"
+        />
+      </div>
+      <div
+        aria-hidden="true"
+        class="vale-progress-bar__percentage"
+      >
+        50
+        %
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Feedback Components Snapshots ProgressBar renders at 75% progress correctly 1`] = `
+<div>
+  <div
+    class="vale-progress-bar"
+  >
+    <div
+      class="vale-progress-bar__label"
+      id=":r3:"
+    >
+      Downloading
+    </div>
+    <div
+      class="vale-progress-bar__container"
+    >
+      <div
+        aria-labelledby=":r3:"
+        aria-valuemax="100"
+        aria-valuemin="0"
+        aria-valuenow="75"
+        class="vale-progress-bar__track"
+        role="progressbar"
+      >
+        <div
+          class="vale-progress-bar__fill"
+          style="width: 75%;"
+        />
+      </div>
+      <div
+        aria-hidden="true"
+        class="vale-progress-bar__percentage"
+      >
+        75
+        %
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Feedback Components Snapshots ProgressBar renders at 100% progress correctly 1`] = `
+<div>
+  <div
+    class="vale-progress-bar"
+  >
+    <div
+      class="vale-progress-bar__label"
+      id=":r4:"
+    >
+      Downloading
+    </div>
+    <div
+      class="vale-progress-bar__container"
+    >
+      <div
+        aria-labelledby=":r4:"
+        aria-valuemax="100"
+        aria-valuemin="0"
+        aria-valuenow="100"
+        class="vale-progress-bar__track"
+        role="progressbar"
+      >
+        <div
+          class="vale-progress-bar__fill"
+          style="width: 100%;"
+        />
+      </div>
+      <div
+        aria-hidden="true"
+        class="vale-progress-bar__percentage"
+      >
+        100
+        %
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Feedback Components Snapshots ProgressBar renders without label 1`] = `
+<div>
+  <div
+    class="vale-progress-bar"
+  >
+    <div
+      class="vale-progress-bar__container"
+    >
+      <div
+        aria-label="Progress"
+        aria-valuemax="100"
+        aria-valuemin="0"
+        aria-valuenow="50"
+        class="vale-progress-bar__track"
+        role="progressbar"
+      >
+        <div
+          class="vale-progress-bar__fill"
+          style="width: 50%;"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Feedback Components Snapshots ProgressBar renders without percentage display 1`] = `
+<div>
+  <div
+    class="vale-progress-bar"
+  >
+    <div
+      class="vale-progress-bar__label"
+      id=":r6:"
+    >
+      Installing
+    </div>
+    <div
+      class="vale-progress-bar__container"
+    >
+      <div
+        aria-labelledby=":r6:"
+        aria-valuemax="100"
+        aria-valuemin="0"
+        aria-valuenow="50"
+        class="vale-progress-bar__track"
+        role="progressbar"
+      >
+        <div
+          class="vale-progress-bar__fill"
+          style="width: 50%;"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Feedback Components Snapshots Toast renders error toast correctly 1`] = `
+<div>
+  <div
+    aria-atomic="true"
+    aria-live="assertive"
+    class="vale-toast vale-toast--error"
+    role="alert"
+  >
+    <div
+      class="vale-toast__content"
+    >
+      <span
+        aria-hidden="true"
+        class="vale-toast__icon"
+      >
+        ✕
+      </span>
+      <span
+        class="vale-toast__message"
+      >
+        This is a error message
+      </span>
+    </div>
+    <button
+      aria-label="Close notification"
+      class="vale-toast__close"
+      type="button"
+    >
+      <span
+        aria-hidden="true"
+      >
+        ×
+      </span>
+    </button>
+  </div>
+</div>
+`;
+
+exports[`Feedback Components Snapshots Toast renders info toast correctly 1`] = `
+<div>
+  <div
+    aria-atomic="true"
+    aria-live="polite"
+    class="vale-toast vale-toast--info"
+    role="status"
+  >
+    <div
+      class="vale-toast__content"
+    >
+      <span
+        aria-hidden="true"
+        class="vale-toast__icon"
+      >
+        ℹ
+      </span>
+      <span
+        class="vale-toast__message"
+      >
+        This is a info message
+      </span>
+    </div>
+    <button
+      aria-label="Close notification"
+      class="vale-toast__close"
+      type="button"
+    >
+      <span
+        aria-hidden="true"
+      >
+        ×
+      </span>
+    </button>
+  </div>
+</div>
+`;
+
+exports[`Feedback Components Snapshots Toast renders success toast correctly 1`] = `
+<div>
+  <div
+    aria-atomic="true"
+    aria-live="polite"
+    class="vale-toast vale-toast--success"
+    role="status"
+  >
+    <div
+      class="vale-toast__content"
+    >
+      <span
+        aria-hidden="true"
+        class="vale-toast__icon"
+      >
+        ✓
+      </span>
+      <span
+        class="vale-toast__message"
+      >
+        This is a success message
+      </span>
+    </div>
+    <button
+      aria-label="Close notification"
+      class="vale-toast__close"
+      type="button"
+    >
+      <span
+        aria-hidden="true"
+      >
+        ×
+      </span>
+    </button>
+  </div>
+</div>
+`;
+
+exports[`Feedback Components Snapshots Toast renders toast with long message 1`] = `
+<div>
+  <div
+    aria-atomic="true"
+    aria-live="assertive"
+    class="vale-toast vale-toast--error"
+    role="alert"
+  >
+    <div
+      class="vale-toast__content"
+    >
+      <span
+        aria-hidden="true"
+        class="vale-toast__icon"
+      >
+        ✕
+      </span>
+      <span
+        class="vale-toast__message"
+      >
+        This is a very long error message that should wrap properly and not break the layout of the toast notification component when displayed to users.
+      </span>
+    </div>
+    <button
+      aria-label="Close notification"
+      class="vale-toast__close"
+      type="button"
+    >
+      <span
+        aria-hidden="true"
+      >
+        ×
+      </span>
+    </button>
+  </div>
+</div>
+`;
+
+exports[`Feedback Components Snapshots Toast renders toast without close button when onClose is undefined 1`] = `
+<div>
+  <div
+    aria-atomic="true"
+    aria-live="polite"
+    class="vale-toast vale-toast--info"
+    role="status"
+  >
+    <div
+      class="vale-toast__content"
+    >
+      <span
+        aria-hidden="true"
+        class="vale-toast__icon"
+      >
+        ℹ
+      </span>
+      <span
+        class="vale-toast__message"
+      >
+        Non-dismissible message
+      </span>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Feedback Components Snapshots Toast renders warning toast correctly 1`] = `
+<div>
+  <div
+    aria-atomic="true"
+    aria-live="assertive"
+    class="vale-toast vale-toast--warning"
+    role="alert"
+  >
+    <div
+      class="vale-toast__content"
+    >
+      <span
+        aria-hidden="true"
+        class="vale-toast__icon"
+      >
+        ⚠
+      </span>
+      <span
+        class="vale-toast__message"
+      >
+        This is a warning message
+      </span>
+    </div>
+    <button
+      aria-label="Close notification"
+      class="vale-toast__close"
+      type="button"
+    >
+      <span
+        aria-hidden="true"
+      >
+        ×
+      </span>
+    </button>
+  </div>
+</div>
+`;
+
+exports[`Feedback Components Snapshots ValidationFeedback renders error with custom message correctly 1`] = `
+<div>
+  <div
+    aria-live="assertive"
+    class="vale-validation-feedback vale-validation-feedback--error"
+    role="alert"
+  >
+    <span
+      aria-hidden="true"
+      class="vale-validation-feedback__icon"
+    >
+      ⚠
+    </span>
+    <span
+      class="vale-validation-feedback__message"
+    >
+      Path does not exist
+    </span>
+  </div>
+</div>
+`;
+
+exports[`Feedback Components Snapshots ValidationFeedback renders error without message correctly 1`] = `
+<div>
+  <div
+    aria-live="assertive"
+    class="vale-validation-feedback vale-validation-feedback--error"
+    role="alert"
+  >
+    <span
+      aria-hidden="true"
+      class="vale-validation-feedback__icon"
+    >
+      ⚠
+    </span>
+    <span
+      class="vale-validation-feedback__message"
+    >
+      Validation failed
+    </span>
+  </div>
+</div>
+`;
+
+exports[`Feedback Components Snapshots ValidationFeedback renders idle (renders nothing) correctly 1`] = `<div />`;
+
+exports[`Feedback Components Snapshots ValidationFeedback renders valid with custom message correctly 1`] = `
+<div>
+  <div
+    aria-live="polite"
+    class="vale-validation-feedback vale-validation-feedback--valid"
+    role="status"
+  >
+    <span
+      aria-hidden="true"
+      class="vale-validation-feedback__icon"
+    >
+      ✓
+    </span>
+    <span
+      class="vale-validation-feedback__message"
+    >
+      Path exists
+    </span>
+  </div>
+</div>
+`;
+
+exports[`Feedback Components Snapshots ValidationFeedback renders valid without message correctly 1`] = `
+<div>
+  <div
+    aria-live="polite"
+    class="vale-validation-feedback vale-validation-feedback--valid"
+    role="status"
+  >
+    <span
+      aria-hidden="true"
+      class="vale-validation-feedback__icon"
+    >
+      ✓
+    </span>
+    <span
+      class="vale-validation-feedback__message"
+    >
+      Valid
+    </span>
+  </div>
+</div>
+`;
+
+exports[`Feedback Components Snapshots ValidationFeedback renders validating with custom message correctly 1`] = `
+<div>
+  <div
+    aria-live="polite"
+    class="vale-validation-feedback vale-validation-feedback--validating"
+    role="status"
+  >
+    <span
+      aria-hidden="true"
+      class="vale-validation-feedback__icon"
+    >
+      ⏳
+    </span>
+    <span
+      class="vale-validation-feedback__message"
+    >
+      Checking path...
+    </span>
+  </div>
+</div>
+`;
+
+exports[`Feedback Components Snapshots ValidationFeedback renders validating without message correctly 1`] = `
+<div>
+  <div
+    aria-live="polite"
+    class="vale-validation-feedback vale-validation-feedback--validating"
+    role="status"
+  >
+    <span
+      aria-hidden="true"
+      class="vale-validation-feedback__icon"
+    >
+      ⏳
+    </span>
+    <span
+      class="vale-validation-feedback__message"
+    >
+      Validating...
+    </span>
+  </div>
+</div>
+`;

@@ -5,7 +5,7 @@ module.exports = {
   roots: ["<rootDir>/test", "<rootDir>/src"],
   testMatch: ["**/*.test.ts", "**/*.test.tsx"],
   moduleDirectories: ["node_modules", "src"],
-  collectCoverageFrom: ["src/**/*.ts", "!src/**/*.d.ts"],
+  collectCoverageFrom: ["src/**/*.{ts,tsx}", "!src/**/*.d.ts"],
   setupFilesAfterEnv: [
     "<rootDir>/test/setup.ts",
     "<rootDir>/test/setup/axe.ts",

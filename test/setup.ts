@@ -37,6 +37,52 @@ global.DEBUG = false; // Set to false for tests to avoid debug output
     }
   };
 
+// Add Obsidian's createEl method to HTMLElement
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(HTMLElement.prototype as any).createEl = function (
+  this: HTMLElement,
+  tag: string,
+  options?: { text?: string; cls?: string },
+): HTMLElement {
+  const el = document.createElement(tag);
+  if (options?.text) {
+    el.textContent = options.text;
+  }
+  if (options?.cls) {
+    el.className = options.cls;
+  }
+  this.appendChild(el);
+  return el;
+};
+
+// Add Obsidian's createSpan method to HTMLElement
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(HTMLElement.prototype as any).createSpan = function (
+  this: HTMLElement,
+  options?: { text?: string; cls?: string },
+): HTMLSpanElement {
+  const span = document.createElement("span");
+  if (options?.text) {
+    span.textContent = options.text;
+  }
+  if (options?.cls) {
+    span.className = options.cls;
+  }
+  this.appendChild(span);
+  return span;
+};
+
+// Add Obsidian's setCssProps method to HTMLElement
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(HTMLElement.prototype as any).setCssProps = function (
+  this: HTMLElement,
+  props: Record<string, string>,
+): void {
+  for (const [key, value] of Object.entries(props)) {
+    this.style.setProperty(key, value);
+  }
+};
+
 // Extend Array with Obsidian-specific methods
 (
   Array.prototype as Array<unknown> & { contains: <T>(value: T) => boolean }

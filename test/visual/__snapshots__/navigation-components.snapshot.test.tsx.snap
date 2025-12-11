@@ -1,0 +1,630 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Navigation Components Snapshots BackButton renders default state 1`] = `
+<div>
+  <button
+    aria-label="Back to styles"
+    class="vale-back-button"
+    type="button"
+  >
+    <span
+      aria-hidden="true"
+      class="vale-back-button__icon"
+    >
+      <svg
+        data-icon="left-arrow-with-tail"
+      />
+    </span>
+    <span
+      class="vale-back-button__label"
+    >
+      Back to styles
+    </span>
+  </button>
+</div>
+`;
+
+exports[`Navigation Components Snapshots BackButton renders disabled state 1`] = `
+<div>
+  <button
+    aria-label="Back to styles"
+    class="vale-back-button"
+    disabled=""
+    type="button"
+  >
+    <span
+      aria-hidden="true"
+      class="vale-back-button__icon"
+    >
+      <svg
+        data-icon="left-arrow-with-tail"
+      />
+    </span>
+    <span
+      class="vale-back-button__label"
+    >
+      Back to styles
+    </span>
+  </button>
+</div>
+`;
+
+exports[`Navigation Components Snapshots BackButton renders with custom aria-label 1`] = `
+<div>
+  <button
+    aria-label="Return to styles list"
+    class="vale-back-button"
+    type="button"
+  >
+    <span
+      aria-hidden="true"
+      class="vale-back-button__icon"
+    >
+      <svg
+        data-icon="left-arrow-with-tail"
+      />
+    </span>
+    <span
+      class="vale-back-button__label"
+    >
+      Back
+    </span>
+  </button>
+</div>
+`;
+
+exports[`Navigation Components Snapshots BackButton renders with long label 1`] = `
+<div>
+  <button
+    aria-label="Back to Vale configuration settings"
+    class="vale-back-button"
+    type="button"
+  >
+    <span
+      aria-hidden="true"
+      class="vale-back-button__icon"
+    >
+      <svg
+        data-icon="left-arrow-with-tail"
+      />
+    </span>
+    <span
+      class="vale-back-button__label"
+    >
+      Back to Vale configuration settings
+    </span>
+  </button>
+</div>
+`;
+
+exports[`Navigation Components Snapshots Breadcrumb renders empty breadcrumb (no items) 1`] = `<div />`;
+
+exports[`Navigation Components Snapshots Breadcrumb renders single item (current page only) 1`] = `
+<div>
+  <nav
+    aria-label="Breadcrumb"
+    class="vale-breadcrumb"
+  >
+    <ol
+      class="vale-breadcrumb__list"
+    >
+      <li
+        class="vale-breadcrumb__item"
+      >
+        <span
+          aria-current="page"
+          class="vale-breadcrumb__current"
+        >
+          General
+        </span>
+      </li>
+    </ol>
+  </nav>
+</div>
+`;
+
+exports[`Navigation Components Snapshots Breadcrumb renders three-level breadcrumb 1`] = `
+<div>
+  <nav
+    aria-label="Breadcrumb"
+    class="vale-breadcrumb"
+  >
+    <ol
+      class="vale-breadcrumb__list"
+    >
+      <li
+        class="vale-breadcrumb__item"
+      >
+        <button
+          class="vale-breadcrumb__link"
+          type="button"
+        >
+          General
+        </button>
+        <span
+          aria-hidden="true"
+          class="vale-breadcrumb__separator"
+        >
+          /
+        </span>
+      </li>
+      <li
+        class="vale-breadcrumb__item"
+      >
+        <button
+          class="vale-breadcrumb__link"
+          type="button"
+        >
+          Styles
+        </button>
+        <span
+          aria-hidden="true"
+          class="vale-breadcrumb__separator"
+        >
+          /
+        </span>
+      </li>
+      <li
+        class="vale-breadcrumb__item"
+      >
+        <span
+          aria-current="page"
+          class="vale-breadcrumb__current"
+        >
+          Google
+        </span>
+      </li>
+    </ol>
+  </nav>
+</div>
+`;
+
+exports[`Navigation Components Snapshots Breadcrumb renders two-level breadcrumb 1`] = `
+<div>
+  <nav
+    aria-label="Breadcrumb"
+    class="vale-breadcrumb"
+  >
+    <ol
+      class="vale-breadcrumb__list"
+    >
+      <li
+        class="vale-breadcrumb__item"
+      >
+        <button
+          class="vale-breadcrumb__link"
+          type="button"
+        >
+          General
+        </button>
+        <span
+          aria-hidden="true"
+          class="vale-breadcrumb__separator"
+        >
+          /
+        </span>
+      </li>
+      <li
+        class="vale-breadcrumb__item"
+      >
+        <span
+          aria-current="page"
+          class="vale-breadcrumb__current"
+        >
+          Styles
+        </span>
+      </li>
+    </ol>
+  </nav>
+</div>
+`;
+
+exports[`Navigation Components Snapshots Breadcrumb renders with custom aria-label 1`] = `
+<div>
+  <nav
+    aria-label="Settings navigation"
+    class="vale-breadcrumb"
+  >
+    <ol
+      class="vale-breadcrumb__list"
+    >
+      <li
+        class="vale-breadcrumb__item"
+      >
+        <button
+          class="vale-breadcrumb__link"
+          type="button"
+        >
+          Settings
+        </button>
+        <span
+          aria-hidden="true"
+          class="vale-breadcrumb__separator"
+        >
+          /
+        </span>
+      </li>
+      <li
+        class="vale-breadcrumb__item"
+      >
+        <span
+          aria-current="page"
+          class="vale-breadcrumb__current"
+        >
+          Styles
+        </span>
+      </li>
+    </ol>
+  </nav>
+</div>
+`;
+
+exports[`Navigation Components Snapshots Breadcrumb renders with long labels 1`] = `
+<div>
+  <nav
+    aria-label="Breadcrumb"
+    class="vale-breadcrumb"
+  >
+    <ol
+      class="vale-breadcrumb__list"
+    >
+      <li
+        class="vale-breadcrumb__item"
+      >
+        <button
+          class="vale-breadcrumb__link"
+          type="button"
+        >
+          General Settings
+        </button>
+        <span
+          aria-hidden="true"
+          class="vale-breadcrumb__separator"
+        >
+          /
+        </span>
+      </li>
+      <li
+        class="vale-breadcrumb__item"
+      >
+        <button
+          class="vale-breadcrumb__link"
+          type="button"
+        >
+          Vale Style Configuration
+        </button>
+        <span
+          aria-hidden="true"
+          class="vale-breadcrumb__separator"
+        >
+          /
+        </span>
+      </li>
+      <li
+        class="vale-breadcrumb__item"
+      >
+        <span
+          aria-current="page"
+          class="vale-breadcrumb__current"
+        >
+          Microsoft Writing Style Guide Rules
+        </span>
+      </li>
+    </ol>
+  </nav>
+</div>
+`;
+
+exports[`Navigation Components Snapshots TabBar renders two-tab configuration 1`] = `
+<div>
+  <div
+    aria-label="Settings"
+    class="vale-tabbar"
+    role="tablist"
+  >
+    <button
+      aria-controls="panel-general"
+      aria-selected="true"
+      class="vale-tabbar__tab is-active "
+      id="tab-general"
+      role="tab"
+      tabindex="0"
+      type="button"
+    >
+      General
+    </button>
+    <button
+      aria-controls="panel-styles"
+      aria-selected="false"
+      class="vale-tabbar__tab  "
+      id="tab-styles"
+      role="tab"
+      tabindex="-1"
+      type="button"
+    >
+      Styles
+    </button>
+  </div>
+</div>
+`;
+
+exports[`Navigation Components Snapshots TabBar renders with custom aria-label 1`] = `
+<div>
+  <div
+    aria-label="Plugin configuration tabs"
+    class="vale-tabbar"
+    role="tablist"
+  >
+    <button
+      aria-controls="panel-general"
+      aria-selected="true"
+      class="vale-tabbar__tab is-active "
+      id="tab-general"
+      role="tab"
+      tabindex="0"
+      type="button"
+    >
+      General
+    </button>
+    <button
+      aria-controls="panel-styles"
+      aria-selected="false"
+      class="vale-tabbar__tab  "
+      id="tab-styles"
+      role="tab"
+      tabindex="-1"
+      type="button"
+    >
+      Styles
+    </button>
+    <button
+      aria-controls="panel-advanced"
+      aria-selected="false"
+      class="vale-tabbar__tab  "
+      id="tab-advanced"
+      role="tab"
+      tabindex="-1"
+      type="button"
+    >
+      Advanced
+    </button>
+  </div>
+</div>
+`;
+
+exports[`Navigation Components Snapshots TabBar renders with disabled tab 1`] = `
+<div>
+  <div
+    aria-label="Settings"
+    class="vale-tabbar"
+    role="tablist"
+  >
+    <button
+      aria-controls="panel-general"
+      aria-selected="true"
+      class="vale-tabbar__tab is-active "
+      id="tab-general"
+      role="tab"
+      tabindex="0"
+      type="button"
+    >
+      General
+    </button>
+    <button
+      aria-controls="panel-styles"
+      aria-disabled="true"
+      aria-selected="false"
+      class="vale-tabbar__tab  is-disabled"
+      disabled=""
+      id="tab-styles"
+      role="tab"
+      tabindex="-1"
+      type="button"
+    >
+      Styles
+    </button>
+    <button
+      aria-controls="panel-advanced"
+      aria-selected="false"
+      class="vale-tabbar__tab  "
+      id="tab-advanced"
+      role="tab"
+      tabindex="-1"
+      type="button"
+    >
+      Advanced
+    </button>
+  </div>
+</div>
+`;
+
+exports[`Navigation Components Snapshots TabBar renders with first tab active 1`] = `
+<div>
+  <div
+    aria-label="Settings"
+    class="vale-tabbar"
+    role="tablist"
+  >
+    <button
+      aria-controls="panel-general"
+      aria-selected="true"
+      class="vale-tabbar__tab is-active "
+      id="tab-general"
+      role="tab"
+      tabindex="0"
+      type="button"
+    >
+      General
+    </button>
+    <button
+      aria-controls="panel-styles"
+      aria-selected="false"
+      class="vale-tabbar__tab  "
+      id="tab-styles"
+      role="tab"
+      tabindex="-1"
+      type="button"
+    >
+      Styles
+    </button>
+    <button
+      aria-controls="panel-advanced"
+      aria-selected="false"
+      class="vale-tabbar__tab  "
+      id="tab-advanced"
+      role="tab"
+      tabindex="-1"
+      type="button"
+    >
+      Advanced
+    </button>
+  </div>
+</div>
+`;
+
+exports[`Navigation Components Snapshots TabBar renders with last tab active 1`] = `
+<div>
+  <div
+    aria-label="Settings"
+    class="vale-tabbar"
+    role="tablist"
+  >
+    <button
+      aria-controls="panel-general"
+      aria-selected="false"
+      class="vale-tabbar__tab  "
+      id="tab-general"
+      role="tab"
+      tabindex="-1"
+      type="button"
+    >
+      General
+    </button>
+    <button
+      aria-controls="panel-styles"
+      aria-selected="false"
+      class="vale-tabbar__tab  "
+      id="tab-styles"
+      role="tab"
+      tabindex="-1"
+      type="button"
+    >
+      Styles
+    </button>
+    <button
+      aria-controls="panel-advanced"
+      aria-selected="true"
+      class="vale-tabbar__tab is-active "
+      id="tab-advanced"
+      role="tab"
+      tabindex="0"
+      type="button"
+    >
+      Advanced
+    </button>
+  </div>
+</div>
+`;
+
+exports[`Navigation Components Snapshots TabBar renders with middle tab active 1`] = `
+<div>
+  <div
+    aria-label="Settings"
+    class="vale-tabbar"
+    role="tablist"
+  >
+    <button
+      aria-controls="panel-general"
+      aria-selected="false"
+      class="vale-tabbar__tab  "
+      id="tab-general"
+      role="tab"
+      tabindex="-1"
+      type="button"
+    >
+      General
+    </button>
+    <button
+      aria-controls="panel-styles"
+      aria-selected="true"
+      class="vale-tabbar__tab is-active "
+      id="tab-styles"
+      role="tab"
+      tabindex="0"
+      type="button"
+    >
+      Styles
+    </button>
+    <button
+      aria-controls="panel-advanced"
+      aria-selected="false"
+      class="vale-tabbar__tab  "
+      id="tab-advanced"
+      role="tab"
+      tabindex="-1"
+      type="button"
+    >
+      Advanced
+    </button>
+  </div>
+</div>
+`;
+
+exports[`Navigation Components Snapshots TabBar renders with multiple disabled tabs 1`] = `
+<div>
+  <div
+    aria-label="Settings"
+    class="vale-tabbar"
+    role="tablist"
+  >
+    <button
+      aria-controls="panel-general"
+      aria-selected="true"
+      class="vale-tabbar__tab is-active "
+      id="tab-general"
+      role="tab"
+      tabindex="0"
+      type="button"
+    >
+      General
+    </button>
+    <button
+      aria-controls="panel-styles"
+      aria-disabled="true"
+      aria-selected="false"
+      class="vale-tabbar__tab  is-disabled"
+      disabled=""
+      id="tab-styles"
+      role="tab"
+      tabindex="-1"
+      type="button"
+    >
+      Styles
+    </button>
+    <button
+      aria-controls="panel-rules"
+      aria-disabled="true"
+      aria-selected="false"
+      class="vale-tabbar__tab  is-disabled"
+      disabled=""
+      id="tab-rules"
+      role="tab"
+      tabindex="-1"
+      type="button"
+    >
+      Rules
+    </button>
+    <button
+      aria-controls="panel-advanced"
+      aria-selected="false"
+      class="vale-tabbar__tab  "
+      id="tab-advanced"
+      role="tab"
+      tabindex="-1"
+      type="button"
+    >
+      Advanced
+    </button>
+  </div>
+</div>
+`;
