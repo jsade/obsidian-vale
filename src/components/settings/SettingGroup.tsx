@@ -29,6 +29,9 @@ export interface SettingGroupProps {
   className?: string;
 }
 
+// Counter for generating unique IDs across component instances
+let groupIdCounter = 0;
+
 /**
  * Component for grouping related settings with a heading.
  *
@@ -96,6 +99,14 @@ export const SettingGroup: React.FC<SettingGroupProps> = ({
   // Ref: Container for the heading Setting
   const headingRef = React.useRef<HTMLDivElement>(null);
 
+  // Generate stable unique ID for this group instance
+  const groupId = React.useMemo(() => {
+    groupIdCounter += 1;
+    return `vale-setting-group-${groupIdCounter}`;
+  }, []);
+
+  const headingId = `${groupId}-heading`;
+
   /**
    * Effect: Create the heading Setting when title or description changes.
    */
@@ -110,6 +121,12 @@ export const SettingGroup: React.FC<SettingGroupProps> = ({
     // Create heading Setting using Obsidian's API
     const heading = new Setting(headingRef.current).setHeading().setName(title);
 
+    // Add ID to the heading element for aria-labelledby
+    const headingNameEl = heading.nameEl;
+    if (headingNameEl) {
+      headingNameEl.id = headingId;
+    }
+
     // Add description if provided
     if (description) {
       heading.setDesc(description);
@@ -121,13 +138,15 @@ export const SettingGroup: React.FC<SettingGroupProps> = ({
         headingRef.current.empty();
       }
     };
-  }, [title, description]);
+  }, [title, description, headingId]);
 
   return (
     <div
       className={
         className ? `vale-setting-group ${className}` : "vale-setting-group"
       }
+      role="group"
+      aria-labelledby={headingId}
     >
       {/* Heading rendered via Obsidian Setting API */}
       <div ref={headingRef} />

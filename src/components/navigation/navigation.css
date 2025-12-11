@@ -31,8 +31,11 @@
   font-weight: var(--font-medium);
   line-height: var(--line-height-tight);
 
-  /* Transition */
-  transition: color 0.15s ease, border-color 0.15s ease;
+  /* Transition - smooth color and border changes */
+  transition:
+    color 150ms ease,
+    border-color 200ms ease,
+    background-color 150ms ease;
 
   /* Remove default button styles */
   -webkit-appearance: none;
@@ -42,6 +45,7 @@
 
 .vale-tabbar__tab:hover:not(:disabled) {
   color: var(--text-normal);
+  background-color: var(--background-modifier-hover);
 }
 
 .vale-tabbar__tab.is-active {

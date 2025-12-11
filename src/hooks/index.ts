@@ -38,3 +38,14 @@ export { useRules, type UseRulesState } from "./useRules";
 
 // Export styles management hook
 export { useStyles, type StylesResult } from "./useStyles";
+
+// Export localStorage persistence hook
+export { useLocalStorage } from "./useLocalStorage";
+
+// Export Vale detection hook
+export {
+  useValeDetection,
+  type ValeDetectionState,
+  type ConfigSuggestions,
+  type UseValeDetectionReturn,
+} from "./useValeDetection";

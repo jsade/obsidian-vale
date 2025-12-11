@@ -5,6 +5,18 @@ import { ManagedModeSettings } from "./ManagedModeSettings";
 import { CustomModeSettings } from "./CustomModeSettings";
 
 /**
+ * Props for CliSettings component.
+ */
+export interface CliSettingsProps {
+  /**
+   * Whether to show advanced options.
+   * Passed to child components to control visibility of help text and info cards.
+   * @default false
+   */
+  showAdvanced?: boolean;
+}
+
+/**
  * CliSettings - Container for CLI mode configuration
  *
  * Provides:
@@ -17,11 +29,14 @@ import { CustomModeSettings } from "./CustomModeSettings";
  * - Uses Obsidian Setting API for the managed mode toggle
  * - Delegates to focused subcomponents for each mode
  * - React manages conditional rendering based on managed flag
+ * - Passes showAdvanced to children for progressive disclosure
  *
  * Nielsen Heuristic Alignment:
  * - H2 (Real World Match): Clear "managed" vs "custom" terminology
  * - H5 (Error Prevention): Toggle prevents accidental mode changes
  * - H6 (Recognition): Shows current mode clearly
+ * - H7 (Flexibility): Advanced options for power users
+ * - H8 (Minimalist Design): Basic view hides help text
  * - H10 (Help): Descriptive toggle text explains implications
  *
  * Accessibility:
@@ -30,10 +45,12 @@ import { CustomModeSettings } from "./CustomModeSettings";
  *
  * @example
  * ```tsx
- * {settings.type === "cli" && <CliSettings />}
+ * {settings.type === "cli" && <CliSettings showAdvanced={showAdvanced} />}
  * ```
  */
-export const CliSettings: React.FC = () => {
+export const CliSettings: React.FC<CliSettingsProps> = ({
+  showAdvanced = false,
+}) => {
   const { settings, updateSettings } = useSettings();
 
   // Ref: Container for the managed mode toggle Setting
@@ -84,7 +101,11 @@ export const CliSettings: React.FC = () => {
       <div ref={containerRef} />
 
       {/* Conditional rendering based on managed flag */}
-      {settings.cli.managed ? <ManagedModeSettings /> : <CustomModeSettings />}
+      {settings.cli.managed ? (
+        <ManagedModeSettings showAdvanced={showAdvanced} />
+      ) : (
+        <CustomModeSettings showAdvanced={showAdvanced} />
+      )}
     </div>
   );
 };

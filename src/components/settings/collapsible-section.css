@@ -1,0 +1,199 @@
+/**
+ * CollapsibleSection Component Styles
+ * Uses only Obsidian CSS variables for theme compatibility
+ *
+ * Animation duration: 200ms for snappy but smooth feel
+ * Respects prefers-reduced-motion for accessibility
+ */
+
+/* ============================================================================
+   Container
+   ============================================================================ */
+
+.vale-collapsible {
+  margin-bottom: var(--size-4-2);
+  border-radius: var(--radius-s);
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  overflow: hidden;
+}
+
+/* ============================================================================
+   Header / Toggle Button
+   ============================================================================ */
+
+.vale-collapsible__header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--size-4-2);
+  width: 100%;
+  padding: var(--size-4-3);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  color: var(--text-normal);
+  font-size: var(--font-ui-small);
+  transition: background-color 0.15s ease;
+}
+
+.vale-collapsible__header:hover {
+  background: var(--background-modifier-hover);
+}
+
+.vale-collapsible__header:focus {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--background-modifier-border-focus);
+}
+
+.vale-collapsible__header:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--interactive-accent);
+}
+
+/* ============================================================================
+   Chevron Icon
+   ============================================================================ */
+
+.vale-collapsible__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--size-4-4);
+  height: var(--size-4-4);
+  margin-top: var(--size-4-1);
+  color: var(--text-muted);
+  transition: transform 200ms ease;
+}
+
+.vale-collapsible__chevron {
+  display: block;
+}
+
+/* Rotate chevron when expanded */
+.vale-collapsible--expanded .vale-collapsible__icon {
+  transform: rotate(90deg);
+}
+
+/* ============================================================================
+   Title and Description
+   ============================================================================ */
+
+.vale-collapsible__title-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-4-1);
+  min-width: 0;
+  flex: 1;
+}
+
+.vale-collapsible__title {
+  font-weight: var(--font-medium);
+  color: var(--text-normal);
+  line-height: var(--line-height-tight);
+}
+
+.vale-collapsible__description {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+  line-height: var(--line-height-normal);
+}
+
+/* ============================================================================
+   Content Wrapper (animates height)
+   ============================================================================ */
+
+.vale-collapsible__content-wrapper {
+  overflow: hidden;
+  transition: height 200ms ease;
+}
+
+.vale-collapsible--collapsed .vale-collapsible__content-wrapper {
+  visibility: hidden;
+}
+
+.vale-collapsible--expanded .vale-collapsible__content-wrapper {
+  visibility: visible;
+}
+
+/* ============================================================================
+   Content (inner content area)
+   ============================================================================ */
+
+.vale-collapsible__content {
+  padding: 0 var(--size-4-3) var(--size-4-3) var(--size-4-3);
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+/* Add top padding to first child in content */
+.vale-collapsible__content > *:first-child {
+  margin-top: var(--size-4-3);
+}
+
+/* ============================================================================
+   Reduced Motion
+   ============================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .vale-collapsible__icon {
+    transition: none;
+  }
+
+  .vale-collapsible__content-wrapper {
+    transition: none;
+  }
+
+  /* Instant show/hide instead of animation */
+  .vale-collapsible--collapsed .vale-collapsible__content-wrapper {
+    height: 0 !important;
+  }
+
+  .vale-collapsible--expanded .vale-collapsible__content-wrapper {
+    height: auto !important;
+  }
+}
+
+/* ============================================================================
+   Variants: Compact (for nested usage)
+   ============================================================================ */
+
+.vale-collapsible--compact {
+  margin-bottom: 0;
+  border-radius: 0;
+  border: none;
+  background: transparent;
+}
+
+.vale-collapsible--compact .vale-collapsible__header {
+  padding: var(--size-4-2);
+}
+
+.vale-collapsible--compact .vale-collapsible__content {
+  padding: 0 var(--size-4-2) var(--size-4-2) var(--size-4-2);
+  border-top: none;
+}
+
+/* ============================================================================
+   Variants: Subtle (less prominent header)
+   ============================================================================ */
+
+.vale-collapsible--subtle {
+  background: transparent;
+  border: none;
+}
+
+.vale-collapsible--subtle .vale-collapsible__header {
+  padding: var(--size-4-2) 0;
+}
+
+.vale-collapsible--subtle .vale-collapsible__title {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.vale-collapsible--subtle .vale-collapsible__content {
+  padding: 0;
+  border-top: none;
+}

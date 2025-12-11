@@ -14,7 +14,12 @@ import { getQueriesForElement, prettyDOM } from "@testing-library/dom";
 import { App } from "obsidian";
 import { ValeSettings, ValeStyle, DEFAULT_SETTINGS } from "../../src/types";
 import { ValeConfigManager } from "../../src/vale/ValeConfigManager";
-import { AppContext, SettingsContext } from "../../src/context";
+import {
+  AppContext,
+  SettingsContext,
+  SettingsContextValue,
+  ValidationState,
+} from "../../src/context";
 import { StyleSettings } from "../../src/settings/StyleSettings";
 import { createMockApp } from "../mocks/obsidian";
 import * as hooks from "../../src/hooks";
@@ -536,14 +541,32 @@ export function renderStyleSettings(
   const container = document.createElement("div");
   document.body.appendChild(container);
 
-  // Render component using React 17 API
+  // Create mock context value with all required fields
+  const defaultValidation: ValidationState = {
+    isValidating: false,
+    configPathValid: true,
+    valePathValid: true,
+    errors: {},
+  };
+
+  const createMockContextValue = (
+    currentSettings: ValeSettings,
+  ): SettingsContextValue => ({
+    settings: currentSettings,
+    updateSettings: jest.fn().mockResolvedValue(undefined),
+    resetToDefaults: jest.fn().mockResolvedValue(undefined),
+    validation: defaultValidation,
+    setValidation: jest.fn(),
+  });
+
+  // Render component using React 18 API
   const renderElement = (
-    settings: ValeSettings,
-    navigate: jest.Mock<void, [string, string]>,
+    currentSettings: ValeSettings,
+    navigateFn: jest.Mock<void, [string, string]>,
   ) => (
     <AppContext.Provider value={app}>
-      <SettingsContext.Provider value={settings}>
-        <StyleSettings settings={settings} navigate={navigate} />
+      <SettingsContext.Provider value={createMockContextValue(currentSettings)}>
+        <StyleSettings settings={currentSettings} navigate={navigateFn} />
       </SettingsContext.Provider>
     </AppContext.Provider>
   );

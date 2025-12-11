@@ -19,11 +19,15 @@
   color: var(--text-muted);
   font-size: var(--font-ui-small);
   font-weight: var(--font-medium);
-  transition: color 0.15s ease, border-color 0.15s ease;
+  transition:
+    color 150ms ease,
+    border-color 200ms ease,
+    background-color 150ms ease;
 }
 
 .vale-settings-nav-tab:hover {
   color: var(--text-normal);
+  background-color: var(--background-modifier-hover);
 }
 
 .vale-settings-nav-tab.is-active {
@@ -34,6 +38,18 @@
 .vale-settings-nav-tab:focus {
   outline: none;
   box-shadow: 0 0 0 2px var(--background-modifier-border-focus);
+}
+
+.vale-settings-nav-tab:focus-visible {
+  outline: 2px solid var(--background-modifier-border-focus);
+  outline-offset: 2px;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .vale-settings-nav-tab {
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* Feedback message when styles unavailable */

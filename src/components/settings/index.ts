@@ -21,3 +21,6 @@ export type { SettingGroupProps } from "./SettingGroup";
 
 export { SettingDivider } from "./SettingDivider";
 export type { SettingDividerProps } from "./SettingDivider";
+
+export { CollapsibleSection } from "./CollapsibleSection";
+export type { CollapsibleSectionProps } from "./CollapsibleSection";

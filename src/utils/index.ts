@@ -19,3 +19,18 @@ export { useDebounce, useDebouncedCallback, debounce } from "./debounce";
 
 // Form utilities
 export { useFormField, type FormFieldState } from "./form";
+
+// Platform defaults and Vale detection utilities
+export {
+  getValeBinaryName,
+  getCommonValePaths,
+  getDefaultValePath,
+  getExamplePaths,
+  getCommonConfigPaths,
+  getDefaultConfigPath,
+  isExecutable,
+  detectValeInCommonPaths,
+  detectValeInPath,
+  detectVale,
+  type ValeDetectionResult,
+} from "./platformDefaults";

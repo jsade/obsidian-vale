@@ -3,6 +3,7 @@ import { Setting } from "obsidian";
 import { useSettings } from "../../context/SettingsContext";
 import { useConfigManager } from "../../hooks";
 import { usePathValidation } from "../../hooks/usePathValidation";
+import { useValeDetection } from "../../hooks/useValeDetection";
 import { SettingWithValidation } from "../../components/settings/SettingWithValidation";
 import {
   FieldValidation,
@@ -11,6 +12,19 @@ import {
   createValidValidation,
   createErrorValidation,
 } from "../../types/validation";
+import { getExamplePaths } from "../../utils/platformDefaults";
+
+/**
+ * Props for CustomModeSettings component.
+ */
+export interface CustomModeSettingsProps {
+  /**
+   * Whether to show advanced options (help text section).
+   * When false, the help text is hidden for a minimal UI.
+   * @default true
+   */
+  showAdvanced?: boolean;
+}
 
 /**
  * CustomModeSettings - Configuration for custom Vale paths
@@ -24,6 +38,7 @@ import {
  * - Debounced validation (500ms delay)
  * - Both paths saved together to avoid stale closures
  * - Clear validation feedback (spinner, checkmark, error)
+ * - Progressive disclosure via showAdvanced prop
  *
  * Architecture:
  * - Uses Obsidian Setting API for text inputs
@@ -35,6 +50,8 @@ import {
  * - H1 (Visibility): Real-time validation feedback
  * - H5 (Error Prevention): Validates paths before saving
  * - H6 (Recognition): Shows example paths and current values
+ * - H7 (Flexibility): Advanced help for power users
+ * - H8 (Minimalist Design): Basic view hides help text
  * - H10 (Help): Clear error messages with suggestions
  *
  * Accessibility:
@@ -44,12 +61,21 @@ import {
  *
  * @example
  * ```tsx
- * {!settings.cli.managed && <CustomModeSettings />}
+ * {!settings.cli.managed && <CustomModeSettings showAdvanced={false} />}
  * ```
  */
-export const CustomModeSettings: React.FC = () => {
+export const CustomModeSettings: React.FC<CustomModeSettingsProps> = ({
+  showAdvanced = true,
+}) => {
   const { settings, updateSettings } = useSettings();
   const configManager = useConfigManager(settings);
+
+  // Auto-detect Vale installation
+  // Only auto-detect if valePath is not already set
+  const detection = useValeDetection(!settings.cli.valePath);
+
+  // Get platform-specific example paths
+  const examplePaths = React.useMemo(() => getExamplePaths(), []);
 
   // Validate both paths using the usePathValidation hook
   const pathValidation = usePathValidation(configManager, {
@@ -85,6 +111,35 @@ export const CustomModeSettings: React.FC = () => {
     }
   }, [settings.cli, updateSettings]);
 
+  /**
+   * Handler: Use the detected Vale path.
+   * Updates the input field and triggers settings save.
+   */
+  const handleUseDetectedPath = React.useCallback((): void => {
+    if (detection.detectedPath) {
+      // Update the input field directly
+      if (valePathInputRef.current) {
+        valePathInputRef.current.value = detection.detectedPath;
+      }
+      // Save the settings
+      void updateSettings({
+        cli: {
+          ...settings.cli,
+          valePath: detection.detectedPath,
+        },
+      });
+      // Dismiss the detection banner
+      detection.dismissDetection();
+    }
+  }, [detection, settings.cli, updateSettings]);
+
+  /**
+   * Determine if we should show the detection suggestion.
+   * Show if: Vale was detected, user hasn't set a path yet, and detection isn't dismissed.
+   */
+  const showDetectionSuggestion =
+    detection.detectedPath !== null && !settings.cli.valePath;
+
   // Convert PathValidationResult to FieldValidation for Vale path
   const valePathFieldValidation: FieldValidation = React.useMemo(() => {
     if (pathValidation.valePath.isValidating) {
@@ -115,6 +170,65 @@ export const CustomModeSettings: React.FC = () => {
 
   return (
     <div className="vale-custom-mode-settings">
+      {/* Detection suggestion banner */}
+      {showDetectionSuggestion && (
+        <div className="vale-detection-banner" role="status" aria-live="polite">
+          <div className="vale-detection-content">
+            <span className="vale-detection-icon" aria-hidden="true">
+              {/* Checkmark icon */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </span>
+            <span className="vale-detection-message">
+              Vale found
+              {detection.detectedSource && (
+                <span className="vale-detection-source">
+                  {" "}
+                  via {detection.detectedSource}
+                </span>
+              )}
+              : <code>{detection.detectedPath}</code>
+            </span>
+          </div>
+          <div className="vale-detection-actions">
+            <button
+              className="mod-cta"
+              onClick={handleUseDetectedPath}
+              type="button"
+            >
+              Use this path
+            </button>
+            <button
+              className="vale-detection-dismiss"
+              onClick={detection.dismissDetection}
+              type="button"
+              aria-label="Dismiss suggestion"
+            >
+              Dismiss
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Detection in progress indicator */}
+      {detection.isDetecting && !settings.cli.valePath && (
+        <div className="vale-detection-scanning" role="status">
+          <span className="vale-detection-spinner" aria-hidden="true"></span>
+          <span>Scanning for Vale installation...</span>
+        </div>
+      )}
+
       {/* Vale binary path setting with validation */}
       <SettingWithValidation
         validation={valePathFieldValidation}
@@ -126,6 +240,9 @@ export const CustomModeSettings: React.FC = () => {
             .setDesc("Absolute path to the Vale binary.")
             .addText((text) => {
               const component = text.setValue(settings.cli.valePath ?? "");
+
+              // Set platform-specific placeholder
+              component.setPlaceholder(detection.defaultPath);
 
               // Store input element reference
               valePathInputRef.current = component.inputEl;
@@ -152,6 +269,9 @@ export const CustomModeSettings: React.FC = () => {
             .addText((text) => {
               const component = text.setValue(settings.cli.configPath ?? "");
 
+              // Set platform-specific placeholder
+              component.setPlaceholder(detection.defaultConfigPath);
+
               // Store input element reference
               configPathInputRef.current = component.inputEl;
 
@@ -165,20 +285,32 @@ export const CustomModeSettings: React.FC = () => {
         }}
       </SettingWithValidation>
 
-      {/* Help text */}
-      <div className="vale-custom-mode-help">
-        <p className="vale-help-text">
-          <strong>Tip:</strong> Paths can be absolute or relative to your vault
-          root.
-        </p>
-        <p className="vale-help-text">
-          Example paths:
-          <br />
-          Vale: <code>/usr/local/bin/vale</code> or <code>~/bin/vale</code>
-          <br />
-          Config: <code>/path/to/.vale.ini</code> or <code>.vale.ini</code>
-        </p>
-      </div>
+      {/* Help text with platform-specific examples - shown only in advanced mode */}
+      {showAdvanced && (
+        <div className="vale-custom-mode-help vale-advanced-content">
+          <p className="vale-help-text">
+            <strong>Tip:</strong> Paths can be absolute or relative to your
+            vault root.
+          </p>
+          <p className="vale-help-text">
+            Example paths for your system:
+            <br />
+            Vale: <code>{examplePaths.valePath}</code>
+            <br />
+            Config: <code>{examplePaths.configPath}</code> or{" "}
+            <code>.vale.ini</code>
+          </p>
+          {!detection.hasDetected && !detection.isDetecting && (
+            <button
+              className="vale-rescan-button"
+              onClick={() => void detection.detectVale()}
+              type="button"
+            >
+              Scan for Vale installation
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 };

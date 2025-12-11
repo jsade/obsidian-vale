@@ -3,7 +3,160 @@
  *
  * Styles for all feedback components using only Obsidian CSS variables.
  * Includes support for reduced motion and high contrast modes.
+ *
+ * Phase 3.2: Added micro-interactions and feedback animations
+ * - Button hover, loading, and success states
+ * - Toggle slide animations
+ * - Validation feedback animations (fade-in, shake)
+ * - All animations respect prefers-reduced-motion
  */
+
+/* ============================================================================
+   Button States & Micro-interactions
+   ========================================================================= */
+
+/**
+ * Vale Button Base Styles
+ *
+ * Generic button styling with transitions for hover, loading, and success states.
+ * Uses GPU-accelerated properties (transform, opacity) for performance.
+ */
+.vale-button {
+  transition:
+    background-color 200ms ease,
+    transform 100ms ease,
+    opacity 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.vale-button:hover:not(:disabled):not(.vale-button--loading) {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px hsla(var(--shadow-color), 0.15);
+}
+
+.vale-button:active:not(:disabled):not(.vale-button--loading) {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* Loading state - prevents interaction and shows dimmed state */
+.vale-button--loading {
+  pointer-events: none;
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.vale-button--loading::after {
+  content: "";
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  margin-left: 0.5em;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: vale-button-spin 800ms linear infinite;
+}
+
+/* Success state - brief pulse animation */
+.vale-button--success {
+  animation: vale-button-success-pulse 300ms ease;
+}
+
+@keyframes vale-button-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes vale-button-success-pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/**
+ * Obsidian Button Enhancements
+ *
+ * Enhanced transitions for Obsidian's native button classes within Vale settings.
+ * Subtle effects that complement Obsidian's existing styling.
+ */
+.vale-settings-layout button,
+.vale-general-settings button,
+.vale-style-settings button,
+.vale-cli-settings button {
+  transition:
+    background-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 100ms ease,
+    opacity 150ms ease;
+}
+
+.vale-settings-layout button:hover:not(:disabled),
+.vale-general-settings button:hover:not(:disabled),
+.vale-style-settings button:hover:not(:disabled),
+.vale-cli-settings button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.vale-settings-layout button:active:not(:disabled),
+.vale-general-settings button:active:not(:disabled),
+.vale-style-settings button:active:not(:disabled),
+.vale-cli-settings button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* ============================================================================
+   Toggle Animations
+   ========================================================================= */
+
+/**
+ * Toggle Slide Animation
+ *
+ * Enhances Obsidian's toggle switches within Vale settings with smooth
+ * slide transitions. Uses transform for GPU acceleration.
+ */
+.vale-settings-layout .checkbox-container,
+.vale-general-settings .checkbox-container,
+.vale-style-settings .checkbox-container,
+.vale-cli-settings .checkbox-container {
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease;
+}
+
+/* Toggle thumb (the sliding part) */
+.vale-settings-layout .checkbox-container::after,
+.vale-general-settings .checkbox-container::after,
+.vale-style-settings .checkbox-container::after,
+.vale-cli-settings .checkbox-container::after {
+  transition:
+    transform 200ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 150ms ease;
+}
+
+/* Hover effect on toggle */
+.vale-settings-layout .checkbox-container:hover:not(.is-disabled),
+.vale-general-settings .checkbox-container:hover:not(.is-disabled),
+.vale-style-settings .checkbox-container:hover:not(.is-disabled),
+.vale-cli-settings .checkbox-container:hover:not(.is-disabled) {
+  box-shadow: 0 0 0 2px hsla(var(--interactive-accent-hsl), 0.2);
+}
+
+/* Focus visible state for keyboard navigation */
+.vale-settings-layout .checkbox-container:focus-visible,
+.vale-general-settings .checkbox-container:focus-visible,
+.vale-style-settings .checkbox-container:focus-visible,
+.vale-cli-settings .checkbox-container:focus-visible {
+  outline: 2px solid var(--background-modifier-border-focus);
+  outline-offset: 2px;
+}
 
 /* ============================================================================
    Loading Spinner
@@ -160,6 +313,9 @@
   border-radius: var(--radius-s);
   font-size: var(--font-ui-small);
   margin-top: 0.25rem;
+
+  /* Entrance animation */
+  animation: vale-validation-fade-in 200ms ease-out;
 }
 
 .vale-validation-feedback__icon {
@@ -184,11 +340,80 @@
 .vale-validation-feedback--valid {
   color: var(--text-success);
   background: rgba(var(--color-green-rgb), 0.1);
+
+  /* Checkmark fade-in with slight scale */
+  animation: vale-validation-success-enter 250ms ease-out;
+}
+
+.vale-validation-feedback--valid .vale-validation-feedback__icon {
+  animation: vale-validation-checkmark 300ms ease-out;
 }
 
 .vale-validation-feedback--error {
   color: var(--text-error);
   background: rgba(var(--color-red-rgb), 0.1);
+
+  /* Subtle shake animation for error state */
+  animation: vale-validation-error-shake 300ms ease-out;
+}
+
+/* Entrance animation - subtle fade in from below */
+@keyframes vale-validation-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Success entrance animation */
+@keyframes vale-validation-success-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Checkmark icon animation */
+@keyframes vale-validation-checkmark {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Error shake animation - short, subtle, not distracting */
+@keyframes vale-validation-error-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-3px);
+  }
+  40% {
+    transform: translateX(3px);
+  }
+  60% {
+    transform: translateX(-2px);
+  }
+  80% {
+    transform: translateX(2px);
+  }
 }
 
 /* Pulse animation for validating state */
@@ -202,11 +427,124 @@
   }
 }
 
-/* Reduced motion support */
+/* Reduced motion support for validation feedback */
 @media (prefers-reduced-motion: reduce) {
+  .vale-validation-feedback {
+    animation: none;
+  }
+
   .vale-validation-feedback--validating .vale-validation-feedback__icon {
     animation: none;
     opacity: 1;
+  }
+
+  .vale-validation-feedback--valid {
+    animation: none;
+  }
+
+  .vale-validation-feedback--valid .vale-validation-feedback__icon {
+    animation: none;
+  }
+
+  .vale-validation-feedback--error {
+    animation: none;
+  }
+}
+
+/* ============================================================================
+   Inline Validation (for SettingWithValidation component)
+   ========================================================================= */
+
+/**
+ * Inline validation styles for Obsidian Setting descriptions.
+ * These classes are applied to spans within the Setting descEl.
+ * Different from ValidationFeedback component which is standalone.
+ */
+
+/* Validating state - pulse animation */
+.vale-validating {
+  animation: vale-inline-pulse 1.5s ease-in-out infinite;
+}
+
+/* Success checkmark - pop in animation */
+.vale-validation-success {
+  display: inline-block;
+  animation: vale-inline-checkmark 300ms ease-out;
+}
+
+/* Error message - subtle shake */
+.vale-validation-error {
+  display: inline-block;
+  animation: vale-inline-error-appear 200ms ease-out;
+}
+
+/* Suggestion text - fade in */
+.vale-validation-suggestion {
+  display: inline-block;
+  animation: vale-inline-fade-in 200ms ease-out;
+}
+
+/* Keyframes for inline validation */
+@keyframes vale-inline-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes vale-inline-checkmark {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  60% {
+    transform: scale(1.15);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes vale-inline-error-appear {
+  0% {
+    opacity: 0;
+    transform: translateX(-4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes vale-inline-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Reduced motion support for inline validation */
+@media (prefers-reduced-motion: reduce) {
+  .vale-validating {
+    animation: none;
+  }
+
+  .vale-validation-success {
+    animation: none;
+  }
+
+  .vale-validation-error {
+    animation: none;
+  }
+
+  .vale-validation-suggestion {
+    animation: none;
   }
 }
 
@@ -482,6 +820,87 @@
 }
 
 /* ============================================================================
+   Comprehensive Reduced Motion Support
+   ========================================================================= */
+
+/**
+ * Reduced Motion - Button & Toggle Micro-interactions
+ *
+ * Disables or minimizes all animations and transitions when user prefers
+ * reduced motion. Critical for accessibility (WCAG 2.3.3).
+ *
+ * Properties affected:
+ * - Button hover/active transforms
+ * - Button loading spinner
+ * - Button success pulse
+ * - Toggle slide transition
+ * - Toggle hover effects
+ */
+@media (prefers-reduced-motion: reduce) {
+  /* Button animations */
+  .vale-button {
+    transition-duration: 0.01ms !important;
+  }
+
+  .vale-button:hover:not(:disabled):not(.vale-button--loading),
+  .vale-button:active:not(:disabled):not(.vale-button--loading) {
+    transform: none;
+  }
+
+  .vale-button--loading::after {
+    animation: none;
+    /* Show static indicator instead */
+    border: 2px solid currentColor;
+    border-radius: 50%;
+  }
+
+  .vale-button--success {
+    animation: none;
+  }
+
+  /* Obsidian button enhancements */
+  .vale-settings-layout button,
+  .vale-general-settings button,
+  .vale-style-settings button,
+  .vale-cli-settings button {
+    transition-duration: 0.01ms !important;
+  }
+
+  .vale-settings-layout button:hover:not(:disabled),
+  .vale-general-settings button:hover:not(:disabled),
+  .vale-style-settings button:hover:not(:disabled),
+  .vale-cli-settings button:hover:not(:disabled),
+  .vale-settings-layout button:active:not(:disabled),
+  .vale-general-settings button:active:not(:disabled),
+  .vale-style-settings button:active:not(:disabled),
+  .vale-cli-settings button:active:not(:disabled) {
+    transform: none;
+  }
+
+  /* Toggle animations */
+  .vale-settings-layout .checkbox-container,
+  .vale-general-settings .checkbox-container,
+  .vale-style-settings .checkbox-container,
+  .vale-cli-settings .checkbox-container {
+    transition-duration: 0.01ms !important;
+  }
+
+  .vale-settings-layout .checkbox-container::after,
+  .vale-general-settings .checkbox-container::after,
+  .vale-style-settings .checkbox-container::after,
+  .vale-cli-settings .checkbox-container::after {
+    transition-duration: 0.01ms !important;
+  }
+
+  .vale-settings-layout .checkbox-container:hover:not(.is-disabled),
+  .vale-general-settings .checkbox-container:hover:not(.is-disabled),
+  .vale-style-settings .checkbox-container:hover:not(.is-disabled),
+  .vale-cli-settings .checkbox-container:hover:not(.is-disabled) {
+    box-shadow: none;
+  }
+}
+
+/* ============================================================================
    High Contrast Mode Support
    ========================================================================= */
 
@@ -500,6 +919,25 @@
   .vale-error-message__details-summary:focus-visible,
   .vale-error-message__action-button:focus-visible {
     outline-width: 3px;
+  }
+
+  /* Ensure button states are visible in high contrast */
+  .vale-button:focus-visible,
+  .vale-settings-layout button:focus-visible,
+  .vale-general-settings button:focus-visible,
+  .vale-style-settings button:focus-visible,
+  .vale-cli-settings button:focus-visible {
+    outline-width: 3px;
+    outline-offset: 3px;
+  }
+
+  /* Ensure toggle focus is visible */
+  .vale-settings-layout .checkbox-container:focus-visible,
+  .vale-general-settings .checkbox-container:focus-visible,
+  .vale-style-settings .checkbox-container:focus-visible,
+  .vale-cli-settings .checkbox-container:focus-visible {
+    outline-width: 3px;
+    outline-offset: 3px;
   }
 }
 

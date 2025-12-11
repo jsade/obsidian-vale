@@ -120,6 +120,135 @@
   margin-top: var(--size-4-4);
 }
 
+/* ============================================================================
+   Vale Detection Banner
+   ============================================================================ */
+
+.vale-detection-banner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-4-3);
+  padding: var(--size-4-4);
+  margin-bottom: var(--size-4-4);
+  background: var(--background-secondary);
+  border-radius: var(--radius-m);
+  border: 1px solid var(--text-success);
+  border-left: 3px solid var(--text-success);
+}
+
+.vale-detection-content {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--size-4-2);
+}
+
+.vale-detection-icon {
+  flex-shrink: 0;
+  color: var(--text-success);
+  margin-top: 2px;
+}
+
+.vale-detection-message {
+  flex: 1;
+  color: var(--text-normal);
+  font-size: var(--font-ui-small);
+  line-height: var(--line-height-normal);
+  word-break: break-all;
+}
+
+.vale-detection-source {
+  color: var(--text-muted);
+}
+
+.vale-detection-message code {
+  display: inline-block;
+  padding: var(--size-4-1) var(--size-4-2);
+  margin-top: var(--size-4-1);
+  background: var(--background-primary-alt);
+  border-radius: var(--radius-s);
+  font-family: var(--font-monospace);
+  font-size: var(--font-ui-smaller);
+  color: var(--text-normal);
+}
+
+.vale-detection-actions {
+  display: flex;
+  gap: var(--size-4-2);
+  flex-wrap: wrap;
+}
+
+.vale-detection-actions button {
+  /* Inherits Obsidian button styles */
+}
+
+.vale-detection-dismiss {
+  background: transparent;
+  border: 1px solid var(--background-modifier-border);
+  color: var(--text-muted);
+}
+
+.vale-detection-dismiss:hover {
+  color: var(--text-normal);
+  border-color: var(--text-muted);
+}
+
+/* Detection scanning indicator */
+.vale-detection-scanning {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+  padding: var(--size-4-3);
+  margin-bottom: var(--size-4-4);
+  background: var(--background-secondary);
+  border-radius: var(--radius-s);
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+}
+
+.vale-detection-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--background-modifier-border);
+  border-top-color: var(--interactive-accent);
+  border-radius: 50%;
+  animation: vale-detection-spin 0.8s linear infinite;
+}
+
+@keyframes vale-detection-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .vale-detection-spinner {
+    animation: none;
+    border-top-color: var(--interactive-accent);
+    border-right-color: var(--interactive-accent);
+  }
+}
+
+/* Rescan button in help text */
+.vale-rescan-button {
+  display: inline-block;
+  margin-top: var(--size-4-2);
+  padding: var(--size-4-1) var(--size-4-3);
+  background: transparent;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.vale-rescan-button:hover {
+  color: var(--text-normal);
+  border-color: var(--text-muted);
+}
+
 .vale-custom-mode-help {
   padding: var(--size-4-3);
   margin-top: var(--size-4-4);
@@ -256,79 +385,59 @@
 }
 
 /* ============================================================================
-   Loading Spinner (used in onboarding)
+   Loading Spinner
+   Note: Main styles in components/feedback/feedback.css
+   Only page-specific overrides here if needed
    ============================================================================ */
 
-.vale-loading-spinner {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+/* ============================================================================
+   Advanced Options Toggle
+   ============================================================================ */
+
+.vale-advanced-toggle {
+  margin-top: var(--size-4-6);
+  padding-top: var(--size-4-4);
+  border-top: 1px solid var(--background-modifier-border);
 }
 
-.vale-loading-spinner--small {
-  width: var(--size-4-4);
-  height: var(--size-4-4);
+/* Style the toggle itself to be less prominent */
+.vale-advanced-toggle .setting-item {
+  border: none;
+  padding-top: 0;
 }
 
-.vale-loading-spinner--medium {
-  width: var(--size-4-6);
-  height: var(--size-4-6);
+.vale-advanced-toggle .setting-item-info .setting-item-name {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
 }
 
-.vale-loading-spinner--large {
-  width: var(--size-4-8);
-  height: var(--size-4-8);
+.vale-advanced-toggle .setting-item-info .setting-item-description {
+  font-size: var(--font-ui-smaller);
 }
 
-.vale-loading-spinner__icon {
-  width: 100%;
-  height: 100%;
-  animation: vale-spinner-rotate 1s linear infinite;
+/* ============================================================================
+   Advanced Content (Progressive Disclosure)
+   ============================================================================ */
+
+.vale-advanced-content {
+  animation: vale-fade-in 200ms ease;
 }
 
-.vale-loading-spinner__svg {
-  width: 100%;
-  height: 100%;
+@keyframes vale-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.vale-loading-spinner__circle {
-  stroke: var(--interactive-accent);
-  stroke-linecap: round;
-  stroke-dasharray: 1, 150;
-  stroke-dashoffset: 0;
-  animation: vale-spinner-dash 1.5s ease-in-out infinite;
-}
-
-/* Respect prefers-reduced-motion */
+/* Respect reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
-  .vale-loading-spinner__icon {
+  .vale-advanced-content {
     animation: none;
-  }
-
-  .vale-loading-spinner__circle {
-    animation: none;
-    stroke-dasharray: 80, 200;
-  }
-}
-
-@keyframes vale-spinner-rotate {
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes vale-spinner-dash {
-  0% {
-    stroke-dasharray: 1, 150;
-    stroke-dashoffset: 0;
-  }
-  50% {
-    stroke-dasharray: 90, 150;
-    stroke-dashoffset: -35;
-  }
-  100% {
-    stroke-dasharray: 90, 150;
-    stroke-dashoffset: -124;
   }
 }
 

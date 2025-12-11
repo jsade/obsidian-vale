@@ -5,6 +5,9 @@ import { ValeConfigManager } from "vale/ValeConfigManager";
 import { useApp } from "./context/AppContext";
 import { ValeSettings } from "./types";
 
+// Re-export hooks from the hooks directory
+export { useLocalStorage } from "./hooks/useLocalStorage";
+
 /**
  * Hook to create and memoize a ValeConfigManager instance.
  * Returns undefined if in server mode or if app is not available.

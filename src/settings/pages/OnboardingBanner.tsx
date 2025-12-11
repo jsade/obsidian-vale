@@ -80,6 +80,7 @@ export const OnboardingBanner: React.FC = () => {
         This plugin is a graphical interface for{" "}
         <a href="https://docs.errata.ai" target="_blank" rel="noopener">
           Vale
+          <span className="visually-hidden"> (opens in new tab)</span>
         </a>
         . To use this plugin, you first need to set up Vale.
       </p>
