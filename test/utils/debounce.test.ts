@@ -143,7 +143,7 @@ describe("useDebounce", () => {
   });
 
   it("should cleanup timeout on unmount", () => {
-    const { result, rerender, unmount } = renderHook(
+    const { rerender, unmount } = renderHook(
       ({ value, delay }) => useDebounce(value, delay),
       { initialProps: { value: "initial", delay: 500 } },
     );
@@ -520,7 +520,7 @@ describe("debounce (standalone)", () => {
       });
       const debounced = debounce(fn, 500);
 
-      debounced();
+      void debounced();
       jest.advanceTimersByTime(500);
 
       expect(fn).toHaveBeenCalled();

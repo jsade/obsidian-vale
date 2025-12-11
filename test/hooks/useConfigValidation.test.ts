@@ -11,7 +11,8 @@
  * Coverage requirements: 90%+ for hooks
  */
 
-import { renderHook, act, waitFor } from "@testing-library/react";
+import { renderHook, waitFor } from "@testing-library/react";
+import { act } from "react";
 import {
   useConfigValidation,
   ConfigValidationResult,
@@ -104,7 +105,9 @@ describe("useConfigValidation", () => {
     it("should not immediately call validation methods (debounced)", () => {
       renderHook(() => useConfigValidation(mockConfigManager));
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateConfigPath).not.toHaveBeenCalled();
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.loadConfig).not.toHaveBeenCalled();
     });
   });
@@ -117,12 +120,14 @@ describe("useConfigValidation", () => {
       renderHook(() => useConfigValidation(mockConfigManager));
 
       // Before debounce
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateConfigPath).not.toHaveBeenCalled();
 
       // Just before threshold
       act(() => {
         jest.advanceTimersByTime(DEBOUNCE_DELAY_MS - 1);
       });
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateConfigPath).not.toHaveBeenCalled();
 
       // Cross threshold
@@ -130,6 +135,7 @@ describe("useConfigValidation", () => {
         jest.advanceTimersByTime(1);
       });
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateConfigPath).toHaveBeenCalledTimes(1);
     });
 
@@ -153,6 +159,7 @@ describe("useConfigValidation", () => {
       act(() => {
         jest.advanceTimersByTime(400);
       });
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateConfigPath).not.toHaveBeenCalled();
 
       // Change manager - resets timer
@@ -162,7 +169,9 @@ describe("useConfigValidation", () => {
       act(() => {
         jest.advanceTimersByTime(400);
       });
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateConfigPath).not.toHaveBeenCalled();
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(secondManager.validateConfigPath).not.toHaveBeenCalled();
 
       // Complete new debounce period
@@ -171,7 +180,9 @@ describe("useConfigValidation", () => {
       });
 
       // Second manager should be called
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(secondManager.validateConfigPath).toHaveBeenCalledTimes(1);
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateConfigPath).not.toHaveBeenCalled();
     });
   });
@@ -267,6 +278,7 @@ describe("useConfigValidation", () => {
       });
 
       // Should NOT attempt to load config if path is invalid
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.loadConfig).not.toHaveBeenCalled();
     });
 
@@ -831,6 +843,7 @@ describe("useConfigValidation", () => {
       // Should show result from second manager
       await waitFor(() => {
         expect(result.current.valid).toBe(true);
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(secondManager.validateConfigPath).toHaveBeenCalled();
       });
     });
@@ -881,6 +894,7 @@ describe("useConfigValidation", () => {
       });
 
       // Validation should NOT have been called
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateConfigPath).not.toHaveBeenCalled();
     });
 
@@ -971,6 +985,7 @@ describe("useConfigValidation", () => {
 
       // Wait for path validation to complete, config load to start
       await waitFor(() => {
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(mockConfigManager.loadConfig).toHaveBeenCalled();
       });
 
@@ -1210,7 +1225,7 @@ describe("useConfigValidation", () => {
       await waitFor(() => {
         expect(result.current.valid).toBe(true);
         // Should preserve extra fields in config
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
         expect((result.current.config as any)?.UnknownField).toBe("ignored");
       });
     });
@@ -1258,6 +1273,7 @@ describe("useConfigValidation", () => {
       }
 
       // Should not have called validation
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateConfigPath).not.toHaveBeenCalled();
     });
 

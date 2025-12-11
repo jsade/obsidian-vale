@@ -10,10 +10,10 @@
  * - Conditional rendering of close button
  */
 
+import React from "react";
 import "@testing-library/jest-dom";
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import React from "react";
 import { Toast, ToastType } from "../../src/components/feedback/Toast";
 
 // Mock timers for auto-dismiss testing

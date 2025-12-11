@@ -423,7 +423,6 @@ describe("CollapsibleSection Component", () => {
 
       // When expanded, height should be auto or a number (not 0)
       // In tests without actual layout, it might be 0 or auto
-      const style = window.getComputedStyle(wrapper as Element);
       // Just verify the height changed or is set
       expect(wrapper).toHaveAttribute("style");
     });

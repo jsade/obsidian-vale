@@ -20,17 +20,19 @@ import {
   createValidValidation,
   createErrorValidation,
 } from "../../src/types/validation";
-import { MockSetting } from "../mocks/obsidianSetting";
 
 // Mock Obsidian's Setting class
-jest.mock("obsidian", () => ({
-  Setting: jest.fn().mockImplementation((containerEl: HTMLElement) => {
-    return new (jest.requireActual("../mocks/obsidianSetting").MockSetting)(
-      containerEl,
-    );
-  }),
-  setIcon: jest.fn(),
-}));
+jest.mock("obsidian", () => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const { MockSetting } = jest.requireActual("../mocks/obsidianSetting");
+  return {
+    Setting: jest.fn().mockImplementation((containerEl: HTMLElement) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return
+      return new MockSetting(containerEl);
+    }),
+    setIcon: jest.fn(),
+  };
+});
 
 // Import after mock
 import { Setting } from "obsidian";
@@ -45,7 +47,7 @@ describe("SettingWithValidation Component", () => {
       const { container } = render(
         <SettingWithValidation validation={createIdleValidation()}>
           {(containerEl) => {
-            new Setting(containerEl).setName("Test Setting");
+            new Setting(containerEl).setName("Test setting");
           }}
         </SettingWithValidation>,
       );
@@ -81,7 +83,7 @@ describe("SettingWithValidation Component", () => {
       render(
         <SettingWithValidation validation={createIdleValidation()}>
           {(containerEl) => {
-            new Setting(containerEl).setName("My Setting");
+            new Setting(containerEl).setName("My setting");
           }}
         </SettingWithValidation>,
       );

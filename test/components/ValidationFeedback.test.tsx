@@ -13,7 +13,6 @@ import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import React from "react";
 import { ValidationFeedback } from "../../src/components/feedback/ValidationFeedback";
-import type { ValidationStatus } from "../../src/types/validation";
 
 describe("ValidationFeedback Component", () => {
   describe("Conditional Rendering", () => {

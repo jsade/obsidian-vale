@@ -253,11 +253,9 @@ describe("validateUrl", () => {
   describe("invalid URLs", () => {
     it("should reject malformed URLs", () => {
       const result = validateUrl("not-a-url");
-      expect(result).toEqual({
-        valid: false,
-        error: "Invalid URL format",
-        suggestion: expect.stringContaining("http://hostname:port"),
-      });
+      expect(result.valid).toBe(false);
+      expect(result.error).toBe("Invalid URL format");
+      expect(result.suggestion).toContain("http://hostname:port");
     });
 
     it("should reject URLs missing protocol", () => {
@@ -552,7 +550,8 @@ describe("validateValeBinary", () => {
 });
 
 describe("validateValeConfig", () => {
-  const { parse: mockParseIni } = jest.requireMock("ini");
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  const mockParseIni = jest.requireMock("ini").parse as jest.Mock;
 
   beforeEach(() => {
     jest.clearAllMocks();

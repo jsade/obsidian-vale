@@ -13,14 +13,14 @@ import "@testing-library/jest-dom";
 import { render, screen, waitFor } from "@testing-library/react";
 import React from "react";
 import { SettingGroup } from "../../src/components/settings/SettingGroup";
-import { MockSetting } from "../mocks/obsidianSetting";
 
 // Mock Obsidian's Setting class
 jest.mock("obsidian", () => ({
   Setting: jest.fn().mockImplementation((containerEl: HTMLElement) => {
-    return new (jest.requireActual("../mocks/obsidianSetting").MockSetting)(
-      containerEl,
-    );
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const mockModule = jest.requireActual("../mocks/obsidianSetting");
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    return new mockModule.MockSetting(containerEl);
   }),
   setIcon: jest.fn(),
 }));

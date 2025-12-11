@@ -100,7 +100,9 @@ describe("usePathValidation", () => {
       );
 
       // Validation should NOT have been called yet - debounce hasn't fired
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateValePath).not.toHaveBeenCalled();
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateConfigPath).not.toHaveBeenCalled();
     });
   });
@@ -118,12 +120,14 @@ describe("usePathValidation", () => {
       );
 
       // Before debounce
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateValePath).not.toHaveBeenCalled();
 
       // Advance time to just before debounce threshold
       act(() => {
         jest.advanceTimersByTime(DEBOUNCE_DELAY_MS - 1);
       });
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateValePath).not.toHaveBeenCalled();
 
       // Cross the debounce threshold
@@ -132,7 +136,9 @@ describe("usePathValidation", () => {
       });
 
       // Now validation should be triggered
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateValePath).toHaveBeenCalledTimes(1);
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateConfigPath).toHaveBeenCalledTimes(1);
     });
 
@@ -154,6 +160,7 @@ describe("usePathValidation", () => {
       act(() => {
         jest.advanceTimersByTime(400);
       });
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateValePath).not.toHaveBeenCalled();
 
       // Change paths - should reset the timer
@@ -163,6 +170,7 @@ describe("usePathValidation", () => {
       act(() => {
         jest.advanceTimersByTime(400);
       });
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateValePath).not.toHaveBeenCalled();
 
       // Complete the new debounce period
@@ -171,6 +179,7 @@ describe("usePathValidation", () => {
       });
 
       // NOW it should be called
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateValePath).toHaveBeenCalledTimes(1);
     });
 
@@ -199,6 +208,7 @@ describe("usePathValidation", () => {
       }
 
       // Still no validation called
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateValePath).not.toHaveBeenCalled();
 
       // Complete debounce for final value
@@ -207,7 +217,9 @@ describe("usePathValidation", () => {
       });
 
       // Should only be called once with the final values
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateValePath).toHaveBeenCalledTimes(1);
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateConfigPath).toHaveBeenCalledTimes(1);
     });
   });
@@ -573,8 +585,10 @@ describe("usePathValidation", () => {
       });
 
       // Vale path validation should NOT have been called
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateValePath).not.toHaveBeenCalled();
       // Config path validation SHOULD have been called
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateConfigPath).toHaveBeenCalled();
 
       // Vale path should remain in default state
@@ -604,7 +618,9 @@ describe("usePathValidation", () => {
         await Promise.resolve();
       });
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateValePath).toHaveBeenCalled();
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateConfigPath).not.toHaveBeenCalled();
 
       expect(result.current.configPath).toEqual({
@@ -633,7 +649,9 @@ describe("usePathValidation", () => {
         await Promise.resolve();
       });
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateValePath).not.toHaveBeenCalled();
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateConfigPath).toHaveBeenCalled();
     });
 
@@ -656,7 +674,9 @@ describe("usePathValidation", () => {
         await Promise.resolve();
       });
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateValePath).toHaveBeenCalled();
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateConfigPath).not.toHaveBeenCalled();
     });
 
@@ -679,7 +699,9 @@ describe("usePathValidation", () => {
         await Promise.resolve();
       });
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateValePath).not.toHaveBeenCalled();
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateConfigPath).not.toHaveBeenCalled();
     });
 
@@ -801,7 +823,6 @@ describe("usePathValidation", () => {
 
   describe("AbortController cleanup", () => {
     it("should abort in-flight validation when paths change", async () => {
-      let firstSignal: AbortSignal | undefined;
       let resolveFirst: (value: ValidationResult) => void;
 
       mockConfigManager.validateValePath.mockImplementation(() => {
@@ -830,6 +851,7 @@ describe("usePathValidation", () => {
       });
 
       // Capture the first call's behavior
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateValePath).toHaveBeenCalledTimes(1);
 
       // Change paths while first validation is in flight
@@ -841,6 +863,7 @@ describe("usePathValidation", () => {
       });
 
       // Second call should have been made
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateValePath).toHaveBeenCalledTimes(2);
 
       // Resolve first validation (should be ignored due to abort)
@@ -902,11 +925,11 @@ describe("usePathValidation", () => {
       });
 
       // Validation should NOT have been called since timeout was cancelled
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateValePath).not.toHaveBeenCalled();
     });
 
     it("should not update state after abort signal fires", async () => {
-      let capturedSignal: AbortSignal;
       let resolveValidation: (value: ValidationResult) => void;
 
       mockConfigManager.validateValePath.mockImplementation(() => {
@@ -1184,7 +1207,9 @@ describe("usePathValidation", () => {
         expect(result.current.configPath.valid).toBe(true);
       });
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateValePath).toHaveBeenCalled();
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateConfigPath).toHaveBeenCalled();
     });
 
@@ -1230,6 +1255,7 @@ describe("usePathValidation", () => {
       }
 
       // Should not have called validation at all
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockConfigManager.validateValePath).not.toHaveBeenCalled();
     });
 

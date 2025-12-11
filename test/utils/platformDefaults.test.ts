@@ -479,7 +479,9 @@ describe("detectValeInPath", () => {
     await detectValeInPath();
 
     // Should not have tried to check ""
-    const calls = (mockFs.promises.stat as jest.Mock).mock.calls;
+    const calls = (mockFs.promises.stat as jest.Mock).mock.calls as Array<
+      [string]
+    >;
     calls.forEach((call) => {
       expect(call[0]).not.toBe("/vale");
     });

@@ -13,6 +13,7 @@ import {
   useObsidianSetting,
   SettingConfig,
 } from "../../src/hooks/useObsidianSetting";
+import * as obsidianModule from "obsidian";
 import { Setting } from "obsidian";
 
 // Type cast Setting for test assertions
@@ -33,6 +34,11 @@ type TestSetting = Setting & {
   dropdownCallback: ((dropdown: unknown) => void) | null;
 };
 
+// Module-level reference for mocking
+const ObsidianModule = obsidianModule as {
+  Setting: typeof Setting;
+};
+
 describe("useObsidianSetting", () => {
   // Track Setting instances created during tests
   let createdSettings: TestSetting[];
@@ -40,24 +46,22 @@ describe("useObsidianSetting", () => {
 
   beforeEach(() => {
     createdSettings = [];
-    originalSetting = Setting;
+    originalSetting = ObsidianModule.Setting;
 
     // Wrap Setting constructor to track instances
-    const obsidianModule = require("obsidian");
-    const OriginalSettingClass = obsidianModule.Setting;
+    const OriginalSettingClass = ObsidianModule.Setting;
 
-    obsidianModule.Setting = class extends OriginalSettingClass {
+    ObsidianModule.Setting = class extends OriginalSettingClass {
       constructor(containerEl: HTMLElement) {
         super(containerEl);
         createdSettings.push(this as unknown as TestSetting);
       }
-    };
+    } as typeof Setting;
   });
 
   afterEach(() => {
     // Restore original Setting class
-    const obsidianModule = require("obsidian");
-    obsidianModule.Setting = originalSetting;
+    ObsidianModule.Setting = originalSetting;
     jest.restoreAllMocks();
     createdSettings = [];
   });
@@ -424,7 +428,7 @@ describe("useObsidianSetting", () => {
 
             const errorSpan = document.createElement("span");
             errorSpan.textContent = "Path not found";
-            errorSpan.style.color = "var(--text-error)";
+            errorSpan.setCssProps({ color: "var(--text-error)" });
             setting.descEl.appendChild(errorSpan);
           },
         },
@@ -715,7 +719,7 @@ describe("useObsidianSetting", () => {
       document.body.appendChild(container);
 
       let depValue = 1;
-      const { result, rerender, unmount } = renderHook(
+      const { result, rerender } = renderHook(
         ({ dep }) => {
           const ref = useObsidianSetting({ name: "Cleanup Test" }, [dep]);
           // Attach container on first render only

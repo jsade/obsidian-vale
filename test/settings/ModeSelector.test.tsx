@@ -13,8 +13,7 @@ import { render, waitFor, fireEvent } from "@testing-library/react";
 import React from "react";
 import { ModeSelector } from "../../src/settings/pages/ModeSelector";
 
-// Track toggle callbacks for testing
-let lastToggleCallback: ((value: boolean) => void) | null = null;
+// Track toggle state for testing
 let currentToggleValue = false;
 
 // Mock Obsidian's Setting class
@@ -44,46 +43,52 @@ jest.mock("obsidian", () => ({
     // Reset toggle value for new component instances
     currentToggleValue = false;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const setting: any = {
+    interface ToggleComponent {
+      setValue: (value: boolean) => ToggleComponent;
+      onChange: (callback: (value: boolean) => void) => ToggleComponent;
+    }
+
+    interface SettingInstance {
+      settingEl: HTMLElement;
+      nameEl: HTMLElement;
+      descEl: HTMLElement;
+      controlEl: HTMLElement;
+      infoEl: HTMLElement;
+      setName: (name: string) => SettingInstance;
+      setDesc: (desc: string) => SettingInstance;
+      addToggle: (
+        callback: (toggle: ToggleComponent) => void,
+      ) => SettingInstance;
+    }
+
+    const setting: SettingInstance = {
       settingEl,
       nameEl,
       descEl,
       controlEl,
       infoEl,
-    };
-
-    setting.setName = jest.fn((name: string) => {
-      nameEl.textContent = name;
-      return setting;
-    });
-
-    setting.setDesc = jest.fn((desc: string) => {
-      descEl.textContent = desc;
-      return setting;
-    });
-
-    setting.addToggle = jest.fn(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (cb: (toggle: any) => any) => {
+      setName: jest.fn((name: string) => {
+        nameEl.textContent = name;
+        return setting;
+      }),
+      setDesc: jest.fn((desc: string) => {
+        descEl.textContent = desc;
+        return setting;
+      }),
+      addToggle: jest.fn((cb: (toggle: ToggleComponent) => void) => {
         const toggleEl = document.createElement("div");
         toggleEl.className = "checkbox-container";
         toggleEl.setAttribute("data-testid", "mode-toggle");
         controlEl.appendChild(toggleEl);
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const toggleComponent: any = {};
-
-        toggleComponent.setValue = jest.fn((v: boolean) => {
-          currentToggleValue = v;
-          toggleEl.classList.toggle("is-enabled", v);
-          toggleEl.setAttribute("data-value", String(v));
-          return toggleComponent;
-        });
-
-        toggleComponent.onChange = jest.fn(
-          (changeCallback: (v: boolean) => void) => {
-            lastToggleCallback = changeCallback;
+        const toggleComponent: ToggleComponent = {
+          setValue: jest.fn((v: boolean) => {
+            currentToggleValue = v;
+            toggleEl.classList.toggle("is-enabled", v);
+            toggleEl.setAttribute("data-value", String(v));
+            return toggleComponent;
+          }),
+          onChange: jest.fn((changeCallback: (v: boolean) => void) => {
             toggleEl.addEventListener("click", () => {
               const newValue = !currentToggleValue;
               currentToggleValue = newValue;
@@ -92,13 +97,13 @@ jest.mock("obsidian", () => ({
               changeCallback(newValue);
             });
             return toggleComponent;
-          },
-        );
+          }),
+        };
 
         cb(toggleComponent);
         return setting;
-      },
-    );
+      }),
+    };
 
     return setting;
   }),
@@ -108,7 +113,6 @@ jest.mock("obsidian", () => ({
 describe("ModeSelector Component", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    lastToggleCallback = null;
     currentToggleValue = false;
   });
 

@@ -371,9 +371,7 @@ describe("useLocalStorage", () => {
       const { result: result1 } = renderHook(() =>
         useLocalStorage("shared", "default"),
       );
-      const { result: result2 } = renderHook(() =>
-        useLocalStorage("shared", "default"),
-      );
+      renderHook(() => useLocalStorage("shared", "default"));
 
       act(() => {
         result1.current[1]("updated by hook 1");

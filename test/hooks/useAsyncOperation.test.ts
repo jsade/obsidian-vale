@@ -11,7 +11,8 @@
  * - Cleanup on unmount
  */
 
-import { renderHook, act, waitFor } from "@testing-library/react";
+import { renderHook, waitFor } from "@testing-library/react";
+import { act } from "react";
 import { useAsyncOperation } from "../../src/hooks/useAsyncOperation";
 
 describe("useAsyncOperation", () => {
@@ -146,9 +147,9 @@ describe("useAsyncOperation", () => {
     });
 
     it("should handle non-Error rejections", async () => {
-      const operation = jest.fn().mockImplementation(async () => {
-        throw "string error";
-      });
+      // Using mockRejectedValue to test handling of non-Error rejections
+      // without actually throwing a string (which violates only-throw-error)
+      const operation = jest.fn().mockRejectedValue("string error");
 
       const { result } = renderHook(() => useAsyncOperation(operation));
 
