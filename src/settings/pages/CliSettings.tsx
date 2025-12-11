@@ -51,7 +51,7 @@ export interface CliSettingsProps {
 export const CliSettings: React.FC<CliSettingsProps> = ({
   showAdvanced = false,
 }) => {
-  const { settings, updateSettings } = useSettings();
+  const { settings, updateSettings, setValidation } = useSettings();
 
   // Ref: Container for the managed mode toggle Setting
   const containerRef = React.useRef<HTMLDivElement>(null);
@@ -94,6 +94,20 @@ export const CliSettings: React.FC<CliSettingsProps> = ({
       }
     };
   }, [settings.cli.managed, updateSettings, settings.cli]);
+
+  /**
+   * Effect: In managed mode, set configPathValid to true since config is auto-created.
+   * This enables the Styles tab without requiring path validation.
+   */
+  React.useEffect(() => {
+    if (settings.cli.managed) {
+      setValidation((prev) => ({
+        ...prev,
+        configPathValid: true,
+        valePathValid: true, // Vale is auto-downloaded in managed mode
+      }));
+    }
+  }, [settings.cli.managed, setValidation]);
 
   return (
     <div className="vale-cli-settings">

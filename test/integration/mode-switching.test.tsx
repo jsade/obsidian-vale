@@ -571,8 +571,8 @@ describe("Mode Switching - Tab Navigation Interaction", () => {
       jest.runAllTimers();
     });
 
-    // Mode toggle should be accessible
-    const toggle = getModeToggle(container);
+    // Mode toggle should be accessible on General tab
+    let toggle = getModeToggle(container);
     expect(toggle).toBeInTheDocument();
 
     // Click Styles tab if visible
@@ -583,10 +583,17 @@ describe("Mode Switching - Tab Navigation Interaction", () => {
         fireEvent.click(stylesTab);
         jest.runAllTimers();
       });
+
+      // Navigate back to General tab to access mode toggle
+      const generalTab = screen.getByRole("tab", { name: /general/i });
+      await act(async () => {
+        fireEvent.click(generalTab);
+        jest.runAllTimers();
+      });
     }
 
-    // Mode switch should be possible from any tab
-    // The settings state manages the mode, not the current tab
+    // Mode toggle should be accessible again after returning to General tab
+    toggle = getModeToggle(container);
     expect(toggle).toBeInTheDocument();
   });
 
@@ -610,6 +617,13 @@ describe("Mode Switching - Tab Navigation Interaction", () => {
     if (stylesTab) {
       await act(async () => {
         fireEvent.click(stylesTab);
+        jest.runAllTimers();
+      });
+
+      // Navigate back to General tab to access mode toggle
+      const generalTab = screen.getByRole("tab", { name: /general/i });
+      await act(async () => {
+        fireEvent.click(generalTab);
         jest.runAllTimers();
       });
 

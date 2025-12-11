@@ -70,7 +70,7 @@ export interface CustomModeSettingsProps {
 export const CustomModeSettings: React.FC<CustomModeSettingsProps> = ({
   showAdvanced = true,
 }) => {
-  const { settings, updateSettings } = useSettings();
+  const { settings, updateSettings, setValidation } = useSettings();
   const configManager = useConfigManager(settings);
 
   // Auto-detect Vale installation
@@ -229,6 +229,33 @@ export const CustomModeSettings: React.FC<CustomModeSettingsProps> = ({
     settings.cli,
     detection,
     updateSettings,
+  ]);
+
+  /**
+   * Effect: Sync path validation results to SettingsContext validation state.
+   * This enables the Styles tab when config path is valid.
+   */
+  React.useEffect(() => {
+    setValidation((prev) => ({
+      ...prev,
+      isValidating:
+        pathValidation.valePath.isValidating ||
+        pathValidation.configPath.isValidating,
+      valePathValid: pathValidation.valePath.valid,
+      configPathValid: pathValidation.configPath.valid,
+      errors: {
+        valePath: pathValidation.valePath.error,
+        configPath: pathValidation.configPath.error,
+      },
+    }));
+  }, [
+    pathValidation.valePath.valid,
+    pathValidation.valePath.isValidating,
+    pathValidation.valePath.error,
+    pathValidation.configPath.valid,
+    pathValidation.configPath.isValidating,
+    pathValidation.configPath.error,
+    setValidation,
   ]);
 
   // Convert PathValidationResult to FieldValidation for Vale path
