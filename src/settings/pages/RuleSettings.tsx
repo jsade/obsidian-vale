@@ -7,7 +7,6 @@ import { SettingsRoute, createStylesRoute } from "../navigation";
 import { RulesHeader } from "./RulesHeader";
 import { RulesList } from "./RulesList";
 import { RulesLoadingSkeleton } from "./RulesLoadingSkeleton";
-import "./rule-settings.css";
 
 /**
  * Props for RuleSettings component

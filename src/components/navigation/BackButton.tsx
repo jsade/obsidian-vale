@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from "react";
 import { setIcon } from "obsidian";
-import "./navigation.css";
 
 /**
  * BackButton component props

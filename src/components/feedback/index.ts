@@ -6,8 +6,7 @@
  * only Obsidian CSS variables for theming.
  */
 
-// Import CSS
-import "./feedback.css";
+// Note: CSS is consolidated in src/styles/index.css and bundled to styles.css by esbuild
 
 // Component exports
 export { LoadingSpinner } from "./LoadingSpinner";

@@ -2,37 +2,31 @@ import * as React from "react";
 import { Setting } from "obsidian";
 import { useSettings } from "../../context/SettingsContext";
 import { useConfigManager, useLocalStorage } from "../../hooks";
-import { ModeSelector } from "./ModeSelector";
-import { ServerSettings } from "./ServerSettings";
 import { CliSettings } from "./CliSettings";
 import { OnboardingBanner } from "./OnboardingBanner";
-import "./general-settings.css";
 
 /**
  * GeneralSettings - Main settings page for Vale plugin
  *
  * Provides configuration for:
- * - Mode selection (CLI vs Server)
- * - Server URL (when in Server mode)
- * - Vale CLI configuration (when in CLI mode)
+ * - Vale CLI configuration
  *   - Managed mode: Auto-download Vale
  *   - Custom mode: User-provided paths
  *
  * Architecture:
  * - Uses SettingsContext for state management
- * - Delegates to focused subcomponents for each mode
+ * - Delegates to focused subcomponents for CLI mode
  * - Shows onboarding banner for first-time users
+ * - Automatically treats "server" settings as "cli" (server mode hidden from UI)
  *
  * Nielsen Heuristic Alignment:
  * - H1 (Visibility): Shows current mode clearly
- * - H2 (Real World Match): Uses "Vale Server" not "HTTP endpoint"
- * - H5 (Error Prevention): Clear mode switching with confirmation
  * - H7 (Flexibility): Advanced options for power users
  * - H8 (Minimalist Design): Basic view shows only essential settings
  * - H10 (Help): Onboarding guidance for first-time users
  */
 export const GeneralSettings: React.FC = () => {
-  const { settings, updateSettings } = useSettings();
+  const { settings } = useSettings();
   const configManager = useConfigManager(settings);
 
   // Persist "show advanced" preference across sessions
@@ -48,12 +42,12 @@ export const GeneralSettings: React.FC = () => {
   const [showOnboarding, setShowOnboarding] = React.useState<boolean>(false);
 
   // Effect: Check if Vale is installed (for onboarding banner)
-  // Only re-run when mode changes, not on every settings change
+  // Always check for CLI mode (server mode is hidden from UI)
   React.useEffect(() => {
     let isMounted = true;
 
     const checkValeInstalled = async (): Promise<void> => {
-      if (settings.type === "cli" && configManager) {
+      if (configManager) {
         try {
           const exists = await configManager.valePathExists();
           if (isMounted) {
@@ -61,11 +55,6 @@ export const GeneralSettings: React.FC = () => {
           }
         } catch (error) {
           console.error("valePathExists error:", error);
-        }
-      } else {
-        // Hide onboarding in server mode
-        if (isMounted) {
-          setShowOnboarding(false);
         }
       }
     };
@@ -75,15 +64,7 @@ export const GeneralSettings: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, [settings.type, configManager]);
-
-  // Handler: Mode change (CLI ↔ Server)
-  const handleModeChange = React.useCallback(
-    (type: "cli" | "server"): void => {
-      void updateSettings({ type });
-    },
-    [updateSettings],
-  );
+  }, [configManager]);
 
   // Effect: Create the advanced options toggle Setting
   React.useEffect(() => {
@@ -138,14 +119,8 @@ export const GeneralSettings: React.FC = () => {
         </div>
       )}
 
-      {/* Mode selector: CLI vs Server */}
-      <ModeSelector mode={settings.type} onModeChange={handleModeChange} />
-
-      {/* Server settings (shown when in Server mode) */}
-      {settings.type === "server" && <ServerSettings />}
-
-      {/* CLI settings (shown when in CLI mode) */}
-      {settings.type === "cli" && <CliSettings showAdvanced={showAdvanced} />}
+      {/* CLI settings - always shown (server mode hidden from UI) */}
+      <CliSettings showAdvanced={showAdvanced} />
     </div>
   );
 };

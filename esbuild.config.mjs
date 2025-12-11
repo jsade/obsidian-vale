@@ -12,7 +12,8 @@ if you want to view the source, please visit the github repository of this plugi
 
 const prod = process.argv[2] === "production";
 
-const outputFiles = ["main.js", "main.css", "styles.css", "manifest.json"];
+// Note: main.css removed - CSS is now bundled from src/styles/index.css to styles.css
+const outputFiles = ["main.js", "styles.css", "manifest.json"];
 
 async function copyOutputsToDist() {
 	const distDir = path.resolve("dist");
@@ -30,25 +31,29 @@ async function copyOutputsToDist() {
 	}
 }
 
-const context = await esbuild.context({
+// Shared esbuild options for externals
+const externalModules = [
+	"obsidian",
+	"electron",
+	"@codemirror/autocomplete",
+	"@codemirror/collab",
+	"@codemirror/commands",
+	"@codemirror/language",
+	"@codemirror/lint",
+	"@codemirror/search",
+	"@codemirror/state",
+	"@codemirror/view",
+	...builtinModules,
+];
+
+// JavaScript build context
+const jsContext = await esbuild.context({
 	banner: {
 		js: banner,
 	},
 	entryPoints: ["src/main.ts"],
 	bundle: true,
-	external: [
-		"obsidian",
-		"electron",
-		"@codemirror/autocomplete",
-		"@codemirror/collab",
-		"@codemirror/commands",
-		"@codemirror/language",
-		"@codemirror/lint",
-		"@codemirror/search",
-		"@codemirror/state",
-		"@codemirror/view",
-		...builtinModules,
-	],
+	external: externalModules,
 	format: "cjs",
 	target: "es2018",
 	logLevel: "info",
@@ -61,10 +66,19 @@ const context = await esbuild.context({
 	},
 });
 
+// CSS build context - bundles all CSS into styles.css for Obsidian
+const cssContext = await esbuild.context({
+	entryPoints: ["src/styles/index.css"],
+	bundle: true,
+	outfile: "styles.css",
+	minify: prod,
+	logLevel: "info",
+});
+
 if (prod) {
-	await context.rebuild();
+	await Promise.all([jsContext.rebuild(), cssContext.rebuild()]);
 	await copyOutputsToDist();
 	process.exit(0);
 } else {
-	await context.watch();
+	await Promise.all([jsContext.watch(), cssContext.watch()]);
 }

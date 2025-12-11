@@ -1,0 +1,69 @@
+/**
+ * Vale Plugin - Master CSS Entry Point
+ *
+ * This file consolidates all CSS for the Obsidian Vale plugin.
+ * Obsidian requires a single styles.css file in the plugin root.
+ * esbuild bundles this file and all its imports into styles.css.
+ *
+ * Import order matters for CSS specificity:
+ * 1. Base utilities and accessibility
+ * 2. Core plugin styles (panel, editor, tooltips)
+ * 3. Layout components
+ * 4. Navigation components
+ * 5. Feedback and UI components
+ * 6. Settings pages (most specific)
+ */
+
+/* ============================================
+   1. Base Utilities
+   ============================================ */
+
+/* Accessibility utilities: visually-hidden, focus indicators, high contrast support */
+@import "../a11y.css";
+
+/* ============================================
+   2. Core Plugin Styles
+   ============================================ */
+
+/* Vale panel, alerts, editor underlines, tooltips */
+@import "./core.css";
+
+/* ============================================
+   3. Layout Components
+   ============================================ */
+
+/* Settings layout container and structure */
+@import "../settings/settings-layout.css";
+
+/* ============================================
+   4. Navigation Components
+   ============================================ */
+
+/* TabBar, BackButton, Breadcrumb components */
+@import "../components/navigation/navigation.css";
+
+/* ============================================
+   5. Feedback and UI Components
+   ============================================ */
+
+/* Toast, ValidationFeedback, LoadingSpinner, ProgressBar, ErrorMessage */
+@import "../components/feedback/feedback.css";
+
+/* CollapsibleSection component */
+@import "../components/settings/collapsible-section.css";
+
+/* ============================================
+   6. Settings Pages
+   ============================================ */
+
+/* Settings navigation tabs and shared settings styles */
+@import "../settings/settings.css";
+
+/* General settings page */
+@import "../settings/pages/general-settings.css";
+
+/* Style settings page */
+@import "../settings/pages/style-settings.css";
+
+/* Rule settings page */
+@import "../settings/pages/rule-settings.css";

@@ -1,5 +1,4 @@
 import * as React from "react";
-import "./settings-layout.css";
 
 /**
  * Props for SettingsLayout component

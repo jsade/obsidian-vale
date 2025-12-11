@@ -75,8 +75,8 @@ export const valeAlertMap = new Map<string, ValeAlert>();
  *
  * @remarks
  * - Vale uses 1-based line numbers; CM6 uses 0-based
- * - Vale Span is [start, end] byte offsets within the line
- * - CM6 positions are character offsets from document start
+ * - Vale Span is [start, end] with 1-based byte offsets within the line
+ * - CM6 positions are 0-based character offsets from document start
  * - Handles multi-byte UTF-8 characters correctly
  *
  * @internal
@@ -91,10 +91,12 @@ function alertToOffsets(
   // Get the line object from the document
   const line = state.doc.line(lineNumber + 1); // doc.line is 1-based
 
-  // Vale Span is [start, end] byte offsets within the line
-  // We need to convert these to character offsets
+  // Vale Span is [start, end] with 1-based byte offsets within the line
+  // We need to convert these to 0-based character offsets
   const lineText = line.text;
-  const [spanStart, spanEnd] = alert.Span;
+  // Convert from 1-based to 0-based byte offsets
+  const spanStart = alert.Span[0] - 1;
+  const spanEnd = alert.Span[1] - 1;
 
   // Check if span is completely beyond the line length
   const lineBytes = new TextEncoder().encode(lineText).length;

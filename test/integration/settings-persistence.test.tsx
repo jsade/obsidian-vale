@@ -109,36 +109,6 @@ function renderSettingsRouter(plugin: MockedPlugin) {
   return render(<SettingsRouter plugin={plugin as unknown as ValePlugin} />);
 }
 
-/**
- * Helper to find the mode toggle checkbox.
- * The ModeSelector uses Obsidian's Setting.addToggle() which creates
- * an <input type="checkbox" class="toggle"> element.
- */
-function getModeToggle(container: HTMLElement): HTMLInputElement {
-  const toggle = container.querySelector(
-    ".vale-mode-selector input.toggle",
-  ) as HTMLInputElement;
-
-  expect(toggle).toBeInTheDocument();
-  expect(toggle).toHaveAttribute("type", "checkbox");
-
-  return toggle;
-}
-
-/**
- * Helper to change mode by toggling the checkbox.
- * @param toggle - The checkbox element
- * @param toServer - true to switch to Server mode, false for CLI mode
- */
-async function changeMode(
-  toggle: HTMLInputElement,
-  toServer: boolean,
-): Promise<void> {
-  await act(async () => {
-    fireEvent.change(toggle, { target: { checked: toServer } });
-  });
-}
-
 describe("Settings Persistence Integration Tests", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -150,22 +120,48 @@ describe("Settings Persistence Integration Tests", () => {
   });
 
   describe("Settings Save After Change", () => {
-    it("should call saveSettings when mode changes", async () => {
+    it("should call saveSettings when settings change via updateSettings", async () => {
       const plugin = createMockPlugin({
         type: "cli",
+        cli: {
+          managed: true,
+          valePath: "/original/vale",
+          configPath: "/original/.vale.ini",
+        },
       });
 
-      const { container } = renderSettingsRouter(plugin);
+      // Capture the updateSettings function
+      let capturedUpdateSettings:
+        | ((updates: Partial<ValeSettings>) => Promise<void>)
+        | null = null;
+
+      const SettingsCapture: React.FC = () => {
+        const { updateSettings } = useSettings();
+        capturedUpdateSettings = updateSettings;
+        return null;
+      };
+
+      jest
+        .spyOn(hooks, "useConfigManager")
+        .mockReturnValue(plugin.configManager as unknown as ValeConfigManager);
+
+      render(
+        <SettingsProvider plugin={plugin as unknown as ValePlugin}>
+          <SettingsCapture />
+        </SettingsProvider>,
+      );
 
       await act(async () => {
         jest.runAllTimers();
       });
 
-      // Find and toggle mode change (CLI -> Server)
-      const toggle = getModeToggle(container);
+      expect(capturedUpdateSettings).toBeDefined();
 
-      await changeMode(toggle, true); // Switch to server mode
+      // Update a setting
       await act(async () => {
+        await capturedUpdateSettings!({
+          cli: { managed: false, valePath: "/new/vale" },
+        });
         jest.runAllTimers();
       });
 
@@ -178,9 +174,33 @@ describe("Settings Persistence Integration Tests", () => {
     it("should save settings immediately after change (no debounce)", async () => {
       const plugin = createMockPlugin({
         type: "cli",
+        cli: {
+          managed: true,
+          valePath: "/original/vale",
+          configPath: "/original/.vale.ini",
+        },
       });
 
-      const { container } = renderSettingsRouter(plugin);
+      // Capture the updateSettings function
+      let capturedUpdateSettings:
+        | ((updates: Partial<ValeSettings>) => Promise<void>)
+        | null = null;
+
+      const SettingsCapture: React.FC = () => {
+        const { updateSettings } = useSettings();
+        capturedUpdateSettings = updateSettings;
+        return null;
+      };
+
+      jest
+        .spyOn(hooks, "useConfigManager")
+        .mockReturnValue(plugin.configManager as unknown as ValeConfigManager);
+
+      render(
+        <SettingsProvider plugin={plugin as unknown as ValePlugin}>
+          <SettingsCapture />
+        </SettingsProvider>,
+      );
 
       await act(async () => {
         jest.runAllTimers();
@@ -188,9 +208,12 @@ describe("Settings Persistence Integration Tests", () => {
 
       const initialCallCount = plugin.saveSettings.mock.calls.length;
 
-      const toggle = getModeToggle(container);
-
-      await changeMode(toggle, true); // Switch to server mode
+      // Update a setting
+      await act(async () => {
+        await capturedUpdateSettings!({
+          cli: { managed: false, valePath: "/new/vale" },
+        });
+      });
 
       // saveSettings should be called immediately (within updateSettings)
       await waitFor(() => {
@@ -203,27 +226,51 @@ describe("Settings Persistence Integration Tests", () => {
     it("should update plugin.settings when settings change", async () => {
       const plugin = createMockPlugin({
         type: "cli",
+        cli: {
+          managed: true,
+          valePath: "/original/vale",
+          configPath: "/original/.vale.ini",
+        },
       });
 
-      const { container } = renderSettingsRouter(plugin);
+      // Capture the updateSettings function
+      let capturedUpdateSettings:
+        | ((updates: Partial<ValeSettings>) => Promise<void>)
+        | null = null;
+
+      const SettingsCapture: React.FC = () => {
+        const { updateSettings } = useSettings();
+        capturedUpdateSettings = updateSettings;
+        return null;
+      };
+
+      jest
+        .spyOn(hooks, "useConfigManager")
+        .mockReturnValue(plugin.configManager as unknown as ValeConfigManager);
+
+      render(
+        <SettingsProvider plugin={plugin as unknown as ValePlugin}>
+          <SettingsCapture />
+        </SettingsProvider>,
+      );
 
       await act(async () => {
         jest.runAllTimers();
       });
 
-      expect(plugin.settings.type).toBe("cli");
+      expect(plugin.settings.cli.valePath).toBe("/original/vale");
 
-      // Switch mode using toggle
-      const toggle = getModeToggle(container);
-
-      await changeMode(toggle, true); // Switch to server mode
+      // Update valePath via updateSettings
       await act(async () => {
+        await capturedUpdateSettings!({
+          cli: { managed: false, valePath: "/new/vale" },
+        });
         jest.runAllTimers();
       });
 
-      // SettingsContext.updateSettings updates plugin.settings
+      // plugin.settings should be updated
       await waitFor(() => {
-        expect(plugin.settings.type).toBe("server");
+        expect(plugin.settings.cli.valePath).toBe("/new/vale");
       });
     });
   });
@@ -847,17 +894,36 @@ describe("Settings Persistence Integration Tests", () => {
         ) as ValeSettings;
       });
 
-      const { container } = renderSettingsRouter(plugin);
+      // Capture the updateSettings function
+      let capturedUpdateSettings:
+        | ((updates: Partial<ValeSettings>) => Promise<void>)
+        | null = null;
+
+      const SettingsCapture: React.FC = () => {
+        const { updateSettings } = useSettings();
+        capturedUpdateSettings = updateSettings;
+        return null;
+      };
+
+      jest
+        .spyOn(hooks, "useConfigManager")
+        .mockReturnValue(plugin.configManager as unknown as ValeConfigManager);
+
+      render(
+        <SettingsProvider plugin={plugin as unknown as ValePlugin}>
+          <SettingsCapture />
+        </SettingsProvider>,
+      );
 
       await act(async () => {
         jest.runAllTimers();
       });
 
-      // Trigger a settings change to force a save via mode toggle
-      const toggle = getModeToggle(container);
-      await changeMode(toggle, true); // Switch to server mode
-
+      // Trigger a settings change to force a save
       await act(async () => {
+        await capturedUpdateSettings!({
+          cli: { managed: false, valePath: "/new/vale" },
+        });
         jest.runAllTimers();
       });
 
@@ -895,27 +961,48 @@ describe("Settings Persistence - Edge Cases", () => {
   it.skip("should handle saveSettings failure gracefully", async () => {
     const plugin = createMockPlugin({
       type: "cli",
+      cli: {
+        managed: true,
+        valePath: "/original/vale",
+        configPath: "/original/.vale.ini",
+      },
     });
 
     // Make save fail - implementation rejects but doesn't crash the UI
     plugin.saveSettings.mockRejectedValue(new Error("Disk full"));
 
-    const { container } = renderSettingsRouter(plugin);
+    // Capture the updateSettings function
+    let capturedUpdateSettings:
+      | ((updates: Partial<ValeSettings>) => Promise<void>)
+      | null = null;
+
+    const SettingsCapture: React.FC = () => {
+      const { updateSettings } = useSettings();
+      capturedUpdateSettings = updateSettings;
+      return null;
+    };
+
+    jest
+      .spyOn(hooks, "useConfigManager")
+      .mockReturnValue(plugin.configManager as unknown as ValeConfigManager);
+
+    render(
+      <SettingsProvider plugin={plugin as unknown as ValePlugin}>
+        <SettingsCapture />
+      </SettingsProvider>,
+    );
 
     await act(async () => {
       jest.runAllTimers();
     });
 
-    const toggle = getModeToggle(container);
-
-    // Trigger the save failure by changing mode
-    await changeMode(toggle, true);
+    // Trigger the save failure by changing a setting
     await act(async () => {
+      await capturedUpdateSettings!({
+        cli: { managed: false, valePath: "/new/vale" },
+      });
       jest.runAllTimers();
     });
-
-    // Component should still be rendered (no crash)
-    expect(screen.queryByRole("tabpanel")).toBeInTheDocument();
 
     // saveSettings was called (even though it failed)
     expect(plugin.saveSettings).toHaveBeenCalled();
@@ -964,6 +1051,11 @@ describe("Settings Persistence - Edge Cases", () => {
   it("should handle concurrent settings updates", async () => {
     const plugin = createMockPlugin({
       type: "cli",
+      cli: {
+        managed: true,
+        valePath: "/original/vale",
+        configPath: "/original/.vale.ini",
+      },
     });
 
     // Make save slow to test concurrency
@@ -971,29 +1063,49 @@ describe("Settings Persistence - Edge Cases", () => {
       () => new Promise((resolve) => setTimeout(resolve, 100)),
     );
 
-    const { container } = renderSettingsRouter(plugin);
+    // Capture the updateSettings function
+    let capturedUpdateSettings:
+      | ((updates: Partial<ValeSettings>) => Promise<void>)
+      | null = null;
+
+    const SettingsCapture: React.FC = () => {
+      const { updateSettings } = useSettings();
+      capturedUpdateSettings = updateSettings;
+      return null;
+    };
+
+    jest
+      .spyOn(hooks, "useConfigManager")
+      .mockReturnValue(plugin.configManager as unknown as ValeConfigManager);
+
+    render(
+      <SettingsProvider plugin={plugin as unknown as ValePlugin}>
+        <SettingsCapture />
+      </SettingsProvider>,
+    );
 
     await act(async () => {
       jest.runAllTimers();
     });
 
-    // Simulate rapid changes using the toggle
-    const toggle = getModeToggle(container);
-
-    // Fire multiple changes quickly (simulating rapid user clicks)
-    // Toggle ON (server), then OFF (cli)
-    await changeMode(toggle, true); // Server
-    await changeMode(toggle, false); // CLI
+    // Fire multiple changes quickly (simulating rapid user actions)
+    await act(async () => {
+      // First change - deliberately not awaited to test concurrency
+      void capturedUpdateSettings!({
+        cli: { managed: false, valePath: "/first/vale" },
+      });
+      // Second change immediately after - deliberately not awaited to test concurrency
+      void capturedUpdateSettings!({
+        cli: { managed: false, valePath: "/final/vale" },
+      });
+    });
 
     await act(async () => {
       jest.runAllTimers();
     });
 
-    // Should handle concurrent updates without crashing
-    expect(screen.queryByRole("tabpanel")).toBeInTheDocument();
-
-    // The final state should reflect the last update (cli)
-    expect(plugin.settings.type).toBe("cli");
+    // The final state should reflect the last update
+    expect(plugin.settings.cli.valePath).toBe("/final/vale");
 
     // Multiple save calls should have been made
     expect(plugin.saveSettings.mock.calls.length).toBeGreaterThanOrEqual(2);

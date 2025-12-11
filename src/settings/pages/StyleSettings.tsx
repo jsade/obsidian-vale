@@ -6,7 +6,6 @@ import { StylesHeader } from "./StylesHeader";
 import { StylesList } from "./StylesList";
 import { StylesLoadingSkeleton } from "./StylesLoadingSkeleton";
 import { StylesError } from "./StylesError";
-import "./style-settings.css";
 
 /**
  * Props for StyleSettings component

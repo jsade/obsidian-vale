@@ -7,10 +7,7 @@ import { SettingsNavigation } from "./SettingsNavigation";
 import { SettingsContent } from "./SettingsContent";
 import { SettingsRoute, createGeneralRoute } from "./navigation";
 
-// CSS imports - centralized for settings UI
-import "./settings.css";
-import "../components/feedback/feedback.css";
-import "../components/settings/collapsible-section.css";
+// Note: CSS is consolidated in src/styles/index.css and bundled to styles.css by esbuild
 
 /**
  * Props for SettingsRouter component

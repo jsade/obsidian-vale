@@ -29,20 +29,6 @@ Obsidian Vale is a [Vale](https://vale.sh/) linter client plugin for [Obsidian](
 > 
 > *@jsade* 👋
 
-
-## Brief version history
-
-- **v1.0.0+**: Full support for Obsidian 1.5.0+ with CodeMirror 6
-  - Modern, declarative editor integration
-  - Improved performance and reliability
-  - Auto-check with debouncing (Planned for future release)
-  - Interactive hover tooltips (Planned for future release)
-
-- **v0.9.0 and earlier**: Legacy editor support (Obsidian pre-1.5.0)
-  - No longer functional on Obsidian 1.5.0+
-  - Legacy Editor mode was removed in Obsidian 1.5.0 (December 2023)
-  - If you're on older Obsidian versions, use [v0.9.0](https://github.com/marcusolsson/obsidian-vale/)
-
 ## Installation
 
 ### Using BRAT
@@ -154,27 +140,6 @@ Automatic checking will be available in a future version:
 - Hides or shows all alert underlines
 - Alerts remain in the panel even when hidden
 
-### Pro Tips
-
-**Efficient Navigation**
-- Use click-to-navigate to quickly move between editor and panel without losing your place
-- The smooth scrolling behavior helps you stay oriented in longer documents
-
-**Editing with Underlines Active**
-- Don't worry about underlines getting out of sync - they automatically track text positions during edits
-- Insert or delete text anywhere; the underlines will adjust intelligently
-- If underlines do get misaligned (rare), simply re-run the check to refresh them
-
-**Focus Management**
-- Click anywhere in the editor (not on an underline) to deselect the current alert
-- This clears the highlight and lets you focus on writing without distractions
-- The underlines remain visible so you can click them again when ready
-
-**Working Through Issues**
-- Click through panel alerts one-by-one to systematically review and fix issues
-- Each click scrolls and highlights the exact location in your document
-- The synchronized selection helps you maintain context as you work
-
 ### Status Bar
 
 The status bar (bottom of window) shows real-time check status:
@@ -191,7 +156,6 @@ Configure Vale integration:
 - **Mode**: Managed (plugin handles Vale) or Custom (use your Vale)
 - **Vale binary path**: Location of Vale executable (custom mode)
 - **Config path**: Location of `.vale.ini` (custom mode)
-- **Server mode**: Use Vale Server instead of CLI (faster for frequent checks)
 
 ### Editor Settings
 
@@ -215,25 +179,16 @@ Vale is a powerful, open-source prose linter:
 - [Official Style Library](https://vale.sh/library)
 - [Creating Custom Rules](https://vale.sh/docs/styles)
 
-### Popular Style Packages
-
-- **Vale**: Core style with essential rules
-- **Google**: Google Developer Documentation Style Guide
-- **Microsoft**: Microsoft Writing Style Guide
-- **write-good**: Plain English recommendations
-- **proselint**: Professional writing advice
-- **Joblint**: Check job posts for issues
-
 ### Style Management: Managed vs Custom Mode
 
 The Styles settings page behaves differently depending on which mode you are using:
 
-| Action | Managed Mode | Custom Mode |
-|--------|--------------|-------------|
-| **Styles shown** | Official Vale style library (8 styles) | Styles installed in your StylesPath directory |
-| **Toggle ON** | Downloads, installs, and enables the style | Enables the style in `.vale.ini` only |
-| **Toggle OFF** | Disables and uninstalls the style | Disables the style in `.vale.ini` only |
-| **Section heading** | "Vale styles" | "Installed Styles" |
+| Action              | Managed Mode                               | Custom Mode                                   |
+| ------------------- | ------------------------------------------ | --------------------------------------------- |
+| **Styles shown**    | Official Vale style library (8 styles)     | Styles installed in your StylesPath directory |
+| **Toggle ON**       | Downloads, installs, and enables the style | Enables the style in `.vale.ini` only         |
+| **Toggle OFF**      | Disables and uninstalls the style          | Disables the style in `.vale.ini` only        |
+| **Section heading** | "Vale styles"                              | "Installed Styles"                            |
 
 **Managed mode** is ideal if you want the plugin to handle everything for you. Toggling a style ON downloads it from the official repository, installs it, and configures your `.vale.ini` automatically.
 
@@ -242,26 +197,6 @@ The Styles settings page behaves differently depending on which mode you are usi
 > **Note**: If no styles appear in Custom mode, ensure your `.vale.ini` has a valid `StylesPath` pointing to a directory containing Vale style folders.
 
 ## Troubleshooting
-
-### Plugin not working after Obsidian update
-
-**Symptom**: No underlines appear, Vale panel shows no errors
-
-**Solution**: Ensure you're using Vale plugin v1.0.0+ for Obsidian 1.5.0+. Check **Settings** → **Community plugins** for updates.
-
-### Vale not found
-
-**Symptom**: Error message "Vale binary not found"
-
-**Solution (Managed mode)**:
-1. Go to **Settings** → **Vale**
-2. Click **Install Vale**
-3. Restart Obsidian
-
-**Solution (Custom mode)**:
-1. Verify Vale is installed: Run `vale --version` in terminal
-2. Provide absolute path to Vale binary in settings
-3. Ensure the file is executable (`chmod +x vale` on Unix)
 
 ### No styles installed
 
@@ -283,10 +218,9 @@ The Styles settings page behaves differently depending on which mode you are usi
 **Symptom**: Typing lags, Obsidian becomes unresponsive during checks
 
 **Solutions**:
-1. **Use Vale Server**: Enable in Settings → Vale → Server mode (faster than CLI for frequent checks)
-2. **Use manual checking**: Only run checks when needed using the command or ribbon icon
-3. **Reduce active rules**: Disable unnecessary styles in Rule Configuration
-4. **Check smaller sections**: Clear alerts and check again after making changes
+1. **Use manual checking**: Only run checks when needed using the command or ribbon icon
+2. **Reduce active rules**: Disable unnecessary styles in Rule Configuration
+3. **Check smaller sections**: Clear alerts and check again after making changes
 
 ### Underlines in wrong places
 
@@ -368,4 +302,4 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-**Note**: This plugin requires Vale to function. Vale is a separate tool that must be installed (automatically in Managed mode, or manually in Custom mode). Vale is open source and free to use.
+**Note**: This plugin requires Vale to function. Vale is a separate tool that must be installed (automatically in Managed mode, or manually in Custom mode). See [Vale](https://vale.sh/).

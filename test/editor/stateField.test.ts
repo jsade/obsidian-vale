@@ -146,11 +146,14 @@ describe("StateField", () => {
   });
 
   describe("Adding Decorations", () => {
+    // NOTE: Vale uses 1-based positions for Span values.
+    // Span: [1, 5] means characters at positions 1-4 (0-based: chars 0-3)
+
     it("should add decoration from single alert", () => {
       let state = createTestState("This is a test document.");
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4], // "This"
+        Span: [1, 5], // 1-based: positions 1-4 = "This"
         Check: "Vale.Test",
       });
 
@@ -164,9 +167,9 @@ describe("StateField", () => {
     it("should add decorations from multiple alerts", () => {
       let state = createTestState("This is a test document with errors.");
       const alerts = [
-        createMockValeAlert({ Line: 1, Span: [0, 4], Check: "Vale.A" }),
-        createMockValeAlert({ Line: 1, Span: [10, 14], Check: "Vale.B" }),
-        createMockValeAlert({ Line: 1, Span: [20, 28], Check: "Vale.C" }),
+        createMockValeAlert({ Line: 1, Span: [1, 5], Check: "Vale.A" }), // "This"
+        createMockValeAlert({ Line: 1, Span: [11, 15], Check: "Vale.B" }), // "test"
+        createMockValeAlert({ Line: 1, Span: [21, 29], Check: "Vale.C" }), // "document"
       ];
 
       state = state.update({
@@ -180,7 +183,7 @@ describe("StateField", () => {
       const state = createTestState("test document");
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5], // 1-based: positions 1-4 = "test"
         Check: "Vale.Test",
       });
       const alertId = generateAlertId(alert);
@@ -199,19 +202,19 @@ describe("StateField", () => {
       const alerts = [
         createMockValeAlert({
           Line: 1,
-          Span: [0, 5],
+          Span: [1, 6], // 1-based: "error"
           Severity: "error",
           Check: "Vale.E",
         }),
         createMockValeAlert({
           Line: 1,
-          Span: [6, 13],
+          Span: [7, 14], // 1-based: "warning"
           Severity: "warning",
           Check: "Vale.W",
         }),
         createMockValeAlert({
           Line: 1,
-          Span: [14, 24],
+          Span: [15, 25], // 1-based: "suggestion"
           Severity: "suggestion",
           Check: "Vale.S",
         }),
@@ -240,7 +243,7 @@ describe("StateField", () => {
       let state = createTestState("test document");
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5], // 1-based: positions 1-4 = "test"
         Check: "Vale.AttrTest",
       });
       const expectedId = generateAlertId(alert);
@@ -257,7 +260,7 @@ describe("StateField", () => {
       let state = createTestState("short");
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [100, 200], // Beyond document length
+        Span: [101, 201], // 1-based: beyond document length
         Check: "Vale.Invalid",
       });
 
@@ -278,7 +281,7 @@ describe("StateField", () => {
       let state = createTestState(doc);
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4], // Entire document
+        Span: [1, 5], // 1-based: entire document "test"
         Check: "Vale.Boundary",
       });
 
@@ -305,11 +308,13 @@ describe("StateField", () => {
   });
 
   describe("Clearing Decorations", () => {
+    // NOTE: Vale uses 1-based positions for Span values.
+
     it("should clear all decorations with clearAllValeMarks", () => {
       let state = createTestState("test document");
       const alerts = [
-        createMockValeAlert({ Line: 1, Span: [0, 4], Check: "Vale.A" }),
-        createMockValeAlert({ Line: 1, Span: [5, 13], Check: "Vale.B" }),
+        createMockValeAlert({ Line: 1, Span: [1, 5], Check: "Vale.A" }), // "test"
+        createMockValeAlert({ Line: 1, Span: [6, 14], Check: "Vale.B" }), // "document"
       ];
 
       state = state.update({
@@ -329,7 +334,7 @@ describe("StateField", () => {
       const state = createTestState("test document");
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5], // 1-based: "test"
         Check: "Vale.Test",
       });
 
@@ -350,9 +355,9 @@ describe("StateField", () => {
     it("should clear decorations in specific range", () => {
       let state = createTestState("first second third");
       const alerts = [
-        createMockValeAlert({ Line: 1, Span: [0, 5], Check: "Vale.A" }), // "first"
-        createMockValeAlert({ Line: 1, Span: [6, 12], Check: "Vale.B" }), // "second"
-        createMockValeAlert({ Line: 1, Span: [13, 18], Check: "Vale.C" }), // "third"
+        createMockValeAlert({ Line: 1, Span: [1, 6], Check: "Vale.A" }), // "first"
+        createMockValeAlert({ Line: 1, Span: [7, 13], Check: "Vale.B" }), // "second"
+        createMockValeAlert({ Line: 1, Span: [14, 19], Check: "Vale.C" }), // "third"
       ];
 
       state = state.update({
@@ -361,7 +366,7 @@ describe("StateField", () => {
 
       expect(countDecorations(state)).toBe(3);
 
-      // Clear middle decoration
+      // Clear middle decoration (0-based range: 6-12 covers "second")
       state = state.update({
         effects: clearValeMarksInRange.of({ from: 6, to: 12 }),
       }).state;
@@ -372,30 +377,30 @@ describe("StateField", () => {
     it("should clear overlapping decorations", () => {
       let state = createTestState("overlapping text here");
       const alerts = [
-        createMockValeAlert({ Line: 1, Span: [0, 11], Check: "Vale.Outer" }),
-        createMockValeAlert({ Line: 1, Span: [12, 16], Check: "Vale.Clear" }),
-        createMockValeAlert({ Line: 1, Span: [17, 21], Check: "Vale.Keep" }),
+        createMockValeAlert({ Line: 1, Span: [1, 12], Check: "Vale.Outer" }), // "overlapping"
+        createMockValeAlert({ Line: 1, Span: [13, 17], Check: "Vale.Clear" }), // "text"
+        createMockValeAlert({ Line: 1, Span: [18, 22], Check: "Vale.Keep" }), // "here"
       ];
 
       state = state.update({
         effects: addValeMarks.of(alerts),
       }).state;
 
-      // Clear range that overlaps second decoration
+      // Clear range that overlaps second decoration (0-based: 10-15)
       state = state.update({
         effects: clearValeMarksInRange.of({ from: 10, to: 15 }),
       }).state;
 
       const ids = getDecorationIds(state);
-      expect(ids).toContain("1:17:21:Vale.Keep");
-      expect(ids).not.toContain("1:12:16:Vale.Clear");
+      expect(ids).toContain("1:18:22:Vale.Keep");
+      expect(ids).not.toContain("1:13:17:Vale.Clear");
     });
 
     it("should remove cleared decorations from valeAlertMap", () => {
       const state = createTestState("test document");
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5], // 1-based: "test"
         Check: "Vale.ToRemove",
       });
       const alertId = generateAlertId(alert);
@@ -406,6 +411,7 @@ describe("StateField", () => {
 
       expect(valeAlertMap.has(alertId)).toBe(true);
 
+      // Clear range (0-based: 0-4 covers "test")
       const clearedState = stateWithAlert.update({
         effects: clearValeMarksInRange.of({ from: 0, to: 4 }),
       }).state;
@@ -416,11 +422,13 @@ describe("StateField", () => {
   });
 
   describe("Selection Decorations", () => {
+    // NOTE: Vale uses 1-based positions for Span values.
+
     it("should add selection decoration for valid alert", () => {
       let state = createTestState("test document");
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5], // 1-based: "test"
         Check: "Vale.Select",
       });
       const alertId = generateAlertId(alert);
@@ -441,12 +449,12 @@ describe("StateField", () => {
       let state = createTestState("first second third");
       const alert1 = createMockValeAlert({
         Line: 1,
-        Span: [0, 5],
+        Span: [1, 6], // 1-based: "first"
         Check: "Vale.A",
       });
       const alert2 = createMockValeAlert({
         Line: 1,
-        Span: [6, 12],
+        Span: [7, 13], // 1-based: "second"
         Check: "Vale.B",
       });
       const id1 = generateAlertId(alert1);
@@ -478,7 +486,7 @@ describe("StateField", () => {
       let state = createTestState("test document");
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5], // 1-based: "test"
         Check: "Vale.Test",
       });
 
@@ -502,7 +510,7 @@ describe("StateField", () => {
       let state = createTestState("test document");
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5], // 1-based: "test"
         Check: "Vale.Select",
       });
       const alertId = generateAlertId(alert);
@@ -529,11 +537,13 @@ describe("StateField", () => {
   });
 
   describe("Highlight Decorations", () => {
+    // NOTE: Vale uses 1-based positions for Span values.
+
     it("should add highlight decoration for valid alert", () => {
       let state = createTestState("test document");
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5], // 1-based: "test"
         Check: "Vale.Highlight",
       });
       const alertId = generateAlertId(alert);
@@ -554,7 +564,7 @@ describe("StateField", () => {
       let state = createTestState("test document");
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5], // 1-based: "test"
         Check: "Vale.Highlight",
       });
       const alertId = generateAlertId(alert);
@@ -582,12 +592,12 @@ describe("StateField", () => {
       let state = createTestState("first second");
       const alert1 = createMockValeAlert({
         Line: 1,
-        Span: [0, 5],
+        Span: [1, 6], // 1-based: "first"
         Check: "Vale.A",
       });
       const alert2 = createMockValeAlert({
         Line: 1,
-        Span: [6, 12],
+        Span: [7, 13], // 1-based: "second"
         Check: "Vale.B",
       });
       const id1 = generateAlertId(alert1);
@@ -617,7 +627,7 @@ describe("StateField", () => {
       let state = createTestState("test document");
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5], // 1-based: "test"
         Check: "Vale.Highlight",
       });
       const alertId = generateAlertId(alert);
@@ -644,11 +654,13 @@ describe("StateField", () => {
   });
 
   describe("Decoration Mapping on Document Changes", () => {
+    // NOTE: Vale uses 1-based positions for Span values.
+
     it("should adjust decorations when text inserted before them", () => {
       let state = createTestState("test document");
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [5, 13], // "document"
+        Span: [6, 14], // 1-based: "document"
         Check: "Vale.Test",
       });
 
@@ -679,7 +691,7 @@ describe("StateField", () => {
       let state = createTestState("test document");
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4], // "test"
+        Span: [1, 5], // 1-based: "test"
         Check: "Vale.Test",
       });
 
@@ -703,7 +715,7 @@ describe("StateField", () => {
       let state = createTestState("test document here");
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [5, 13], // "document"
+        Span: [6, 14], // 1-based: "document"
         Check: "Vale.Test",
       });
 
@@ -711,7 +723,7 @@ describe("StateField", () => {
         effects: addValeMarks.of([alert]),
       }).state;
 
-      // Delete text overlapping the decoration
+      // Delete text overlapping the decoration (0-based: 4-14)
       state = state.update({
         changes: { from: 4, to: 14, insert: "" },
       }).state;
@@ -723,7 +735,7 @@ describe("StateField", () => {
       let state = createTestState("test document");
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5], // 1-based: "test"
         Check: "Vale.Test",
       });
       const alertId = generateAlertId(alert);
@@ -736,7 +748,7 @@ describe("StateField", () => {
         effects: selectValeAlert.of(alertId),
       }).state;
 
-      // Change text outside the decoration range
+      // Change text outside the decoration range (0-based: 10-13)
       state = state.update({
         changes: { from: 10, to: 13, insert: "DOC" },
       }).state;
@@ -748,9 +760,9 @@ describe("StateField", () => {
     it("should handle multiple decorations mapping correctly", () => {
       let state = createTestState("first second third");
       const alerts = [
-        createMockValeAlert({ Line: 1, Span: [0, 5], Check: "Vale.A" }),
-        createMockValeAlert({ Line: 1, Span: [6, 12], Check: "Vale.B" }),
-        createMockValeAlert({ Line: 1, Span: [13, 18], Check: "Vale.C" }),
+        createMockValeAlert({ Line: 1, Span: [1, 6], Check: "Vale.A" }), // "first"
+        createMockValeAlert({ Line: 1, Span: [7, 13], Check: "Vale.B" }), // "second"
+        createMockValeAlert({ Line: 1, Span: [14, 19], Check: "Vale.C" }), // "third"
       ];
 
       state = state.update({
@@ -770,11 +782,13 @@ describe("StateField", () => {
   });
 
   describe("Complex Scenarios", () => {
+    // NOTE: Vale uses 1-based positions for Span values.
+
     it("should handle add, select, and clear in same transaction", () => {
       let state = createTestState("test document");
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5], // 1-based: "test"
         Check: "Vale.Complex",
       });
       const alertId = generateAlertId(alert);
@@ -783,7 +797,7 @@ describe("StateField", () => {
         effects: [
           addValeMarks.of([alert]),
           selectValeAlert.of(alertId),
-          clearValeMarksInRange.of({ from: 5, to: 10 }), // Non-overlapping
+          clearValeMarksInRange.of({ from: 5, to: 10 }), // Non-overlapping (0-based)
         ],
       }).state;
 
@@ -832,7 +846,7 @@ describe("StateField", () => {
       for (let i = 0; i < 5; i++) {
         const alert = createMockValeAlert({
           Line: 1,
-          Span: [0, 4],
+          Span: [1, 5], // 1-based: "test"
           Check: `Vale.Cycle${i}`,
         });
 
@@ -852,12 +866,14 @@ describe("StateField", () => {
   });
 
   describe("Edge Cases", () => {
+    // NOTE: Vale uses 1-based positions for Span values.
+
     it("should handle empty document", () => {
       let state = createTestState("");
 
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 0],
+        Span: [1, 1], // 1-based: zero-length at position 1
         Check: "Vale.Empty",
       });
 
@@ -873,7 +889,7 @@ describe("StateField", () => {
       let state = createTestState("test");
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [2, 2], // Zero-length span
+        Span: [3, 3], // 1-based: zero-length span
         Check: "Vale.ZeroLength",
       });
 
@@ -895,7 +911,7 @@ describe("StateField", () => {
 
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 4],
+        Span: [1, 5], // 1-based: "word"
         Check: "Vale.Long",
       });
 
@@ -913,7 +929,7 @@ describe("StateField", () => {
       for (let i = 0; i < 10; i++) {
         const alert = createMockValeAlert({
           Line: 1,
-          Span: [0, 4],
+          Span: [1, 5], // 1-based: "test"
           Check: `Vale.Rapid${i}`,
         });
 
@@ -928,11 +944,13 @@ describe("StateField", () => {
   });
 
   describe("Error Handling", () => {
+    // NOTE: Vale uses 1-based positions for Span values.
+
     it("should handle alerts beyond document length gracefully", () => {
       let state = createTestState("short");
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [0, 100], // Way beyond document
+        Span: [1, 101], // 1-based: way beyond document
         Check: "Vale.Beyond",
       });
 
@@ -952,7 +970,7 @@ describe("StateField", () => {
       let state = createTestState("single line");
       const alert = createMockValeAlert({
         Line: 100, // Line doesn't exist
-        Span: [0, 5],
+        Span: [1, 6], // 1-based
         Check: "Vale.NoLine",
       });
 
@@ -971,9 +989,9 @@ describe("StateField", () => {
     it("should continue processing after individual alert errors", () => {
       let state = createTestState("test document");
       const alerts = [
-        createMockValeAlert({ Line: 1, Span: [0, 4], Check: "Vale.Good" }),
-        createMockValeAlert({ Line: 999, Span: [0, 5], Check: "Vale.Bad" }), // Invalid
-        createMockValeAlert({ Line: 1, Span: [5, 8], Check: "Vale.Good2" }),
+        createMockValeAlert({ Line: 1, Span: [1, 5], Check: "Vale.Good" }), // 1-based: "test"
+        createMockValeAlert({ Line: 999, Span: [1, 6], Check: "Vale.Bad" }), // Invalid line
+        createMockValeAlert({ Line: 1, Span: [6, 9], Check: "Vale.Good2" }), // 1-based: "doc"
       ];
 
       const consoleError = jest.spyOn(console, "error").mockImplementation();

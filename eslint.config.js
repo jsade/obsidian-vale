@@ -66,17 +66,6 @@ export default defineConfig(
     },
   },
 
-  // Test files configuration
-  {
-    files: ["test/**/*.{ts,tsx}", "**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}"],
-    languageOptions: {
-      globals: {
-        ...globals.jest,
-        ...globals.node,
-      },
-    },
-  },
-
   // Obsidian plugin recommended rules
   ...obsidianmd.configs.recommended,
   {
@@ -115,6 +104,25 @@ export default defineConfig(
     },
     rules: {
       "prettier/prettier": "error",
+    },
+  },
+
+  // Test files configuration - MUST come after all TypeScript configs
+  // to properly override rules from tseslint.configs.recommended
+  {
+    files: ["test/**/*.{ts,tsx}", "**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}"],
+    languageOptions: {
+      globals: {
+        ...globals.jest,
+        ...globals.node,
+      },
+    },
+    rules: {
+      // Disable no-deprecated for act() from @testing-library/react
+      // The act() function is re-exported from react-dom/test-utils which is marked deprecated,
+      // but this is a false positive - @testing-library/react's act() is the correct approach.
+      // See: https://github.com/testing-library/react-testing-library/issues/1061
+      "@typescript-eslint/no-deprecated": "off",
     },
   },
 );
