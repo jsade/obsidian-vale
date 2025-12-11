@@ -70,10 +70,7 @@ export const Breadcrumb = ({
           const isCurrent = isLast || !item.onClick;
 
           return (
-            <li
-              key={`${item.label}-${index}`}
-              className="vale-breadcrumb__item"
-            >
+            <li key={item.label} className="vale-breadcrumb__item">
               {item.onClick && !isCurrent ? (
                 <button
                   className="vale-breadcrumb__link"
