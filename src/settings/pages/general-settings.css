@@ -447,6 +447,22 @@
 }
 
 /* ============================================================================
+   Settings Footer
+   ============================================================================ */
+
+.vale-settings-footer {
+  margin-top: var(--size-4-6);
+  padding-top: var(--size-4-4);
+  border-top: 1px solid var(--background-modifier-border);
+  text-align: center;
+}
+
+.vale-version-info {
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+}
+
+/* ============================================================================
    Utility Classes
    ============================================================================ */
 
