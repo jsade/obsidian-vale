@@ -1,18 +1,17 @@
-import { App, FileSystemAdapter, normalizePath, Vault } from "obsidian";
+import { FileSystemAdapter, normalizePath, Vault } from "obsidian";
 import path from "path";
 import * as React from "react";
 import { ValeConfigManager } from "vale/ValeConfigManager";
-import { AppContext, SettingsContext } from "./context";
+import { useApp } from "./context/AppContext";
 import { ValeSettings } from "./types";
 
-export const useApp = (): App | null => {
-  return React.useContext(AppContext);
-};
-
-export const useSettings = (): ValeSettings | null => {
-  return React.useContext(SettingsContext);
-};
-
+/**
+ * Hook to create and memoize a ValeConfigManager instance.
+ * Returns undefined if in server mode or if app is not available.
+ *
+ * @param settings - Current Vale settings
+ * @returns ValeConfigManager instance or undefined
+ */
 export const useConfigManager = (
   settings: ValeSettings,
 ): ValeConfigManager | undefined => {

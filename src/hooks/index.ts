@@ -7,6 +7,9 @@
  * @module hooks
  */
 
+// Export config manager hook
+export { useConfigManager } from "../hooks";
+
 // Export path validation hook
 export {
   usePathValidation,

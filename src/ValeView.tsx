@@ -4,7 +4,7 @@ import { createRoot, Root } from "react-dom/client";
 import { ValeApp } from "./components/ValeApp";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ErrorFallback } from "./components/ErrorFallback";
-import { AppContext, SettingsContext } from "./context";
+import { AppContext } from "./context/AppContext";
 import { timed } from "./debug";
 import { EventBus } from "./EventBus";
 import { ValeAlert, ValeSettings } from "./types";
@@ -72,15 +72,13 @@ export class ValeView extends ItemView {
         <React.StrictMode>
           <ErrorBoundary fallback={ErrorFallback}>
             <AppContext.Provider value={this.app}>
-              <SettingsContext.Provider value={this.settings}>
-                <div className="obsidian-vale">
-                  <ValeApp
-                    runner={this.runner}
-                    eventBus={this.eventBus}
-                    onAlertClick={this.onAlertClick}
-                  />
-                </div>
-              </SettingsContext.Provider>
+              <div className="obsidian-vale">
+                <ValeApp
+                  runner={this.runner}
+                  eventBus={this.eventBus}
+                  onAlertClick={this.onAlertClick}
+                />
+              </div>
             </AppContext.Provider>
           </ErrorBoundary>
         </React.StrictMode>,

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useId } from "react";
 
 /**
  * Props for ProgressBar component
@@ -51,6 +52,8 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   label,
   showPercentage = false,
 }) => {
+  const labelId = useId();
+
   // Clamp value to 0-100 range
   const clampedValue = Math.max(0, Math.min(100, value));
   const percentage = Math.round(clampedValue);
@@ -58,7 +61,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   return (
     <div className="vale-progress-bar">
       {label && (
-        <div className="vale-progress-bar__label" id="progress-label">
+        <div className="vale-progress-bar__label" id={labelId}>
           {label}
         </div>
       )}
@@ -69,7 +72,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
           aria-valuenow={percentage}
           aria-valuemin={0}
           aria-valuemax={100}
-          aria-labelledby={label ? "progress-label" : undefined}
+          aria-labelledby={label ? labelId : undefined}
           aria-label={label ? undefined : "Progress"}
         >
           <div

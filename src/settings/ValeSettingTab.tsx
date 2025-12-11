@@ -1,10 +1,10 @@
-import { AppContext } from "context";
 import { App, PluginSettingTab } from "obsidian";
 import * as React from "react";
 import { createRoot, Root } from "react-dom/client";
 import ValePlugin from "../main";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { ErrorFallback } from "../components/ErrorFallback";
+import { AppContext } from "../context/AppContext";
 import { SettingsRouter } from "./SettingsRouter";
 
 /**
@@ -23,6 +23,7 @@ export class ValeSettingTab extends PluginSettingTab {
   display(): void {
     // Create root only once, or reuse existing root
     if (!this.root) {
+      this.containerEl.empty();
       this.root = createRoot(this.containerEl);
     }
 

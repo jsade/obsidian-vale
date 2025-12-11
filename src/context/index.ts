@@ -8,6 +8,9 @@
  * @module context
  */
 
+// Export AppContext and related hooks
+export { AppContext, useApp } from "./AppContext";
+
 // Export SettingsContext and related types
 export {
   SettingsContext,

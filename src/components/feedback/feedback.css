@@ -222,7 +222,7 @@
   background: var(--background-primary);
   border-radius: var(--radius-m);
   border: 1px solid var(--background-modifier-border);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-s);
   min-width: 280px;
   max-width: 480px;
   animation: vale-toast-slide-in 300ms ease-out;
@@ -508,9 +508,9 @@
    ========================================================================= */
 
 body.theme-dark .vale-toast {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 8px hsla(var(--shadow-color), 0.3);
 }
 
 body.theme-dark .vale-error-message__details-content {
-  background: rgba(0, 0, 0, 0.2);
+  background: hsla(var(--shadow-color), 0.2);
 }

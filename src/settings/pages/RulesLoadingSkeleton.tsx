@@ -19,10 +19,12 @@ import { LoadingSpinner } from "components/feedback/LoadingSpinner";
  */
 export const RulesLoadingSkeleton: React.FC = () => {
   return (
-    <div className="vale-rules-loading" role="status" aria-live="polite">
+    <div className="vale-rules-loading">
       <div className="vale-rules-loading__container">
         <LoadingSpinner size="large" label="Loading rules" />
-        <p className="vale-rules-loading__message">Loading rules...</p>
+        <p className="vale-rules-loading__message" aria-hidden="true">
+          Loading rules...
+        </p>
       </div>
     </div>
   );

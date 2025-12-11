@@ -377,7 +377,7 @@ label[for] [aria-required="true"]::after {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--background-modifier-cover);
   z-index: var(--layer-modal);
 }
 

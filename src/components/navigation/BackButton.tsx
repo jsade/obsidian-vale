@@ -46,23 +46,10 @@ export const BackButton = ({
     }
   }, []);
 
-  /**
-   * Handle keyboard activation (Enter or Space)
-   */
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      if (!disabled) {
-        onClick();
-      }
-    }
-  };
-
   return (
     <button
       className="vale-back-button"
       onClick={onClick}
-      onKeyDown={handleKeyDown}
       disabled={disabled}
       aria-label={ariaLabel || `${label}`}
       type="button"

@@ -64,9 +64,9 @@ export const SettingsContent = ({
 
   /**
    * Render the appropriate page based on route.
-   * Uses type guards for type-safe route handling.
+   * Uses type guards for type-safe route handling with exhaustive checking.
    */
-  const renderPage = () => {
+  const renderPage = (): React.ReactElement => {
     if (isGeneralRoute(route)) {
       return (
         <div
@@ -120,17 +120,10 @@ export const SettingsContent = ({
       return <RuleSettings style={route.style} onNavigate={onNavigate} />;
     }
 
-    // Fallback to General if route is unknown
-    return (
-      <div
-        role="tabpanel"
-        id="panel-general"
-        aria-labelledby="tab-general"
-        tabIndex={0}
-      >
-        <GeneralSettings />
-      </div>
-    );
+    // Exhaustive check: TypeScript will error if we add a new route type
+    // and forget to handle it here
+    const _exhaustive: never = route;
+    return _exhaustive;
   };
 
   return <>{renderPage()}</>;
