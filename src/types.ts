@@ -7,6 +7,12 @@ export interface ValeSettings {
     managed: boolean;
     valePath?: string;
     configPath?: string;
+    /**
+     * StylesPath for Custom mode.
+     * Auto-populated from .vale.ini when config path is validated.
+     * User can override this value if needed.
+     */
+    stylesPath?: string;
   };
 }
 
@@ -19,6 +25,7 @@ export const DEFAULT_SETTINGS: ValeSettings = {
     managed: true,
     valePath: "",
     configPath: "",
+    stylesPath: "",
   },
 };
 

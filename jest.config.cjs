@@ -6,7 +6,14 @@ module.exports = {
   testMatch: ["**/*.test.ts", "**/*.test.tsx"],
   moduleDirectories: ["node_modules", "src"],
   collectCoverageFrom: ["src/**/*.ts", "!src/**/*.d.ts"],
-  setupFilesAfterEnv: ["<rootDir>/test/setup.ts"],
+  setupFilesAfterEnv: [
+    "<rootDir>/test/setup.ts",
+    "<rootDir>/test/setup/axe.ts",
+  ],
+  moduleNameMapper: {
+    // Mock CSS imports to prevent Jest from failing on them
+    "\\.css$": "<rootDir>/test/__mocks__/styleMock.js",
+  },
   transform: {
     "^.+\\.(ts|tsx)$": [
       "ts-jest",

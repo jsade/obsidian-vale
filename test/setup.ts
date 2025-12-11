@@ -9,6 +9,20 @@ import "@testing-library/jest-dom";
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder as typeof global.TextDecoder;
 
+// Mock ResizeObserver for JSDOM (used by CollapsibleSection)
+global.ResizeObserver = class ResizeObserver {
+  callback: ResizeObserverCallback;
+  constructor(callback: ResizeObserverCallback) {
+    this.callback = callback;
+  }
+  observe(): void {
+    // Mock implementation - immediately call with empty entries
+    // In tests, we don't need actual resize observation
+  }
+  unobserve(): void {}
+  disconnect(): void {}
+};
+
 // Define DEBUG global (used in src/debug.ts)
 declare global {
   var DEBUG: boolean;

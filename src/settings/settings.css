@@ -64,3 +64,21 @@
 .vale-settings-feedback p {
   margin: 0;
 }
+
+/**
+ * Field Attribution Styles
+ * Subtle muted text shown below fields when auto-populated
+ */
+.vale-field-attribution {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+  margin-top: -0.5rem;
+  margin-bottom: 0.5rem;
+  padding-left: var(--size-4-2);
+  font-style: italic;
+}
+
+/* StylesPath setting container */
+.vale-stylespath-setting {
+  position: relative;
+}

@@ -3,7 +3,10 @@ import { Setting } from "obsidian";
 import { useSettings } from "../../context/SettingsContext";
 import { useConfigManager } from "../../hooks";
 import { usePathValidation } from "../../hooks/usePathValidation";
-import { useValeDetection } from "../../hooks/useValeDetection";
+import {
+  useValeDetection,
+  ConfigSuggestions,
+} from "../../hooks/useValeDetection";
 import { SettingWithValidation } from "../../components/settings/SettingWithValidation";
 import {
   FieldValidation,
@@ -87,29 +90,50 @@ export const CustomModeSettings: React.FC<CustomModeSettingsProps> = ({
   // This prevents stale closure issues when saving both paths together
   const valePathInputRef = React.useRef<HTMLInputElement | null>(null);
   const configPathInputRef = React.useRef<HTMLInputElement | null>(null);
+  const stylesPathInputRef = React.useRef<HTMLInputElement | null>(null);
+
+  // State: Track if StylesPath was auto-populated from .vale.ini
+  const [stylesPathAutoPopulated, setStylesPathAutoPopulated] =
+    React.useState<boolean>(false);
+
+  // Ref: Track the previous config path validation state to detect changes
+  const prevConfigValidRef = React.useRef<boolean>(false);
 
   /**
-   * Handler: Update both paths together when either input is blurred.
-   * This prevents stale closure issues by reading both values from DOM.
+   * Handler: Update all paths together when any input is blurred.
+   * This prevents stale closure issues by reading all values from DOM.
    */
   const handlePathsUpdate = React.useCallback((): void => {
     const valePath = valePathInputRef.current?.value ?? "";
     const configPath = configPathInputRef.current?.value ?? "";
+    const stylesPath = stylesPathInputRef.current?.value ?? "";
 
     // Only update if at least one path changed
     if (
       valePath !== settings.cli.valePath ||
-      configPath !== settings.cli.configPath
+      configPath !== settings.cli.configPath ||
+      stylesPath !== settings.cli.stylesPath
     ) {
       void updateSettings({
         cli: {
           ...settings.cli,
           valePath,
           configPath,
+          stylesPath,
         },
       });
     }
   }, [settings.cli, updateSettings]);
+
+  /**
+   * Handler: Called when StylesPath is manually edited by user.
+   * Clears the auto-populated attribution since user has made changes.
+   */
+  const handleStylesPathChange = React.useCallback((): void => {
+    // Clear auto-populated state when user manually edits
+    setStylesPathAutoPopulated(false);
+    handlePathsUpdate();
+  }, [handlePathsUpdate]);
 
   /**
    * Handler: Use the detected Vale path.
@@ -139,6 +163,73 @@ export const CustomModeSettings: React.FC<CustomModeSettingsProps> = ({
    */
   const showDetectionSuggestion =
     detection.detectedPath !== null && !settings.cli.valePath;
+
+  /**
+   * Effect: Auto-populate StylesPath when config path validation succeeds.
+   * Only populates if:
+   * - Config path just became valid (transition from invalid to valid)
+   * - User doesn't already have a stylesPath set
+   * - We can parse the config and find a StylesPath
+   */
+  React.useEffect(() => {
+    const configIsValid = pathValidation.configPath.valid;
+    const wasValid = prevConfigValidRef.current;
+
+    // Update ref for next comparison
+    prevConfigValidRef.current = configIsValid;
+
+    // Only auto-populate on transition from invalid to valid
+    if (!configIsValid || wasValid) {
+      return;
+    }
+
+    // Don't auto-populate if user already has a value
+    if (settings.cli.stylesPath && settings.cli.stylesPath.trim() !== "") {
+      return;
+    }
+
+    // Config just became valid - try to parse and extract StylesPath
+    const configPath = settings.cli.configPath;
+    if (!configPath) {
+      return;
+    }
+
+    // Async: Parse config and auto-populate
+    void (async () => {
+      try {
+        const suggestions: ConfigSuggestions =
+          await detection.parseConfigSuggestions(configPath);
+
+        if (suggestions.stylesPath) {
+          // Update the input field directly
+          if (stylesPathInputRef.current) {
+            stylesPathInputRef.current.value = suggestions.stylesPath;
+          }
+
+          // Save to settings
+          void updateSettings({
+            cli: {
+              ...settings.cli,
+              stylesPath: suggestions.stylesPath,
+            },
+          });
+
+          // Mark as auto-populated to show attribution
+          setStylesPathAutoPopulated(true);
+        }
+      } catch (error) {
+        // Failed to parse config - not critical, just log
+        console.debug("Failed to parse config for StylesPath:", error);
+      }
+    })();
+  }, [
+    pathValidation.configPath.valid,
+    settings.cli.configPath,
+    settings.cli.stylesPath,
+    settings.cli,
+    detection,
+    updateSettings,
+  ]);
 
   // Convert PathValidationResult to FieldValidation for Vale path
   const valePathFieldValidation: FieldValidation = React.useMemo(() => {
@@ -288,6 +379,43 @@ export const CustomModeSettings: React.FC<CustomModeSettingsProps> = ({
             });
         }}
       </SettingWithValidation>
+
+      {/* StylesPath setting - auto-populated from .vale.ini */}
+      <div className="vale-stylespath-setting">
+        <SettingWithValidation
+          validation={createIdleValidation()}
+          baseDescription="Absolute path to Vale styles directory."
+        >
+          {(containerEl) => {
+            new Setting(containerEl)
+              .setName("Styles path")
+              .setDesc("Absolute path to Vale styles directory.")
+              .addText((text) => {
+                const component = text.setValue(settings.cli.stylesPath ?? "");
+
+                // Placeholder text
+                component.setPlaceholder("Auto-detected from config");
+
+                // Store input element reference
+                stylesPathInputRef.current = component.inputEl;
+
+                // Save on blur (clears auto-populated attribution)
+                component.inputEl.onblur = (): void => {
+                  handleStylesPathChange();
+                };
+
+                return component;
+              });
+          }}
+        </SettingWithValidation>
+
+        {/* Attribution text - shown when auto-populated from .vale.ini */}
+        {stylesPathAutoPopulated && (
+          <div className="vale-field-attribution" aria-live="polite">
+            Populated from .vale.ini
+          </div>
+        )}
+      </div>
 
       {/* Rescan button - always visible (not just in advanced mode) for better discoverability */}
       {!detection.hasDetected && !detection.isDetecting && (

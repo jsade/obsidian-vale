@@ -28,6 +28,7 @@ export default defineConfig(
       "jest.config.js",
       "**/*.config.js",
       "**/*.config.mjs",
+      "test/__mocks__/**",
     ],
   },
 
