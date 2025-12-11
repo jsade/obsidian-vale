@@ -9,7 +9,7 @@
  */
 
 import { Extension } from "@codemirror/state";
-import { EditorView } from "@codemirror/view";
+import { EditorView, ViewUpdate } from "@codemirror/view";
 import { valeStateField } from "./stateField";
 import { clickHandler, hoverHandler } from "./eventHandlers";
 import { valeHoverTooltip } from "./tooltip";
@@ -120,6 +120,19 @@ export interface ValeExtensionConfig {
    * @defaultValue true
    */
   enableTooltips?: boolean;
+
+  /**
+   * Callback invoked when the document content changes.
+   *
+   * This callback is triggered whenever the user edits the document.
+   * Use it to implement auto-check functionality with debouncing.
+   *
+   * @remarks
+   * The callback is called synchronously during the update cycle.
+   * Any expensive operations (like running Vale) should be debounced
+   * by the caller.
+   */
+  onDocChange?: () => void;
 }
 
 /**
@@ -170,6 +183,7 @@ export function valeExtension(config: ValeExtensionConfig = {}): Extension {
     enableBaseTheme = true,
     tooltipHoverDelay = 300,
     enableTooltips = true,
+    onDocChange,
   } = config;
 
   const extensions: Extension[] = [
@@ -192,8 +206,16 @@ export function valeExtension(config: ValeExtensionConfig = {}): Extension {
     extensions.push(valeBaseTheme);
   }
 
-  // Future extensions can be added here:
-  // - autoCheckListener(plugin)
+  // Add document change listener for auto-check functionality
+  if (onDocChange) {
+    extensions.push(
+      EditorView.updateListener.of((update: ViewUpdate) => {
+        if (update.docChanged) {
+          onDocChange();
+        }
+      }),
+    );
+  }
 
   return extensions;
 }

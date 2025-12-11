@@ -36,6 +36,12 @@ import {
   scrollToAlert,
 } from "./editor";
 
+/** Debounce delay for auto-check after document edits (typing) */
+const AUTO_CHECK_EDIT_DELAY_MS = 800;
+
+/** Debounce delay for auto-check after switching notes */
+const AUTO_CHECK_SWITCH_DELAY_MS = 150;
+
 export default class ValePlugin extends Plugin {
   public settings: ValeSettings = DEFAULT_SETTINGS;
 
@@ -67,6 +73,12 @@ export default class ValePlugin extends Plugin {
    */
   private lastCheckedView: EditorView | null = null;
 
+  /** Timer for debounced auto-checks */
+  private autoCheckTimer: ReturnType<typeof setTimeout> | null = null;
+
+  /** Path of the file that was last auto-checked (to skip redundant checks) */
+  private lastAutoCheckedPath: string | null = null;
+
   // onload runs when plugin becomes enabled.
   async onload(): Promise<void> {
     // Register custom Vale icon (Material Icons "book_6" - book with A)
@@ -79,7 +91,15 @@ export default class ValePlugin extends Plugin {
     await this.loadSettings();
 
     // Register CM6 extension for Vale decorations and event handling
-    this.registerEditorExtension(valeExtension());
+    this.registerEditorExtension(
+      valeExtension({
+        onDocChange: () => {
+          if (this.settings.autoCheckOnChange) {
+            this.scheduleAutoCheck(AUTO_CHECK_EDIT_DELAY_MS);
+          }
+        },
+      }),
+    );
 
     this.addSettingTab(new ValeSettingTab(this.app, this));
 
@@ -114,6 +134,17 @@ export default class ValePlugin extends Plugin {
             this.addValeActionToView(leaf.view);
           }
         });
+      }),
+    );
+
+    // Auto-check on note switch (file-open event)
+    this.registerEvent(
+      this.app.workspace.on("file-open", (file) => {
+        if (!this.settings.autoCheckOnChange) return;
+        if (!file || file.extension !== "md") return;
+        if (file.path === this.lastAutoCheckedPath) return;
+
+        this.scheduleAutoCheck(AUTO_CHECK_SWITCH_DELAY_MS);
       }),
     );
 
@@ -250,6 +281,12 @@ export default class ValePlugin extends Plugin {
 
   // onunload runs when plugin becomes disabled.
   onunload(): void {
+    // Clean up auto-check timer
+    if (this.autoCheckTimer) {
+      clearTimeout(this.autoCheckTimer);
+      this.autoCheckTimer = null;
+    }
+
     // Clean up status bar
     if (this.statusBarItem) {
       this.statusBarItem.remove();
@@ -362,6 +399,10 @@ export default class ValePlugin extends Plugin {
     this.initializeValeRunner();
     // Refresh toolbar buttons in case the setting changed
     this.refreshToolbarButtons();
+    // Clear auto-check state if feature is disabled
+    if (this.settings.autoCheckOnChange === false) {
+      this.lastAutoCheckedPath = null;
+    }
     console.debug("[DEBUG:ValePlugin] saveSettings completed");
   }
 
@@ -676,6 +717,34 @@ export default class ValePlugin extends Plugin {
         leaves.length,
     );
     return null;
+  }
+
+  /**
+   * Schedules a debounced auto-check.
+   * Cancels any pending auto-check and schedules a new one after the specified delay.
+   *
+   * @param delayMs - Delay in milliseconds before running the check
+   */
+  private scheduleAutoCheck(delayMs: number): void {
+    if (this.autoCheckTimer) {
+      clearTimeout(this.autoCheckTimer);
+    }
+    this.autoCheckTimer = setTimeout(() => {
+      this.autoCheckTimer = null;
+      void this.runAutoCheck();
+    }, delayMs);
+  }
+
+  /**
+   * Runs an auto-check on the current markdown file.
+   * Updates lastAutoCheckedPath to prevent redundant checks on the same file.
+   */
+  private async runAutoCheck(): Promise<void> {
+    const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
+    if (!markdownView?.file) return;
+
+    this.lastAutoCheckedPath = markdownView.file.path;
+    await this.activateView();
   }
 
   // withEditorView is a convenience function for making sure that a

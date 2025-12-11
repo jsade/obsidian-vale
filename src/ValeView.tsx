@@ -60,7 +60,7 @@ export class ValeView extends ItemView {
   }
 
   getIcon(): string {
-    return "check-small";
+    return "vale-book";
   }
 
   setTargetView(view: MarkdownView | null): void {

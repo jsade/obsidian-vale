@@ -34,6 +34,9 @@ export const GeneralSettings: React.FC = () => {
   // Ref: Container for the toolbar button toggle Setting
   const toolbarToggleRef = React.useRef<HTMLDivElement>(null);
 
+  // Ref: Container for the auto-check toggle Setting
+  const autoCheckToggleRef = React.useRef<HTMLDivElement>(null);
+
   // Effect: Check if Vale is installed (for onboarding banner)
   // Always check for CLI mode (server mode is hidden from UI)
   React.useEffect(() => {
@@ -98,6 +101,41 @@ export const GeneralSettings: React.FC = () => {
     };
   }, [settings.showEditorToolbarButton, updateSettings]);
 
+  /**
+   * Effect: Create the auto-check toggle Setting.
+   * Recreates when the setting value changes.
+   */
+  React.useEffect(() => {
+    const el = autoCheckToggleRef.current;
+    if (!el) {
+      return;
+    }
+
+    // Clear previous Setting
+    el.empty();
+
+    // Create auto-check toggle Setting using Obsidian's API
+    const autoCheck = settings.autoCheckOnChange === true;
+
+    new Setting(el)
+      .setName("Auto-check on changes")
+      .setDesc(
+        "Automatically run Vale when switching notes or after editing. Uses debouncing to prevent excessive checks.",
+      )
+      .addToggle((toggle) => {
+        return toggle.setValue(autoCheck).onChange((value: boolean) => {
+          void updateSettings({
+            autoCheckOnChange: value,
+          });
+        });
+      });
+
+    // Cleanup: Clear on unmount (uses captured local variable, not ref.current)
+    return () => {
+      el.empty();
+    };
+  }, [settings.autoCheckOnChange, updateSettings]);
+
   return (
     <div className="vale-general-settings">
       {/* Onboarding banner for first-time users */}
@@ -105,6 +143,9 @@ export const GeneralSettings: React.FC = () => {
 
       {/* Editor toolbar button toggle */}
       <div ref={toolbarToggleRef} />
+
+      {/* Auto-check toggle */}
+      <div ref={autoCheckToggleRef} />
 
       {/* CLI settings - always shown (server mode hidden from UI) */}
       <CliSettings />

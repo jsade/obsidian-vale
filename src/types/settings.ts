@@ -56,6 +56,9 @@ export interface ValeSettings {
 
   /** Whether to show the Vale check button in the editor toolbar */
   showEditorToolbarButton: boolean;
+
+  /** Whether to automatically run Vale when switching notes or after editing */
+  autoCheckOnChange: boolean;
 }
 
 /**
@@ -96,6 +99,7 @@ export const DEFAULT_SETTINGS: ValeSettings = {
     configPath: "",
   },
   showEditorToolbarButton: true,
+  autoCheckOnChange: false,
 };
 
 /**
