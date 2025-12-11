@@ -387,7 +387,10 @@ describe("ErrorMessage Component", () => {
   describe("Comprehensive Error Types", () => {
     it("should handle simple error (title + description only)", () => {
       render(
-        <ErrorMessage title="Simple Error" description="Something went wrong" />,
+        <ErrorMessage
+          title="Simple Error"
+          description="Something went wrong"
+        />,
       );
 
       expect(screen.getByRole("alert")).toBeInTheDocument();

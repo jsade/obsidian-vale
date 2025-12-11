@@ -8,7 +8,7 @@
  */
 
 // Export config manager hook from the parent hooks.ts file (explicit path to avoid ambiguity)
-export { useConfigManager } from "../hooks.ts";
+export { useConfigManager } from "../hooks";
 
 // Export path validation hook
 export {

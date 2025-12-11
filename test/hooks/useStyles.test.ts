@@ -392,7 +392,9 @@ describe("useStyles", () => {
       });
 
       expect(result.current.error).toBeInstanceOf(Error);
-      expect(result.current.error?.message).toBe("Config manager not available");
+      expect(result.current.error?.message).toBe(
+        "Config manager not available",
+      );
       expect(result.current.styles).toEqual([]);
       expect(result.current.enabledStyles).toEqual([]);
     });

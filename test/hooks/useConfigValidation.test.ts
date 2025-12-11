@@ -16,7 +16,10 @@ import {
   useConfigValidation,
   ConfigValidationResult,
 } from "../../src/hooks/useConfigValidation";
-import { ValeConfigManager, ValidationResult } from "../../src/vale/ValeConfigManager";
+import {
+  ValeConfigManager,
+  ValidationResult,
+} from "../../src/vale/ValeConfigManager";
 import { ValeConfig } from "../../src/types";
 
 // Mock ValeConfigManager - no filesystem operations in tests
@@ -87,7 +90,7 @@ describe("useConfigValidation", () => {
   describe("initial state", () => {
     it("should return default validation state", () => {
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       expect(result.current).toEqual({
@@ -143,7 +146,7 @@ describe("useConfigValidation", () => {
       const { rerender } = renderHook(
         ({ cm }: { cm: ValeConfigManager | undefined }) =>
           useConfigValidation(cm),
-        { initialProps: { cm: mockConfigManager } }
+        { initialProps: { cm: mockConfigManager } },
       );
 
       // Advance 400ms
@@ -179,7 +182,7 @@ describe("useConfigValidation", () => {
       mockConfigManager.loadConfig.mockResolvedValue(validConfig);
 
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       act(() => {
@@ -199,7 +202,7 @@ describe("useConfigValidation", () => {
       mockConfigManager.loadConfig.mockResolvedValue(minimalValidConfig);
 
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       act(() => {
@@ -226,7 +229,7 @@ describe("useConfigValidation", () => {
       mockConfigManager.loadConfig.mockResolvedValue(configWithStylesPath);
 
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       act(() => {
@@ -248,7 +251,7 @@ describe("useConfigValidation", () => {
       });
 
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       act(() => {
@@ -259,7 +262,7 @@ describe("useConfigValidation", () => {
         expect(result.current.valid).toBe(false);
         expect(result.current.config).toBeNull();
         expect(result.current.error).toBe(
-          "Config file not found at /missing/.vale.ini"
+          "Config file not found at /missing/.vale.ini",
         );
       });
 
@@ -274,7 +277,7 @@ describe("useConfigValidation", () => {
       });
 
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       act(() => {
@@ -291,10 +294,12 @@ describe("useConfigValidation", () => {
   describe("config structure validation", () => {
     it("should reject config that is not an object (null)", async () => {
       mockConfigManager.validateConfigPath.mockResolvedValue({ valid: true });
-      mockConfigManager.loadConfig.mockResolvedValue(null as unknown as ValeConfig);
+      mockConfigManager.loadConfig.mockResolvedValue(
+        null as unknown as ValeConfig,
+      );
 
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       act(() => {
@@ -309,10 +314,12 @@ describe("useConfigValidation", () => {
 
     it("should reject config that is not an object (primitive)", async () => {
       mockConfigManager.validateConfigPath.mockResolvedValue({ valid: true });
-      mockConfigManager.loadConfig.mockResolvedValue("not an object" as unknown as ValeConfig);
+      mockConfigManager.loadConfig.mockResolvedValue(
+        "not an object" as unknown as ValeConfig,
+      );
 
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       act(() => {
@@ -334,10 +341,12 @@ describe("useConfigValidation", () => {
       };
 
       mockConfigManager.validateConfigPath.mockResolvedValue({ valid: true });
-      mockConfigManager.loadConfig.mockResolvedValue(badConfig as unknown as ValeConfig);
+      mockConfigManager.loadConfig.mockResolvedValue(
+        badConfig as unknown as ValeConfig,
+      );
 
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       act(() => {
@@ -357,10 +366,12 @@ describe("useConfigValidation", () => {
       };
 
       mockConfigManager.validateConfigPath.mockResolvedValue({ valid: true });
-      mockConfigManager.loadConfig.mockResolvedValue(badConfig as unknown as ValeConfig);
+      mockConfigManager.loadConfig.mockResolvedValue(
+        badConfig as unknown as ValeConfig,
+      );
 
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       act(() => {
@@ -369,7 +380,9 @@ describe("useConfigValidation", () => {
 
       await waitFor(() => {
         expect(result.current.valid).toBe(false);
-        expect(result.current.error).toBe('Config file must have a "*" section');
+        expect(result.current.error).toBe(
+          'Config file must have a "*" section',
+        );
       });
     });
 
@@ -379,10 +392,12 @@ describe("useConfigValidation", () => {
       };
 
       mockConfigManager.validateConfigPath.mockResolvedValue({ valid: true });
-      mockConfigManager.loadConfig.mockResolvedValue(badConfig as unknown as ValeConfig);
+      mockConfigManager.loadConfig.mockResolvedValue(
+        badConfig as unknown as ValeConfig,
+      );
 
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       act(() => {
@@ -391,7 +406,9 @@ describe("useConfigValidation", () => {
 
       await waitFor(() => {
         expect(result.current.valid).toBe(false);
-        expect(result.current.error).toBe('Config file must have a "*" section');
+        expect(result.current.error).toBe(
+          'Config file must have a "*" section',
+        );
       });
     });
 
@@ -404,10 +421,12 @@ describe("useConfigValidation", () => {
       };
 
       mockConfigManager.validateConfigPath.mockResolvedValue({ valid: true });
-      mockConfigManager.loadConfig.mockResolvedValue(badConfig as unknown as ValeConfig);
+      mockConfigManager.loadConfig.mockResolvedValue(
+        badConfig as unknown as ValeConfig,
+      );
 
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       act(() => {
@@ -416,7 +435,9 @@ describe("useConfigValidation", () => {
 
       await waitFor(() => {
         expect(result.current.valid).toBe(false);
-        expect(result.current.error).toBe('Config file must have a "*.md" section');
+        expect(result.current.error).toBe(
+          'Config file must have a "*.md" section',
+        );
       });
     });
 
@@ -428,10 +449,12 @@ describe("useConfigValidation", () => {
       };
 
       mockConfigManager.validateConfigPath.mockResolvedValue({ valid: true });
-      mockConfigManager.loadConfig.mockResolvedValue(badConfig as unknown as ValeConfig);
+      mockConfigManager.loadConfig.mockResolvedValue(
+        badConfig as unknown as ValeConfig,
+      );
 
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       act(() => {
@@ -440,7 +463,9 @@ describe("useConfigValidation", () => {
 
       await waitFor(() => {
         expect(result.current.valid).toBe(false);
-        expect(result.current.error).toBe('Config file must have a "*.md" section');
+        expect(result.current.error).toBe(
+          'Config file must have a "*.md" section',
+        );
       });
     });
 
@@ -454,10 +479,12 @@ describe("useConfigValidation", () => {
       };
 
       mockConfigManager.validateConfigPath.mockResolvedValue({ valid: true });
-      mockConfigManager.loadConfig.mockResolvedValue(badConfig as unknown as ValeConfig);
+      mockConfigManager.loadConfig.mockResolvedValue(
+        badConfig as unknown as ValeConfig,
+      );
 
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       act(() => {
@@ -480,10 +507,12 @@ describe("useConfigValidation", () => {
       };
 
       mockConfigManager.validateConfigPath.mockResolvedValue({ valid: true });
-      mockConfigManager.loadConfig.mockResolvedValue(configWithoutBasedOnStyles);
+      mockConfigManager.loadConfig.mockResolvedValue(
+        configWithoutBasedOnStyles,
+      );
 
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       act(() => {
@@ -504,11 +533,11 @@ describe("useConfigValidation", () => {
         () =>
           new Promise((resolve) => {
             resolvePathValidation = resolve;
-          })
+          }),
       );
 
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       // Initial state
@@ -543,17 +572,17 @@ describe("useConfigValidation", () => {
         () =>
           new Promise((resolve) => {
             resolvePathValidation = resolve;
-          })
+          }),
       );
       mockConfigManager.loadConfig.mockImplementation(
         () =>
           new Promise((resolve) => {
             resolveConfigLoad = resolve;
-          })
+          }),
       );
 
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       act(() => {
@@ -589,11 +618,11 @@ describe("useConfigValidation", () => {
   describe("error handling", () => {
     it("should handle Error thrown by validateConfigPath", async () => {
       mockConfigManager.validateConfigPath.mockRejectedValue(
-        new Error("ENOENT: no such file or directory")
+        new Error("ENOENT: no such file or directory"),
       );
 
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       act(() => {
@@ -610,11 +639,11 @@ describe("useConfigValidation", () => {
     it("should handle Error thrown by loadConfig", async () => {
       mockConfigManager.validateConfigPath.mockResolvedValue({ valid: true });
       mockConfigManager.loadConfig.mockRejectedValue(
-        new Error("Invalid INI format")
+        new Error("Invalid INI format"),
       );
 
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       act(() => {
@@ -632,7 +661,7 @@ describe("useConfigValidation", () => {
       mockConfigManager.validateConfigPath.mockRejectedValue("string error");
 
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       act(() => {
@@ -650,7 +679,7 @@ describe("useConfigValidation", () => {
       mockConfigManager.loadConfig.mockRejectedValue({ code: "EACCES" });
 
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       act(() => {
@@ -691,7 +720,11 @@ describe("useConfigValidation", () => {
       const { result, rerender } = renderHook(
         ({ cm }: { cm: ValeConfigManager | undefined }) =>
           useConfigValidation(cm),
-        { initialProps: { cm: mockConfigManager as ValeConfigManager | undefined } }
+        {
+          initialProps: {
+            cm: mockConfigManager as ValeConfigManager | undefined,
+          },
+        },
       );
 
       act(() => {
@@ -727,7 +760,7 @@ describe("useConfigValidation", () => {
       const { result, rerender } = renderHook(
         ({ cm }: { cm: ValeConfigManager | undefined }) =>
           useConfigValidation(cm),
-        { initialProps: { cm: undefined as ValeConfigManager | undefined } }
+        { initialProps: { cm: undefined as ValeConfigManager | undefined } },
       );
 
       act(() => {
@@ -758,7 +791,7 @@ describe("useConfigValidation", () => {
         () =>
           new Promise((resolve) => {
             firstResolve = resolve;
-          })
+          }),
       );
 
       const secondManager = {
@@ -770,7 +803,7 @@ describe("useConfigValidation", () => {
       const { result, rerender } = renderHook(
         ({ cm }: { cm: ValeConfigManager | undefined }) =>
           useConfigValidation(cm),
-        { initialProps: { cm: mockConfigManager } }
+        { initialProps: { cm: mockConfigManager } },
       );
 
       // Trigger first validation
@@ -808,11 +841,11 @@ describe("useConfigValidation", () => {
         () =>
           new Promise((resolve) => {
             resolveValidation = resolve;
-          })
+          }),
       );
 
       const { result, unmount } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       act(() => {
@@ -836,7 +869,7 @@ describe("useConfigValidation", () => {
 
     it("should cancel pending timeout on unmount", () => {
       const { unmount } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       // Unmount before debounce fires
@@ -857,7 +890,7 @@ describe("useConfigValidation", () => {
         () =>
           new Promise((resolve) => {
             resolvePathValidation = resolve;
-          })
+          }),
       );
 
       const secondManager = {
@@ -869,7 +902,7 @@ describe("useConfigValidation", () => {
       const { result, rerender } = renderHook(
         ({ cm }: { cm: ValeConfigManager | undefined }) =>
           useConfigValidation(cm),
-        { initialProps: { cm: mockConfigManager } }
+        { initialProps: { cm: mockConfigManager } },
       );
 
       // Trigger first validation
@@ -907,7 +940,7 @@ describe("useConfigValidation", () => {
         () =>
           new Promise((resolve) => {
             resolveConfigLoad = resolve;
-          })
+          }),
       );
 
       const differentConfig: ValeConfig = {
@@ -928,7 +961,7 @@ describe("useConfigValidation", () => {
       const { result, rerender } = renderHook(
         ({ cm }: { cm: ValeConfigManager | undefined }) =>
           useConfigValidation(cm),
-        { initialProps: { cm: mockConfigManager } }
+        { initialProps: { cm: mockConfigManager } },
       );
 
       // Trigger first validation
@@ -969,17 +1002,17 @@ describe("useConfigValidation", () => {
         () =>
           new Promise((resolve) => {
             resolveValidation = resolve;
-          })
+          }),
       );
       mockConfigManager.loadConfig.mockImplementation(
         () =>
           new Promise((resolve) => {
             resolveConfig = resolve;
-          })
+          }),
       );
 
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       // State 1: Default
@@ -1036,7 +1069,7 @@ describe("useConfigValidation", () => {
       });
 
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       act(() => {
@@ -1061,11 +1094,11 @@ describe("useConfigValidation", () => {
 
       mockConfigManager.validateConfigPath.mockResolvedValue({ valid: true });
       mockConfigManager.loadConfig.mockResolvedValue(
-        invalidStructureConfig as unknown as ValeConfig
+        invalidStructureConfig as unknown as ValeConfig,
       );
 
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       act(() => {
@@ -1089,7 +1122,7 @@ describe("useConfigValidation", () => {
       const { result, rerender } = renderHook(
         ({ cm }: { cm: ValeConfigManager | undefined }) =>
           useConfigValidation(cm),
-        { initialProps: { cm: mockConfigManager } }
+        { initialProps: { cm: mockConfigManager } },
       );
 
       // Complete initial validation
@@ -1118,7 +1151,7 @@ describe("useConfigValidation", () => {
           () =>
             new Promise((resolve) => {
               resolveNewValidation = resolve;
-            })
+            }),
         ),
         loadConfig: jest.fn().mockResolvedValue(newConfig),
       } as unknown as MockedValeConfigManager;
@@ -1163,11 +1196,11 @@ describe("useConfigValidation", () => {
 
       mockConfigManager.validateConfigPath.mockResolvedValue({ valid: true });
       mockConfigManager.loadConfig.mockResolvedValue(
-        configWithExtras as unknown as ValeConfig
+        configWithExtras as unknown as ValeConfig,
       );
 
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       act(() => {
@@ -1195,7 +1228,7 @@ describe("useConfigValidation", () => {
       mockConfigManager.loadConfig.mockResolvedValue(configWithEmptyStyles);
 
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       act(() => {
@@ -1214,7 +1247,7 @@ describe("useConfigValidation", () => {
 
       for (let i = 0; i < 5; i++) {
         const { unmount } = renderHook(() =>
-          useConfigValidation(mockConfigManager)
+          useConfigValidation(mockConfigManager),
         );
 
         act(() => {
@@ -1233,7 +1266,7 @@ describe("useConfigValidation", () => {
       mockConfigManager.loadConfig.mockResolvedValue(validConfig);
 
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       act(() => {
@@ -1263,7 +1296,7 @@ describe("useConfigValidation", () => {
 
       const { result, rerender } = renderHook(
         ({ key }: { key: number }) => useConfigValidation(mockConfigManager),
-        { initialProps: { key: 1 } }
+        { initialProps: { key: 1 } },
       );
 
       // First validation
@@ -1287,7 +1320,7 @@ describe("useConfigValidation", () => {
   describe("return value structure", () => {
     it("should return ConfigValidationResult with correct shape", () => {
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       const state: ConfigValidationResult = result.current;
@@ -1309,7 +1342,7 @@ describe("useConfigValidation", () => {
       });
 
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       act(() => {
@@ -1326,7 +1359,7 @@ describe("useConfigValidation", () => {
       mockConfigManager.loadConfig.mockResolvedValue(validConfig);
 
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       act(() => {
@@ -1337,7 +1370,7 @@ describe("useConfigValidation", () => {
         expect(result.current.config).not.toBeNull();
         expect(result.current.config?.StylesPath).toBe("styles");
         expect(result.current.config?.["*"].md.BasedOnStyles).toBe(
-          "Vale, Google"
+          "Vale, Google",
         );
       });
     });
@@ -1358,11 +1391,11 @@ describe("useConfigValidation", () => {
 
       mockConfigManager.validateConfigPath.mockResolvedValue({ valid: true });
       mockConfigManager.loadConfig.mockResolvedValue(
-        configWithBadStylesPath as unknown as ValeConfig
+        configWithBadStylesPath as unknown as ValeConfig,
       );
 
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       act(() => {
@@ -1382,11 +1415,11 @@ describe("useConfigValidation", () => {
 
       mockConfigManager.validateConfigPath.mockResolvedValue({ valid: true });
       mockConfigManager.loadConfig.mockResolvedValue(
-        configWithoutStar as unknown as ValeConfig
+        configWithoutStar as unknown as ValeConfig,
       );
 
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       act(() => {
@@ -1395,7 +1428,9 @@ describe("useConfigValidation", () => {
 
       await waitFor(() => {
         // Should fail on * check, not md check
-        expect(result.current.error).toBe('Config file must have a "*" section');
+        expect(result.current.error).toBe(
+          'Config file must have a "*" section',
+        );
       });
     });
 
@@ -1409,11 +1444,11 @@ describe("useConfigValidation", () => {
 
       mockConfigManager.validateConfigPath.mockResolvedValue({ valid: true });
       mockConfigManager.loadConfig.mockResolvedValue(
-        configWithoutMd as unknown as ValeConfig
+        configWithoutMd as unknown as ValeConfig,
       );
 
       const { result } = renderHook(() =>
-        useConfigValidation(mockConfigManager)
+        useConfigValidation(mockConfigManager),
       );
 
       act(() => {
@@ -1422,7 +1457,9 @@ describe("useConfigValidation", () => {
 
       await waitFor(() => {
         // Should fail on md check, not BasedOnStyles check
-        expect(result.current.error).toBe('Config file must have a "*.md" section');
+        expect(result.current.error).toBe(
+          'Config file must have a "*.md" section',
+        );
       });
     });
   });

@@ -695,11 +695,7 @@ describe("TabBar Component", () => {
       ];
 
       render(
-        <TabBar
-          tabs={tabsWithLong}
-          activeTab="long"
-          onTabChange={jest.fn()}
-        />,
+        <TabBar tabs={tabsWithLong} activeTab="long" onTabChange={jest.fn()} />,
       );
 
       expect(screen.getByText(longLabel.trim())).toBeInTheDocument();
@@ -729,11 +725,7 @@ describe("TabBar Component", () => {
       ];
 
       render(
-        <TabBar
-          tabs={numericTabs}
-          activeTab="1"
-          onTabChange={jest.fn()}
-        />,
+        <TabBar tabs={numericTabs} activeTab="1" onTabChange={jest.fn()} />,
       );
 
       expect(screen.getByRole("tab", { name: "First" })).toHaveAttribute(

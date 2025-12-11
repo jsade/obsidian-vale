@@ -43,7 +43,7 @@ describe("useAsyncOperation", () => {
         () =>
           new Promise<string>((resolve) => {
             resolvePromise = resolve;
-          })
+          }),
       );
 
       const { result } = renderHook(() => useAsyncOperation(operation));
@@ -91,7 +91,7 @@ describe("useAsyncOperation", () => {
       const operation = jest.fn().mockResolvedValue({ id: 1, name: "test" });
 
       const { result } = renderHook(() =>
-        useAsyncOperation<{ id: number; name: string }>(operation)
+        useAsyncOperation<{ id: number; name: string }>(operation),
       );
 
       act(() => {
@@ -170,17 +170,19 @@ describe("useAsyncOperation", () => {
       let secondSignal: AbortSignal | undefined;
       let callCount = 0;
 
-      const operation = jest.fn().mockImplementation(async (signal: AbortSignal) => {
-        callCount++;
-        if (callCount === 1) {
-          firstSignal = signal;
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-          return "first";
-        } else {
-          secondSignal = signal;
-          return "second";
-        }
-      });
+      const operation = jest
+        .fn()
+        .mockImplementation(async (signal: AbortSignal) => {
+          callCount++;
+          if (callCount === 1) {
+            firstSignal = signal;
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            return "first";
+          } else {
+            secondSignal = signal;
+            return "second";
+          }
+        });
 
       const { result } = renderHook(() => useAsyncOperation(operation));
 
@@ -326,7 +328,9 @@ describe("useAsyncOperation", () => {
         return "done";
       });
 
-      const { result, unmount } = renderHook(() => useAsyncOperation(operation));
+      const { result, unmount } = renderHook(() =>
+        useAsyncOperation(operation),
+      );
 
       act(() => {
         void result.current.execute();
@@ -345,7 +349,9 @@ describe("useAsyncOperation", () => {
         return "done";
       });
 
-      const { result, unmount } = renderHook(() => useAsyncOperation(operation));
+      const { result, unmount } = renderHook(() =>
+        useAsyncOperation(operation),
+      );
 
       act(() => {
         void result.current.execute();
@@ -361,7 +367,9 @@ describe("useAsyncOperation", () => {
 
       // Should not have logged React warning about updating unmounted component
       expect(consoleError).not.toHaveBeenCalledWith(
-        expect.stringContaining("Can't perform a React state update on an unmounted component")
+        expect.stringContaining(
+          "Can't perform a React state update on an unmounted component",
+        ),
       );
 
       consoleError.mockRestore();
@@ -375,7 +383,7 @@ describe("useAsyncOperation", () => {
 
       const { result, rerender } = renderHook(
         ({ op }) => useAsyncOperation(op),
-        { initialProps: { op: operation1 } }
+        { initialProps: { op: operation1 } },
       );
 
       // Change operation
@@ -410,7 +418,9 @@ describe("useAsyncOperation", () => {
     it("should handle undefined return value", async () => {
       const operation = jest.fn().mockResolvedValue(undefined);
 
-      const { result } = renderHook(() => useAsyncOperation<undefined>(operation));
+      const { result } = renderHook(() =>
+        useAsyncOperation<undefined>(operation),
+      );
 
       act(() => {
         void result.current.execute();

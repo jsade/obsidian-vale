@@ -552,9 +552,7 @@ describe("validateValeBinary", () => {
 });
 
 describe("validateValeConfig", () => {
-  const { parse: mockParseIni } = jest.requireMock("ini") as {
-    parse: jest.Mock;
-  };
+  const { parse: mockParseIni } = jest.requireMock("ini");
 
   beforeEach(() => {
     jest.clearAllMocks();

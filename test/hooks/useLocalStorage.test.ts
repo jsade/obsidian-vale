@@ -52,7 +52,9 @@ describe("useLocalStorage", () => {
 
   describe("initialization", () => {
     it("should return default value when localStorage is empty", () => {
-      const { result } = renderHook(() => useLocalStorage("test-key", "default"));
+      const { result } = renderHook(() =>
+        useLocalStorage("test-key", "default"),
+      );
 
       expect(result.current[0]).toBe("default");
     });
@@ -60,7 +62,9 @@ describe("useLocalStorage", () => {
     it("should return stored value when localStorage has data", () => {
       mockStorage["vale-test-key"] = JSON.stringify("stored value");
 
-      const { result } = renderHook(() => useLocalStorage("test-key", "default"));
+      const { result } = renderHook(() =>
+        useLocalStorage("test-key", "default"),
+      );
 
       expect(result.current[0]).toBe("stored value");
     });
@@ -96,7 +100,7 @@ describe("useLocalStorage", () => {
       mockStorage["vale-obj-key"] = JSON.stringify(storedObj);
 
       const { result } = renderHook(() =>
-        useLocalStorage("obj-key", { name: "", count: 0 })
+        useLocalStorage("obj-key", { name: "", count: 0 }),
       );
 
       expect(result.current[0]).toEqual(storedObj);
@@ -105,7 +109,9 @@ describe("useLocalStorage", () => {
     it("should work with array values", () => {
       mockStorage["vale-arr-key"] = JSON.stringify([1, 2, 3]);
 
-      const { result } = renderHook(() => useLocalStorage<number[]>("arr-key", []));
+      const { result } = renderHook(() =>
+        useLocalStorage<number[]>("arr-key", []),
+      );
 
       expect(result.current[0]).toEqual([1, 2, 3]);
     });
@@ -114,7 +120,7 @@ describe("useLocalStorage", () => {
       mockStorage["vale-invalid-key"] = "not valid json{";
 
       const { result } = renderHook(() =>
-        useLocalStorage("invalid-key", "default")
+        useLocalStorage("invalid-key", "default"),
       );
 
       expect(result.current[0]).toBe("default");
@@ -145,7 +151,9 @@ describe("useLocalStorage", () => {
 
     it("should work with complex objects", () => {
       const { result } = renderHook(() =>
-        useLocalStorage<{ nested: { value: string } }>("complex", { nested: { value: "" } })
+        useLocalStorage<{ nested: { value: string } }>("complex", {
+          nested: { value: "" },
+        }),
       );
 
       act(() => {
@@ -153,7 +161,9 @@ describe("useLocalStorage", () => {
       });
 
       expect(result.current[0]).toEqual({ nested: { value: "deep" } });
-      expect(mockStorage["vale-complex"]).toBe(JSON.stringify({ nested: { value: "deep" } }));
+      expect(mockStorage["vale-complex"]).toBe(
+        JSON.stringify({ nested: { value: "deep" } }),
+      );
     });
   });
 
@@ -183,7 +193,7 @@ describe("useLocalStorage", () => {
 
     it("should work with object spread pattern", () => {
       const { result } = renderHook(() =>
-        useLocalStorage<{ a: number; b: number }>("obj", { a: 1, b: 2 })
+        useLocalStorage<{ a: number; b: number }>("obj", { a: 1, b: 2 }),
       );
 
       act(() => {
@@ -195,7 +205,7 @@ describe("useLocalStorage", () => {
 
     it("should work with array operations", () => {
       const { result } = renderHook(() =>
-        useLocalStorage<string[]>("list", ["a"])
+        useLocalStorage<string[]>("list", ["a"]),
       );
 
       act(() => {
@@ -208,7 +218,9 @@ describe("useLocalStorage", () => {
 
   describe("storage event synchronization", () => {
     it("should update state when storage event fires for same key", () => {
-      const { result } = renderHook(() => useLocalStorage("sync-key", "initial"));
+      const { result } = renderHook(() =>
+        useLocalStorage("sync-key", "initial"),
+      );
 
       // Simulate storage event from another tab
       act(() => {
@@ -240,7 +252,7 @@ describe("useLocalStorage", () => {
     it("should use default value when key is removed", () => {
       mockStorage["vale-removable"] = JSON.stringify("stored");
       const { result } = renderHook(() =>
-        useLocalStorage("removable", "default")
+        useLocalStorage("removable", "default"),
       );
 
       expect(result.current[0]).toBe("stored");
@@ -282,7 +294,7 @@ describe("useLocalStorage", () => {
 
       expect(removeEventListenerSpy).toHaveBeenCalledWith(
         "storage",
-        expect.any(Function)
+        expect.any(Function),
       );
     });
   });
@@ -345,10 +357,10 @@ describe("useLocalStorage", () => {
       mockStorage["vale-shared"] = JSON.stringify("shared value");
 
       const { result: result1 } = renderHook(() =>
-        useLocalStorage("shared", "default")
+        useLocalStorage("shared", "default"),
       );
       const { result: result2 } = renderHook(() =>
-        useLocalStorage("shared", "default")
+        useLocalStorage("shared", "default"),
       );
 
       expect(result1.current[0]).toBe("shared value");
@@ -357,10 +369,10 @@ describe("useLocalStorage", () => {
 
     it("should update localStorage but not other hook instances directly", () => {
       const { result: result1 } = renderHook(() =>
-        useLocalStorage("shared", "default")
+        useLocalStorage("shared", "default"),
       );
       const { result: result2 } = renderHook(() =>
-        useLocalStorage("shared", "default")
+        useLocalStorage("shared", "default"),
       );
 
       act(() => {
@@ -371,14 +383,16 @@ describe("useLocalStorage", () => {
       expect(result1.current[0]).toBe("updated by hook 1");
       // Hook 2 won't update until storage event fires (in real browser)
       // In tests without actual localStorage, hook 2 keeps old value
-      expect(mockStorage["vale-shared"]).toBe(JSON.stringify("updated by hook 1"));
+      expect(mockStorage["vale-shared"]).toBe(
+        JSON.stringify("updated by hook 1"),
+      );
     });
   });
 
   describe("edge cases", () => {
     it("should handle null value", () => {
       const { result } = renderHook(() =>
-        useLocalStorage<string | null>("nullable", null)
+        useLocalStorage<string | null>("nullable", null),
       );
 
       expect(result.current[0]).toBeNull();
@@ -399,7 +413,7 @@ describe("useLocalStorage", () => {
 
     it("should handle undefined default value", () => {
       const { result } = renderHook(() =>
-        useLocalStorage<string | undefined>("undef", undefined)
+        useLocalStorage<string | undefined>("undef", undefined),
       );
 
       expect(result.current[0]).toBeUndefined();
@@ -418,14 +432,16 @@ describe("useLocalStorage", () => {
 
     it("should handle special characters in key", () => {
       const { result } = renderHook(() =>
-        useLocalStorage("special:key/with.dots", "default")
+        useLocalStorage("special:key/with.dots", "default"),
       );
 
       act(() => {
         result.current[1]("stored");
       });
 
-      expect(mockStorage["vale-special:key/with.dots"]).toBe(JSON.stringify("stored"));
+      expect(mockStorage["vale-special:key/with.dots"]).toBe(
+        JSON.stringify("stored"),
+      );
     });
   });
 });

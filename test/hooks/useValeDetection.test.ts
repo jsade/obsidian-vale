@@ -90,7 +90,7 @@ describe("useValeDetection", () => {
   describe("initial state", () => {
     it("should have correct initial state before detection", () => {
       mockDetectVale.mockImplementation(
-        () => new Promise(() => {}) // Never resolves
+        () => new Promise(() => {}), // Never resolves
       );
 
       const { result } = renderHook(() => useValeDetection(false));
@@ -147,12 +147,14 @@ describe("useValeDetection", () => {
     });
 
     it("should set isDetecting while detection is in progress", async () => {
-      let resolveDetection: (value: platformDefaults.ValeDetectionResult) => void;
+      let resolveDetection: (
+        value: platformDefaults.ValeDetectionResult,
+      ) => void;
       mockDetectVale.mockImplementation(
         () =>
           new Promise((resolve) => {
             resolveDetection = resolve;
-          })
+          }),
       );
 
       const { result } = renderHook(() => useValeDetection(true));
@@ -235,9 +237,8 @@ describe("useValeDetection", () => {
 
       const { result } = renderHook(() => useValeDetection(false));
 
-      const suggestions = await result.current.parseConfigSuggestions(
-        "/some/config.ini"
-      );
+      const suggestions =
+        await result.current.parseConfigSuggestions("/some/config.ini");
 
       expect(suggestions).toEqual({
         stylesPath: null,
@@ -340,7 +341,7 @@ describe("useValeDetection", () => {
       // Should log warning
       expect(consoleSpy).toHaveBeenCalledWith(
         "Vale detection failed:",
-        expect.any(Error)
+        expect.any(Error),
       );
       // State should be set appropriately
       expect(result.current.detectedPath).toBeNull();
@@ -433,7 +434,7 @@ BasedOnStyles = Vale
       const { result } = renderHook(() => useValeDetection(false));
 
       const suggestions = await result.current.parseConfigSuggestions(
-        "/Users/test/.vale.ini"
+        "/Users/test/.vale.ini",
       );
 
       expect(suggestions).toEqual({
@@ -452,7 +453,7 @@ MinAlertLevel = warning
       const { result } = renderHook(() => useValeDetection(false));
 
       const suggestions = await result.current.parseConfigSuggestions(
-        "/Users/test/project/.vale.ini"
+        "/Users/test/project/.vale.ini",
       );
 
       // Relative "styles" should be resolved against config directory
@@ -469,7 +470,7 @@ StylesPath = ../shared/styles
       const { result } = renderHook(() => useValeDetection(false));
 
       const suggestions = await result.current.parseConfigSuggestions(
-        "/Users/test/project/.vale.ini"
+        "/Users/test/project/.vale.ini",
       );
 
       expect(suggestions.stylesPath).toBe("/Users/test/shared/styles");
@@ -488,7 +489,7 @@ BasedOnStyles = Vale
       const { result } = renderHook(() => useValeDetection(false));
 
       const suggestions = await result.current.parseConfigSuggestions(
-        "/Users/test/.vale.ini"
+        "/Users/test/.vale.ini",
       );
 
       expect(suggestions).toEqual({
@@ -507,7 +508,7 @@ MinAlertLevel = warning
       const { result } = renderHook(() => useValeDetection(false));
 
       const suggestions = await result.current.parseConfigSuggestions(
-        "/Users/test/.vale.ini"
+        "/Users/test/.vale.ini",
       );
 
       // Empty string after trim should result in null
@@ -525,7 +526,7 @@ MinAlertLevel = warning
       const { result } = renderHook(() => useValeDetection(false));
 
       const suggestions = await result.current.parseConfigSuggestions(
-        "/Users/test/.vale.ini"
+        "/Users/test/.vale.ini",
       );
 
       expect(suggestions.stylesPath).toBeNull();
@@ -542,7 +543,7 @@ StylesPath = 123
       const { result } = renderHook(() => useValeDetection(false));
 
       const suggestions = await result.current.parseConfigSuggestions(
-        "/Users/test/.vale.ini"
+        "/Users/test/.vale.ini",
       );
 
       // "123" is a valid string, so it should be treated as relative path
@@ -553,13 +554,13 @@ StylesPath = 123
     it("should handle config file not found", async () => {
       const consoleSpy = jest.spyOn(console, "debug").mockImplementation();
       mockFs.promises.readFile.mockRejectedValue(
-        new Error("ENOENT: no such file")
+        new Error("ENOENT: no such file"),
       );
 
       const { result } = renderHook(() => useValeDetection(false));
 
       const suggestions = await result.current.parseConfigSuggestions(
-        "/nonexistent/.vale.ini"
+        "/nonexistent/.vale.ini",
       );
 
       expect(suggestions).toEqual({
@@ -568,7 +569,7 @@ StylesPath = 123
       });
       expect(consoleSpy).toHaveBeenCalledWith(
         "Could not parse config for suggestions:",
-        expect.any(Error)
+        expect.any(Error),
       );
 
       consoleSpy.mockRestore();
@@ -579,13 +580,13 @@ StylesPath = 123
       // This might cause ini parser to throw or return unexpected results
       // Note: The ini package is quite lenient, so we mock an error
       mockFs.promises.readFile.mockRejectedValue(
-        new Error("EACCES: permission denied")
+        new Error("EACCES: permission denied"),
       );
 
       const { result } = renderHook(() => useValeDetection(false));
 
       const suggestions = await result.current.parseConfigSuggestions(
-        "/protected/.vale.ini"
+        "/protected/.vale.ini",
       );
 
       expect(suggestions).toEqual({
@@ -599,12 +600,14 @@ StylesPath = 123
 
   describe("cleanup on unmount", () => {
     it("should abort in-flight detection on unmount", async () => {
-      let resolveDetection: (value: platformDefaults.ValeDetectionResult) => void;
+      let resolveDetection: (
+        value: platformDefaults.ValeDetectionResult,
+      ) => void;
       mockDetectVale.mockImplementation(
         () =>
           new Promise((resolve) => {
             resolveDetection = resolve;
-          })
+          }),
       );
 
       const { result, unmount } = renderHook(() => useValeDetection(false));
@@ -628,12 +631,14 @@ StylesPath = 123
     it("should not update state after unmount", async () => {
       const consoleError = jest.spyOn(console, "error").mockImplementation();
 
-      let resolveDetection: (value: platformDefaults.ValeDetectionResult) => void;
+      let resolveDetection: (
+        value: platformDefaults.ValeDetectionResult,
+      ) => void;
       mockDetectVale.mockImplementation(
         () =>
           new Promise((resolve) => {
             resolveDetection = resolve;
-          })
+          }),
       );
 
       const { result, unmount } = renderHook(() => useValeDetection(false));
@@ -653,7 +658,7 @@ StylesPath = 123
 
       // Should not log React warning about state update on unmounted component
       expect(consoleError).not.toHaveBeenCalledWith(
-        expect.stringContaining("unmounted")
+        expect.stringContaining("unmounted"),
       );
 
       consoleError.mockRestore();
@@ -667,7 +672,7 @@ StylesPath = 123
         () =>
           new Promise((_, reject) => {
             rejectDetection = reject;
-          })
+          }),
       );
 
       const { result, unmount } = renderHook(() => useValeDetection(false));
@@ -693,7 +698,10 @@ StylesPath = 123
 
   describe("re-detection behavior", () => {
     it("should not re-detect automatically once hasDetected is true", async () => {
-      mockDetectVale.mockResolvedValue({ path: "/usr/bin/vale", source: "System" });
+      mockDetectVale.mockResolvedValue({
+        path: "/usr/bin/vale",
+        source: "System",
+      });
 
       const { result, rerender } = renderHook(() => useValeDetection(true));
 
@@ -712,7 +720,10 @@ StylesPath = 123
     it("should allow manual re-detection even after initial detection", async () => {
       mockDetectVale
         .mockResolvedValueOnce({ path: "/usr/bin/vale", source: "System" })
-        .mockResolvedValueOnce({ path: "/opt/homebrew/bin/vale", source: "Homebrew" });
+        .mockResolvedValueOnce({
+          path: "/opt/homebrew/bin/vale",
+          source: "Homebrew",
+        });
 
       const { result } = renderHook(() => useValeDetection(true));
 
@@ -765,7 +776,7 @@ StylesPath =   /Users/test/styles
       const { result } = renderHook(() => useValeDetection(false));
 
       const suggestions = await result.current.parseConfigSuggestions(
-        "/Users/test/.vale.ini"
+        "/Users/test/.vale.ini",
       );
 
       expect(suggestions.stylesPath).toBe("/Users/test/styles");
@@ -780,7 +791,7 @@ StylesPath = C:\\Users\\test\\styles
       const { result } = renderHook(() => useValeDetection(false));
 
       const suggestions = await result.current.parseConfigSuggestions(
-        "C:\\Users\\test\\.vale.ini"
+        "C:\\Users\\test\\.vale.ini",
       );
 
       // path.isAbsolute should recognize Windows paths
@@ -801,7 +812,7 @@ StylesPath = /should/be/ignored
       const { result } = renderHook(() => useValeDetection(false));
 
       const suggestions = await result.current.parseConfigSuggestions(
-        "/Users/test/.vale.ini"
+        "/Users/test/.vale.ini",
       );
 
       // Should use the top-level StylesPath, not the one in section

@@ -108,7 +108,9 @@ describe("getCommonValePaths", () => {
       expect(paths.length).toBeGreaterThan(0);
 
       // Check for Chocolatey path
-      const chocolateyPath = paths.find(([, source]) => source === "Chocolatey");
+      const chocolateyPath = paths.find(
+        ([, source]) => source === "Chocolatey",
+      );
       expect(chocolateyPath).toBeDefined();
       expect(chocolateyPath![0]).toContain("chocolatey");
       expect(chocolateyPath![0]).toContain("vale.exe");
@@ -121,7 +123,9 @@ describe("getCommonValePaths", () => {
 
     it("should include user home directory in paths", () => {
       const paths = getCommonValePaths();
-      const hasHomePath = paths.some(([path]) => path.includes("/home/testuser"));
+      const hasHomePath = paths.some(([path]) =>
+        path.includes("/home/testuser"),
+      );
       expect(hasHomePath).toBe(true);
     });
   });
@@ -137,12 +141,16 @@ describe("getCommonValePaths", () => {
       expect(paths.length).toBeGreaterThan(0);
 
       // Check for Homebrew ARM path
-      const homebrewArmPath = paths.find(([, source]) => source === "Homebrew (ARM)");
+      const homebrewArmPath = paths.find(
+        ([, source]) => source === "Homebrew (ARM)",
+      );
       expect(homebrewArmPath).toBeDefined();
       expect(homebrewArmPath![0]).toContain("/opt/homebrew");
 
       // Check for local path (Intel/manual install)
-      const localPath = paths.find(([, source]) => source === "Local (/usr/local)");
+      const localPath = paths.find(
+        ([, source]) => source === "Local (/usr/local)",
+      );
       expect(localPath).toBeDefined();
       expect(localPath![0]).toContain("/usr/local/bin");
     });
@@ -345,7 +353,9 @@ describe("isExecutable", () => {
     (mockFs.promises.stat as jest.Mock).mockResolvedValue({
       isFile: () => true,
     });
-    (mockFs.promises.access as jest.Mock).mockRejectedValue(new Error("EACCES"));
+    (mockFs.promises.access as jest.Mock).mockRejectedValue(
+      new Error("EACCES"),
+    );
 
     const result = await isExecutable("/usr/local/bin/vale");
     expect(result).toBe(false);
@@ -549,7 +559,9 @@ describe("getCommonConfigPaths", () => {
   it("should include user home config path", () => {
     const paths = getCommonConfigPaths();
 
-    const homeConfig = paths.find((p) => p.includes("/home/testuser") && p.endsWith(".vale.ini"));
+    const homeConfig = paths.find(
+      (p) => p.includes("/home/testuser") && p.endsWith(".vale.ini"),
+    );
     expect(homeConfig).toBeDefined();
   });
 
@@ -563,7 +575,9 @@ describe("getCommonConfigPaths", () => {
   it("should include macOS Application Support path", () => {
     const paths = getCommonConfigPaths();
 
-    const macPath = paths.find((p) => p.includes("Library/Application Support"));
+    const macPath = paths.find((p) =>
+      p.includes("Library/Application Support"),
+    );
     expect(macPath).toBeDefined();
   });
 

@@ -269,7 +269,9 @@ describe("useRules", () => {
     it("should handle empty available rules", async () => {
       const configManager = createMockConfigManager({
         getRulesForStyle: jest.fn().mockResolvedValue([]),
-        getConfiguredRules: jest.fn().mockResolvedValue(createConfiguredRules()),
+        getConfiguredRules: jest
+          .fn()
+          .mockResolvedValue(createConfiguredRules()),
       });
 
       const { result } = renderHook(() => useRules("Google", configManager));
@@ -389,7 +391,9 @@ describe("useRules", () => {
       });
 
       expect(result.current.error).toBeInstanceOf(Error);
-      expect(result.current.error?.message).toBe("Config manager not available");
+      expect(result.current.error?.message).toBe(
+        "Config manager not available",
+      );
       expect(result.current.rules).toEqual([]);
     });
 
@@ -805,9 +809,11 @@ describe("useRules", () => {
   describe("style name changes", () => {
     it("should refetch when style name changes", async () => {
       const configManager = createMockConfigManager({
-        getRulesForStyle: jest.fn().mockImplementation((styleName: string) =>
-          Promise.resolve([`${styleName}.Rule1`, `${styleName}.Rule2`]),
-        ),
+        getRulesForStyle: jest
+          .fn()
+          .mockImplementation((styleName: string) =>
+            Promise.resolve([`${styleName}.Rule1`, `${styleName}.Rule2`]),
+          ),
       });
 
       const { result, rerender } = renderHook(
@@ -849,7 +855,9 @@ describe("useRules", () => {
 
       await waitFor(() => {
         // eslint-disable-next-line @typescript-eslint/unbound-method
-        expect(configManager.getRulesForStyle).toHaveBeenCalledWith("Microsoft");
+        expect(configManager.getRulesForStyle).toHaveBeenCalledWith(
+          "Microsoft",
+        );
         // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(configManager.getConfiguredRules).toHaveBeenCalledWith(
           "Microsoft",
@@ -879,11 +887,13 @@ describe("useRules", () => {
 
     it("should handle rules with special characters in names", async () => {
       const configManager = createMockConfigManager({
-        getRulesForStyle: jest.fn().mockResolvedValue([
-          "Style.Rule-With-Dashes",
-          "Style.Rule_With_Underscores",
-          "Style.RuleWithNumbers123",
-        ]),
+        getRulesForStyle: jest
+          .fn()
+          .mockResolvedValue([
+            "Style.Rule-With-Dashes",
+            "Style.Rule_With_Underscores",
+            "Style.RuleWithNumbers123",
+          ]),
       });
 
       const { result } = renderHook(() => useRules("Style", configManager));
@@ -897,10 +907,7 @@ describe("useRules", () => {
     });
 
     it("should handle large number of rules", async () => {
-      const manyRules = Array.from(
-        { length: 100 },
-        (_, i) => `Style.Rule${i}`,
-      );
+      const manyRules = Array.from({ length: 100 }, (_, i) => `Style.Rule${i}`);
       const configManager = createMockConfigManager({
         getRulesForStyle: jest.fn().mockResolvedValue(manyRules),
       });

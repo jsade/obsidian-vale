@@ -16,11 +16,20 @@
  */
 
 import * as React from "react";
-import { act, render, screen, waitFor, fireEvent } from "@testing-library/react";
+import {
+  act,
+  render,
+  screen,
+  waitFor,
+  fireEvent,
+} from "@testing-library/react";
 import { App } from "obsidian";
 import { ValeSettings, DEFAULT_SETTINGS } from "../../src/types";
 import { SettingsRouter } from "../../src/settings/SettingsRouter";
-import { SettingsProvider, useSettings } from "../../src/context/SettingsContext";
+import {
+  SettingsProvider,
+  useSettings,
+} from "../../src/context/SettingsContext";
 import ValePlugin from "../../src/main";
 import { ValeConfigManager } from "../../src/vale/ValeConfigManager";
 import * as hooks from "../../src/hooks";
@@ -96,13 +105,11 @@ function createMockPlugin(
  */
 function renderSettingsRouter(plugin: MockedPlugin) {
   // Mock useConfigManager to return our mock
-  jest.spyOn(hooks, "useConfigManager").mockReturnValue(
-    plugin.configManager as unknown as ValeConfigManager,
-  );
+  jest
+    .spyOn(hooks, "useConfigManager")
+    .mockReturnValue(plugin.configManager as unknown as ValeConfigManager);
 
-  return render(
-    <SettingsRouter plugin={plugin as unknown as ValePlugin} />,
-  );
+  return render(<SettingsRouter plugin={plugin as unknown as ValePlugin} />);
 }
 
 /**
@@ -182,7 +189,9 @@ describe("Settings Persistence Integration Tests", () => {
 
         // saveSettings should be called immediately (within updateSettings)
         await waitFor(() => {
-          expect(plugin.saveSettings.mock.calls.length).toBeGreaterThan(initialCallCount);
+          expect(plugin.saveSettings.mock.calls.length).toBeGreaterThan(
+            initialCallCount,
+          );
         });
       }
     });
@@ -477,9 +486,9 @@ describe("Settings Persistence Integration Tests", () => {
         return null;
       };
 
-      jest.spyOn(hooks, "useConfigManager").mockReturnValue(
-        plugin.configManager as unknown as ValeConfigManager,
-      );
+      jest
+        .spyOn(hooks, "useConfigManager")
+        .mockReturnValue(plugin.configManager as unknown as ValeConfigManager);
 
       render(
         <SettingsProvider plugin={plugin as unknown as ValePlugin}>
@@ -506,7 +515,10 @@ describe("Settings Persistence Integration Tests", () => {
         },
       });
 
-      const capturedRef: { settings: ValeSettings | null; reset: (() => Promise<void>) | null } = {
+      const capturedRef: {
+        settings: ValeSettings | null;
+        reset: (() => Promise<void>) | null;
+      } = {
         settings: null,
         reset: null,
       };
@@ -518,9 +530,9 @@ describe("Settings Persistence Integration Tests", () => {
         return null;
       };
 
-      jest.spyOn(hooks, "useConfigManager").mockReturnValue(
-        plugin.configManager as unknown as ValeConfigManager,
-      );
+      jest
+        .spyOn(hooks, "useConfigManager")
+        .mockReturnValue(plugin.configManager as unknown as ValeConfigManager);
 
       render(
         <SettingsProvider plugin={plugin as unknown as ValePlugin}>

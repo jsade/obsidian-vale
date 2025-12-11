@@ -536,7 +536,7 @@ describe("Keyboard Navigation", () => {
         </div>,
       );
 
-      const focusable = getFocusableElements(container as HTMLElement);
+      const focusable = getFocusableElements(container);
       expect(focusable).toHaveLength(6);
       expect(focusable[0]).toHaveTextContent("First");
       expect(focusable[5]).toHaveTextContent("Last");
@@ -550,7 +550,7 @@ describe("Keyboard Navigation", () => {
         </div>,
       );
 
-      const focusable = getFocusableElements(container as HTMLElement);
+      const focusable = getFocusableElements(container);
       expect(focusable).toHaveLength(1);
       expect(focusable[0]).toHaveTextContent("Enabled");
     });
@@ -563,7 +563,7 @@ describe("Keyboard Navigation", () => {
         </div>,
       );
 
-      const focusable = getFocusableElements(container as HTMLElement);
+      const focusable = getFocusableElements(container);
       expect(focusable).toHaveLength(1);
       expect(focusable[0]).toHaveTextContent("In Tab Order");
     });
@@ -582,10 +582,7 @@ describe("Keyboard Navigation", () => {
       const firstButton = screen.getByRole("button", { name: "First" });
       firstButton.focus();
 
-      const nextFocused = simulateKeyboardNavigation(
-        container as HTMLElement,
-        "Tab",
-      );
+      const nextFocused = simulateKeyboardNavigation(container, "Tab");
 
       expect(nextFocused).toBe(screen.getByRole("button", { name: "Second" }));
       expect(document.activeElement).toBe(
@@ -605,10 +602,7 @@ describe("Keyboard Navigation", () => {
       const thirdButton = screen.getByRole("button", { name: "Third" });
       thirdButton.focus();
 
-      const nextFocused = simulateKeyboardNavigation(
-        container as HTMLElement,
-        "Shift+Tab",
-      );
+      const nextFocused = simulateKeyboardNavigation(container, "Shift+Tab");
 
       expect(nextFocused).toBe(screen.getByRole("button", { name: "Second" }));
       expect(document.activeElement).toBe(
@@ -628,10 +622,7 @@ describe("Keyboard Navigation", () => {
       const thirdButton = screen.getByRole("button", { name: "Third" });
       thirdButton.focus();
 
-      const nextFocused = simulateKeyboardNavigation(
-        container as HTMLElement,
-        "Tab",
-      );
+      const nextFocused = simulateKeyboardNavigation(container, "Tab");
 
       expect(nextFocused).toBe(screen.getByRole("button", { name: "First" }));
     });

@@ -16,7 +16,10 @@ import {
   PathValidationState,
   PathsToValidate,
 } from "../../src/hooks/usePathValidation";
-import { ValeConfigManager, ValidationResult } from "../../src/vale/ValeConfigManager";
+import {
+  ValeConfigManager,
+  ValidationResult,
+} from "../../src/vale/ValeConfigManager";
 
 // Mock ValeConfigManager - we don't want actual filesystem operations
 jest.mock("../../src/vale/ValeConfigManager");
@@ -72,7 +75,7 @@ describe("usePathValidation", () => {
         usePathValidation(mockConfigManager, {
           valePath: "/usr/local/bin/vale",
           configPath: "/home/user/.vale.ini",
-        })
+        }),
       );
 
       // Before debounce fires, both should be in default state
@@ -93,7 +96,7 @@ describe("usePathValidation", () => {
         usePathValidation(mockConfigManager, {
           valePath: "/usr/local/bin/vale",
           configPath: "/home/user/.vale.ini",
-        })
+        }),
       );
 
       // Validation should NOT have been called yet - debounce hasn't fired
@@ -111,7 +114,7 @@ describe("usePathValidation", () => {
         usePathValidation(mockConfigManager, {
           valePath: "/usr/local/bin/vale",
           configPath: "/home/user/.vale.ini",
-        })
+        }),
       );
 
       // Before debounce
@@ -144,7 +147,7 @@ describe("usePathValidation", () => {
           initialProps: {
             paths: { valePath: "/path/one", configPath: "/config/one" },
           },
-        }
+        },
       );
 
       // Advance 400ms (not enough to trigger)
@@ -182,7 +185,7 @@ describe("usePathValidation", () => {
           initialProps: {
             paths: { valePath: "/path/1", configPath: "/config/1" },
           },
-        }
+        },
       );
 
       // Rapid-fire path changes
@@ -218,7 +221,7 @@ describe("usePathValidation", () => {
         usePathValidation(mockConfigManager, {
           valePath: "/usr/local/bin/vale",
           configPath: "/home/user/.vale.ini",
-        })
+        }),
       );
 
       // Trigger debounced validation
@@ -241,7 +244,7 @@ describe("usePathValidation", () => {
         usePathValidation(mockConfigManager, {
           valePath: "/usr/local/bin/vale",
           configPath: "/home/user/.vale.ini",
-        })
+        }),
       );
 
       act(() => {
@@ -263,20 +266,20 @@ describe("usePathValidation", () => {
         () =>
           new Promise((resolve) => {
             valeResolve = resolve;
-          })
+          }),
       );
       mockConfigManager.validateConfigPath.mockImplementation(
         () =>
           new Promise((resolve) => {
             configResolve = resolve;
-          })
+          }),
       );
 
       const { result } = renderHook(() =>
         usePathValidation(mockConfigManager, {
           valePath: "/usr/local/bin/vale",
           configPath: "/home/user/.vale.ini",
-        })
+        }),
       );
 
       act(() => {
@@ -325,7 +328,7 @@ describe("usePathValidation", () => {
         usePathValidation(mockConfigManager, {
           valePath: "/nonexistent/vale",
           configPath: "/home/user/.vale.ini",
-        })
+        }),
       );
 
       act(() => {
@@ -351,7 +354,7 @@ describe("usePathValidation", () => {
         usePathValidation(mockConfigManager, {
           valePath: "/usr/local/bin/vale",
           configPath: "/missing/.vale.ini",
-        })
+        }),
       );
 
       act(() => {
@@ -379,7 +382,7 @@ describe("usePathValidation", () => {
         usePathValidation(mockConfigManager, {
           valePath: "/bad/vale",
           configPath: "/bad/.vale.ini",
-        })
+        }),
       );
 
       act(() => {
@@ -402,7 +405,7 @@ describe("usePathValidation", () => {
         () =>
           new Promise((resolve) => {
             resolveValidation = resolve;
-          })
+          }),
       );
       mockConfigManager.validateConfigPath.mockResolvedValue({ valid: true });
 
@@ -410,7 +413,7 @@ describe("usePathValidation", () => {
         usePathValidation(mockConfigManager, {
           valePath: "/usr/local/bin/vale",
           configPath: "/home/user/.vale.ini",
-        })
+        }),
       );
 
       // Initial state: not validating
@@ -438,7 +441,7 @@ describe("usePathValidation", () => {
 
     it("should clear isValidating on validation error", async () => {
       mockConfigManager.validateValePath.mockRejectedValue(
-        new Error("Network error")
+        new Error("Network error"),
       );
       mockConfigManager.validateConfigPath.mockResolvedValue({ valid: true });
 
@@ -446,7 +449,7 @@ describe("usePathValidation", () => {
         usePathValidation(mockConfigManager, {
           valePath: "/usr/local/bin/vale",
           configPath: "/home/user/.vale.ini",
-        })
+        }),
       );
 
       act(() => {
@@ -463,7 +466,7 @@ describe("usePathValidation", () => {
   describe("error handling", () => {
     it("should handle Error instances and extract message", async () => {
       mockConfigManager.validateValePath.mockRejectedValue(
-        new Error("Permission denied")
+        new Error("Permission denied"),
       );
       mockConfigManager.validateConfigPath.mockResolvedValue({ valid: true });
 
@@ -471,7 +474,7 @@ describe("usePathValidation", () => {
         usePathValidation(mockConfigManager, {
           valePath: "/usr/local/bin/vale",
           configPath: "/home/user/.vale.ini",
-        })
+        }),
       );
 
       act(() => {
@@ -488,13 +491,15 @@ describe("usePathValidation", () => {
       // Sometimes people throw strings or objects that aren't Error instances
       // Back in the ES3 days we used to see `throw "something went wrong"` all the time
       mockConfigManager.validateValePath.mockRejectedValue("string error");
-      mockConfigManager.validateConfigPath.mockRejectedValue({ code: "ENOENT" });
+      mockConfigManager.validateConfigPath.mockRejectedValue({
+        code: "ENOENT",
+      });
 
       const { result } = renderHook(() =>
         usePathValidation(mockConfigManager, {
           valePath: "/usr/local/bin/vale",
           configPath: "/home/user/.vale.ini",
-        })
+        }),
       );
 
       act(() => {
@@ -514,7 +519,7 @@ describe("usePathValidation", () => {
         () =>
           new Promise((_, reject) => {
             rejectValidation = reject;
-          })
+          }),
       );
       mockConfigManager.validateConfigPath.mockResolvedValue({ valid: true });
 
@@ -522,7 +527,7 @@ describe("usePathValidation", () => {
         usePathValidation(mockConfigManager, {
           valePath: "/usr/local/bin/vale",
           configPath: "/home/user/.vale.ini",
-        })
+        }),
       );
 
       act(() => {
@@ -555,7 +560,7 @@ describe("usePathValidation", () => {
         usePathValidation(mockConfigManager, {
           valePath: "",
           configPath: "/home/user/.vale.ini",
-        })
+        }),
       );
 
       act(() => {
@@ -588,7 +593,7 @@ describe("usePathValidation", () => {
         usePathValidation(mockConfigManager, {
           valePath: "/usr/local/bin/vale",
           configPath: "",
-        })
+        }),
       );
 
       act(() => {
@@ -617,7 +622,7 @@ describe("usePathValidation", () => {
         usePathValidation(mockConfigManager, {
           valePath: undefined,
           configPath: "/home/user/.vale.ini",
-        })
+        }),
       );
 
       act(() => {
@@ -640,7 +645,7 @@ describe("usePathValidation", () => {
         usePathValidation(mockConfigManager, {
           valePath: "/usr/local/bin/vale",
           configPath: undefined,
-        })
+        }),
       );
 
       act(() => {
@@ -663,7 +668,7 @@ describe("usePathValidation", () => {
         usePathValidation(mockConfigManager, {
           valePath: "   ",
           configPath: "\t\n",
-        })
+        }),
       );
 
       act(() => {
@@ -692,7 +697,7 @@ describe("usePathValidation", () => {
               configPath: "/home/user/.vale.ini",
             },
           },
-        }
+        },
       );
 
       // Complete initial validation
@@ -728,7 +733,7 @@ describe("usePathValidation", () => {
         usePathValidation(undefined, {
           valePath: "/usr/local/bin/vale",
           configPath: "/home/user/.vale.ini",
-        })
+        }),
       );
 
       act(() => {
@@ -762,7 +767,11 @@ describe("usePathValidation", () => {
             valePath: "/usr/local/bin/vale",
             configPath: "/home/user/.vale.ini",
           }),
-        { initialProps: { cm: mockConfigManager as ValeConfigManager | undefined } }
+        {
+          initialProps: {
+            cm: mockConfigManager as ValeConfigManager | undefined,
+          },
+        },
       );
 
       act(() => {
@@ -812,7 +821,7 @@ describe("usePathValidation", () => {
           initialProps: {
             paths: { valePath: "/path/one", configPath: "/config/one" },
           },
-        }
+        },
       );
 
       // Trigger first validation
@@ -846,7 +855,7 @@ describe("usePathValidation", () => {
         () =>
           new Promise((resolve) => {
             resolveValidation = resolve;
-          })
+          }),
       );
       mockConfigManager.validateConfigPath.mockResolvedValue({ valid: true });
 
@@ -854,7 +863,7 @@ describe("usePathValidation", () => {
         usePathValidation(mockConfigManager, {
           valePath: "/usr/local/bin/vale",
           configPath: "/home/user/.vale.ini",
-        })
+        }),
       );
 
       act(() => {
@@ -881,7 +890,7 @@ describe("usePathValidation", () => {
         usePathValidation(mockConfigManager, {
           valePath: "/usr/local/bin/vale",
           configPath: "/home/user/.vale.ini",
-        })
+        }),
       );
 
       // Unmount before debounce fires
@@ -914,7 +923,7 @@ describe("usePathValidation", () => {
           initialProps: {
             paths: { valePath: "/path/one", configPath: "/config/one" },
           },
-        }
+        },
       );
 
       // Trigger first validation
@@ -951,7 +960,7 @@ describe("usePathValidation", () => {
         () =>
           new Promise((resolve) => {
             resolveValidation = resolve;
-          })
+          }),
       );
       mockConfigManager.validateConfigPath.mockResolvedValue({ valid: true });
 
@@ -959,7 +968,7 @@ describe("usePathValidation", () => {
         usePathValidation(mockConfigManager, {
           valePath: "/usr/local/bin/vale",
           configPath: "/home/user/.vale.ini",
-        })
+        }),
       );
 
       // State 1: Default
@@ -1004,7 +1013,7 @@ describe("usePathValidation", () => {
         () =>
           new Promise((resolve) => {
             resolveValidation = resolve;
-          })
+          }),
       );
       mockConfigManager.validateConfigPath.mockResolvedValue({ valid: true });
 
@@ -1012,7 +1021,7 @@ describe("usePathValidation", () => {
         usePathValidation(mockConfigManager, {
           valePath: "/bad/path",
           configPath: "/home/user/.vale.ini",
-        })
+        }),
       );
 
       act(() => {
@@ -1042,7 +1051,7 @@ describe("usePathValidation", () => {
         () =>
           new Promise((_, reject) => {
             rejectValidation = reject;
-          })
+          }),
       );
       mockConfigManager.validateConfigPath.mockResolvedValue({ valid: true });
 
@@ -1050,7 +1059,7 @@ describe("usePathValidation", () => {
         usePathValidation(mockConfigManager, {
           valePath: "/bad/path",
           configPath: "/home/user/.vale.ini",
-        })
+        }),
       );
 
       act(() => {
@@ -1088,7 +1097,7 @@ describe("usePathValidation", () => {
               configPath: "/home/user/.vale.ini",
             },
           },
-        }
+        },
       );
 
       // Complete first validation
@@ -1106,7 +1115,7 @@ describe("usePathValidation", () => {
         () =>
           new Promise((resolve) => {
             resolveSecond = resolve;
-          })
+          }),
       );
 
       // Change path
@@ -1142,7 +1151,7 @@ describe("usePathValidation", () => {
         usePathValidation(mockConfigManager, {
           valePath: "/usr/local/bin/vale",
           configPath: "/home/user/.vale.ini",
-        })
+        }),
       );
 
       act(() => {
@@ -1163,7 +1172,7 @@ describe("usePathValidation", () => {
         usePathValidation(mockConfigManager, {
           valePath: "/path/with spaces/and-special_chars!/vale",
           configPath: "/home/user/.vale (1).ini",
-        })
+        }),
       );
 
       act(() => {
@@ -1188,7 +1197,7 @@ describe("usePathValidation", () => {
         usePathValidation(mockConfigManager, {
           valePath: longPath,
           configPath: "/home/user/.vale.ini",
-        })
+        }),
       );
 
       act(() => {
@@ -1210,7 +1219,7 @@ describe("usePathValidation", () => {
           usePathValidation(mockConfigManager, {
             valePath: "/usr/local/bin/vale",
             configPath: "/home/user/.vale.ini",
-          })
+          }),
         );
 
         act(() => {
@@ -1233,7 +1242,7 @@ describe("usePathValidation", () => {
         usePathValidation(mockConfigManager, {
           valePath: "/usr/local/bin/vale",
           configPath: "/home/user/.vale.ini",
-        })
+        }),
       );
 
       act(() => {
@@ -1253,7 +1262,7 @@ describe("usePathValidation", () => {
         usePathValidation(mockConfigManager, {
           valePath: "/usr/local/bin/vale",
           configPath: "/home/user/.vale.ini",
-        })
+        }),
       );
 
       const state: PathValidationState = result.current;

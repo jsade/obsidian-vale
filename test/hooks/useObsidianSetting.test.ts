@@ -67,7 +67,10 @@ describe("useObsidianSetting", () => {
    * The hook returns a ref, so we need to render a component that
    * attaches the ref to an actual DOM element.
    */
-  function renderWithContainer(config: SettingConfig, deps: React.DependencyList) {
+  function renderWithContainer(
+    config: SettingConfig,
+    deps: React.DependencyList,
+  ) {
     const container = document.createElement("div");
     document.body.appendChild(container);
 
@@ -76,13 +79,14 @@ describe("useObsidianSetting", () => {
         const ref = useObsidianSetting(config, deps);
         // Simulate attaching ref to container
         React.useLayoutEffect(() => {
-          (ref as React.MutableRefObject<HTMLDivElement | null>).current = container;
+          (ref as React.MutableRefObject<HTMLDivElement | null>).current =
+            container;
         }, []);
         return ref;
       },
       {
         initialProps: { config, deps },
-      }
+      },
     );
 
     return {
@@ -102,7 +106,7 @@ describe("useObsidianSetting", () => {
     it("should create a Setting with name", () => {
       const { container, getLatestSetting } = renderWithContainer(
         { name: "Test Setting" },
-        []
+        [],
       );
 
       expect(createdSettings).toHaveLength(1);
@@ -117,7 +121,7 @@ describe("useObsidianSetting", () => {
           name: "Path Setting",
           desc: "Enter the path to Vale binary",
         },
-        []
+        [],
       );
 
       const setting = getLatestSetting();
@@ -128,23 +132,20 @@ describe("useObsidianSetting", () => {
     it("should return a ref to the container element", () => {
       const { result, container } = renderWithContainer(
         { name: "Ref Test" },
-        []
+        [],
       );
 
       expect(result.current.current).toBe(container);
     });
 
     it("should create Setting inside the container element", () => {
-      const { container } = renderWithContainer(
-        { name: "Container Test" },
-        []
-      );
+      const { container } = renderWithContainer({ name: "Container Test" }, []);
 
       const settingItem = container.querySelector(".setting-item");
       expect(settingItem).toBeTruthy();
-      expect(settingItem?.querySelector(".setting-item-name")?.textContent).toBe(
-        "Container Test"
-      );
+      expect(
+        settingItem?.querySelector(".setting-item-name")?.textContent,
+      ).toBe("Container Test");
     });
   });
 
@@ -155,7 +156,7 @@ describe("useObsidianSetting", () => {
           name: "Section Title",
           heading: true,
         },
-        []
+        [],
       );
 
       const setting = getLatestSetting();
@@ -166,7 +167,7 @@ describe("useObsidianSetting", () => {
     it("should not set heading when heading is not provided", () => {
       const { container, getLatestSetting } = renderWithContainer(
         { name: "Regular Setting" },
-        []
+        [],
       );
 
       const setting = getLatestSetting();
@@ -180,7 +181,7 @@ describe("useObsidianSetting", () => {
           name: "Styled Setting",
           class: "my-custom-class",
         },
-        []
+        [],
       );
 
       const setting = getLatestSetting();
@@ -194,7 +195,7 @@ describe("useObsidianSetting", () => {
           name: "Disabled Setting",
           disabled: true,
         },
-        []
+        [],
       );
 
       const setting = getLatestSetting();
@@ -208,7 +209,7 @@ describe("useObsidianSetting", () => {
           name: "Enabled Setting",
           disabled: false,
         },
-        []
+        [],
       );
 
       const setting = getLatestSetting();
@@ -219,7 +220,7 @@ describe("useObsidianSetting", () => {
     it("should not call setDisabled when disabled is undefined", () => {
       const { getLatestSetting } = renderWithContainer(
         { name: "No Disabled Setting" },
-        []
+        [],
       );
 
       // disabled should remain at default value
@@ -233,13 +234,13 @@ describe("useObsidianSetting", () => {
           name: "Tooltip Setting",
           tooltip: "This is helpful information",
         },
-        []
+        [],
       );
 
       const setting = getLatestSetting();
       expect(setting.tooltip).toBe("This is helpful information");
       expect(
-        container.querySelector("[title='This is helpful information']")
+        container.querySelector("[title='This is helpful information']"),
       ).toBeTruthy();
     });
 
@@ -254,7 +255,7 @@ describe("useObsidianSetting", () => {
           name: "Fragment Desc",
           desc: fragment,
         },
-        []
+        [],
       );
 
       const setting = getLatestSetting();
@@ -272,7 +273,7 @@ describe("useObsidianSetting", () => {
           disabled: true,
           tooltip: "Full tooltip",
         },
-        []
+        [],
       );
 
       const setting = getLatestSetting();
@@ -298,7 +299,7 @@ describe("useObsidianSetting", () => {
           name: "Configurable",
           configure: configureFn,
         },
-        []
+        [],
       );
 
       expect(configureFn).toHaveBeenCalledTimes(1);
@@ -313,12 +314,16 @@ describe("useObsidianSetting", () => {
           name: "Text Input",
           configure: (setting) => {
             setting.addText((text) => {
-              (text as { setValue: (v: string) => unknown }).setValue("/path/to/vale");
-              (text as { onChange: (cb: (v: string) => void) => unknown }).onChange(onChange);
+              (text as { setValue: (v: string) => unknown }).setValue(
+                "/path/to/vale",
+              );
+              (
+                text as { onChange: (cb: (v: string) => void) => unknown }
+              ).onChange(onChange);
             });
           },
         },
-        []
+        [],
       );
 
       const input = container.querySelector("input[type='text']");
@@ -339,7 +344,7 @@ describe("useObsidianSetting", () => {
             });
           },
         },
-        []
+        [],
       );
 
       expect(capturedToggle).not.toBeNull();
@@ -352,15 +357,19 @@ describe("useObsidianSetting", () => {
           name: "Dropdown Setting",
           configure: (setting) => {
             setting.addDropdown((dropdown) => {
-              (dropdown as { addOption: (v: string, d: string) => unknown })
-                .addOption("opt1", "Option 1");
-              (dropdown as { addOption: (v: string, d: string) => unknown })
-                .addOption("opt2", "Option 2");
-              (dropdown as { setValue: (v: string) => unknown }).setValue("opt1");
+              (
+                dropdown as { addOption: (v: string, d: string) => unknown }
+              ).addOption("opt1", "Option 1");
+              (
+                dropdown as { addOption: (v: string, d: string) => unknown }
+              ).addOption("opt2", "Option 2");
+              (dropdown as { setValue: (v: string) => unknown }).setValue(
+                "opt1",
+              );
             });
           },
         },
-        []
+        [],
       );
 
       const select = container.querySelector("select");
@@ -375,12 +384,16 @@ describe("useObsidianSetting", () => {
           name: "Button Setting",
           configure: (setting) => {
             setting.addButton((button) => {
-              (button as { setButtonText: (t: string) => unknown }).setButtonText("Click me");
-              (button as { onClick: (cb: () => void) => unknown }).onClick(onClick);
+              (
+                button as { setButtonText: (t: string) => unknown }
+              ).setButtonText("Click me");
+              (button as { onClick: (cb: () => void) => unknown }).onClick(
+                onClick,
+              );
             });
           },
         },
-        []
+        [],
       );
 
       // Button was configured
@@ -415,7 +428,7 @@ describe("useObsidianSetting", () => {
             setting.descEl.appendChild(errorSpan);
           },
         },
-        []
+        [],
       );
 
       const descEl = container.querySelector(".setting-item-description");
@@ -428,7 +441,7 @@ describe("useObsidianSetting", () => {
     it("should clear container on unmount", () => {
       const { container, unmount } = renderWithContainer(
         { name: "Cleanup Test" },
-        []
+        [],
       );
 
       expect(container.querySelector(".setting-item")).toBeTruthy();
@@ -442,12 +455,12 @@ describe("useObsidianSetting", () => {
     it("should clear previous Setting when dependencies change", async () => {
       const { container, rerender } = renderWithContainer(
         { name: "Initial Name" },
-        ["dep1"]
+        ["dep1"],
       );
 
       expect(createdSettings).toHaveLength(1);
       expect(container.querySelector(".setting-item-name")?.textContent).toBe(
-        "Initial Name"
+        "Initial Name",
       );
 
       // Change dependencies - should recreate the Setting
@@ -458,17 +471,16 @@ describe("useObsidianSetting", () => {
       // Should have created a new Setting
       expect(createdSettings).toHaveLength(2);
       expect(container.querySelector(".setting-item-name")?.textContent).toBe(
-        "Updated Name"
+        "Updated Name",
       );
       // Only one setting-item should exist (old one cleared)
       expect(container.querySelectorAll(".setting-item").length).toBe(1);
     });
 
     it("should not recreate Setting if dependencies do not change", async () => {
-      const { rerender } = renderWithContainer(
-        { name: "Stable Setting" },
-        ["stable-dep"]
-      );
+      const { rerender } = renderWithContainer({ name: "Stable Setting" }, [
+        "stable-dep",
+      ]);
 
       expect(createdSettings).toHaveLength(1);
 
@@ -492,7 +504,7 @@ describe("useObsidianSetting", () => {
             });
           },
         },
-        [value]
+        [value],
       );
 
       const initialInput = container.querySelector("input") as HTMLInputElement;
@@ -510,7 +522,7 @@ describe("useObsidianSetting", () => {
               });
             },
           },
-          [value]
+          [value],
         );
       });
 
@@ -521,7 +533,7 @@ describe("useObsidianSetting", () => {
     it("should handle rapid dependency changes", async () => {
       const { container, rerender } = renderWithContainer(
         { name: "Setting 0" },
-        [0]
+        [0],
       );
 
       // Rapid changes
@@ -536,7 +548,7 @@ describe("useObsidianSetting", () => {
       // But only one should remain in DOM
       expect(container.querySelectorAll(".setting-item").length).toBe(1);
       expect(container.querySelector(".setting-item-name")?.textContent).toBe(
-        "Setting 5"
+        "Setting 5",
       );
     });
   });
@@ -551,7 +563,7 @@ describe("useObsidianSetting", () => {
     it("should handle empty string description", () => {
       const { getLatestSetting } = renderWithContainer(
         { name: "Empty Desc", desc: "" },
-        []
+        [],
       );
 
       expect(getLatestSetting().desc).toBe("");
@@ -561,7 +573,7 @@ describe("useObsidianSetting", () => {
       const specialName = "Setting <with> \"special\" & 'chars'";
       const { getLatestSetting } = renderWithContainer(
         { name: specialName },
-        []
+        [],
       );
 
       expect(getLatestSetting().name).toBe(specialName);
@@ -575,10 +587,7 @@ describe("useObsidianSetting", () => {
     });
 
     it("should handle empty deps array (never recreate)", async () => {
-      const { rerender } = renderWithContainer(
-        { name: "Static Setting" },
-        []
-      );
+      const { rerender } = renderWithContainer({ name: "Static Setting" }, []);
 
       expect(createdSettings).toHaveLength(1);
 
@@ -594,7 +603,9 @@ describe("useObsidianSetting", () => {
     });
 
     it("should handle configure callback that throws", () => {
-      const consoleError = jest.spyOn(console, "error").mockImplementation(() => {});
+      const consoleError = jest
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
 
       expect(() => {
         renderWithContainer(
@@ -604,7 +615,7 @@ describe("useObsidianSetting", () => {
               throw new Error("Configure failed");
             },
           },
-          []
+          [],
         );
       }).toThrow("Configure failed");
 
@@ -622,7 +633,7 @@ describe("useObsidianSetting", () => {
           tooltip: undefined,
           configure: undefined,
         },
-        []
+        [],
       );
 
       const setting = getLatestSetting();
@@ -636,7 +647,7 @@ describe("useObsidianSetting", () => {
     it("should maintain ref stability across rerenders", async () => {
       const { result, rerender } = renderWithContainer(
         { name: "Ref Stability" },
-        ["dep1"]
+        ["dep1"],
       );
 
       const initialRef = result.current;
@@ -652,7 +663,7 @@ describe("useObsidianSetting", () => {
     it("should provide ref with correct type for HTMLDivElement", () => {
       // Test that the ref type is compatible with HTMLDivElement
       const { result } = renderHook(() =>
-        useObsidianSetting({ name: "Type Check" }, [])
+        useObsidianSetting({ name: "Type Check" }, []),
       );
 
       // The ref should be of type RefObject<HTMLDivElement>
@@ -667,7 +678,7 @@ describe("useObsidianSetting", () => {
       // This tests the guard clause: if (!containerRef.current) return;
       // We can simulate this by not attaching the ref
       const { result } = renderHook(() =>
-        useObsidianSetting({ name: "Null Container" }, [])
+        useObsidianSetting({ name: "Null Container" }, []),
       );
 
       // The hook should return a ref, but no Setting should be created
@@ -679,7 +690,7 @@ describe("useObsidianSetting", () => {
     it("should use container.empty() for cleanup", () => {
       const { container, unmount } = renderWithContainer(
         { name: "Empty Cleanup" },
-        []
+        [],
       );
 
       // Add some extra content to verify empty() is called
@@ -709,18 +720,21 @@ describe("useObsidianSetting", () => {
           const ref = useObsidianSetting({ name: "Cleanup Test" }, [dep]);
           // Attach container on first render only
           React.useLayoutEffect(() => {
-            (ref as React.MutableRefObject<HTMLDivElement | null>).current = container;
+            (ref as React.MutableRefObject<HTMLDivElement | null>).current =
+              container;
           }, []);
           return ref;
         },
-        { initialProps: { dep: depValue } }
+        { initialProps: { dep: depValue } },
       );
 
       // Setting was created
       expect(createdSettings).toHaveLength(1);
 
       // Manually set ref to null to simulate edge case
-      (result.current as React.MutableRefObject<HTMLDivElement | null>).current = null;
+      (
+        result.current as React.MutableRefObject<HTMLDivElement | null>
+      ).current = null;
 
       // Trigger cleanup by changing deps - should not throw
       expect(() => {
@@ -745,22 +759,24 @@ describe("useObsidianSetting", () => {
           configure: (setting) => {
             setting.addText((text) => {
               (text as { setValue: (v: string) => unknown }).setValue(value);
-              (text as { onChange: (cb: (v: string) => void) => unknown }).onChange(onChange);
+              (
+                text as { onChange: (cb: (v: string) => void) => unknown }
+              ).onChange(onChange);
             });
           },
         },
-        [value]
+        [value],
       );
 
       expect(container.querySelector(".setting-item-name")?.textContent).toBe(
-        "Vale binary path"
+        "Vale binary path",
       );
-      expect(container.querySelector(".setting-item-description")?.textContent).toBe(
-        "Path to Vale executable"
-      );
-      expect((container.querySelector("input") as HTMLInputElement)?.value).toBe(
-        "/usr/local/bin/vale"
-      );
+      expect(
+        container.querySelector(".setting-item-description")?.textContent,
+      ).toBe("Path to Vale executable");
+      expect(
+        (container.querySelector("input") as HTMLInputElement)?.value,
+      ).toBe("/usr/local/bin/vale");
     });
 
     it("should work with toggle setting pattern", () => {
@@ -773,12 +789,16 @@ describe("useObsidianSetting", () => {
           desc: "Enable this experimental feature",
           configure: (setting) => {
             setting.addToggle((toggle) => {
-              (toggle as { setValue: (v: boolean) => unknown }).setValue(enabled);
-              (toggle as { onChange: (cb: (v: boolean) => void) => unknown }).onChange(onToggle);
+              (toggle as { setValue: (v: boolean) => unknown }).setValue(
+                enabled,
+              );
+              (
+                toggle as { onChange: (cb: (v: boolean) => void) => unknown }
+              ).onChange(onToggle);
             });
           },
         },
-        [enabled]
+        [enabled],
       );
 
       expect(createdSettings[0].toggleCallback).toBeTruthy();
@@ -791,12 +811,12 @@ describe("useObsidianSetting", () => {
           desc: "Configure advanced features",
           heading: true,
         },
-        []
+        [],
       );
 
       expect(container.querySelector(".setting-item-heading")).toBeTruthy();
       expect(container.querySelector(".setting-item-name")?.textContent).toBe(
-        "Advanced settings"
+        "Advanced settings",
       );
     });
   });

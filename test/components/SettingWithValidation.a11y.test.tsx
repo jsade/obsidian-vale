@@ -137,7 +137,10 @@ jest.mock("obsidian", () => {
         input.type = "text";
         input.className = "setting-text-input";
         // Add aria-label from the setting name for accessibility
-        input.setAttribute("aria-label", this.nameEl.textContent || "Setting input");
+        input.setAttribute(
+          "aria-label",
+          this.nameEl.textContent || "Setting input",
+        );
 
         controlContainer.appendChild(input);
         this.containerEl
