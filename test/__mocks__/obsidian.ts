@@ -85,6 +85,7 @@ export class Setting {
   setName(name: string): this {
     this._name = name;
     this.nameEl.textContent = name;
+    this.nameEl.setAttribute("data-name", name);
     return this;
   }
 
@@ -118,21 +119,44 @@ export class Setting {
 
   addToggle(callback: (toggle: unknown) => void): this {
     this._toggleCallback = callback;
-    // Create a simple mock toggle
+
+    // Create actual DOM element for the toggle
+    const toggleEl = document.createElement("input");
+    toggleEl.type = "checkbox";
+    toggleEl.className = "toggle";
+    this.controlEl.appendChild(toggleEl);
+
+    // Create a mock toggle that updates the DOM element
+    let currentValue = false;
+    let changeHandler: ((value: boolean) => void) | null = null;
+
     const toggle = {
       setValue: function (value: boolean) {
-        this._value = value;
+        currentValue = value;
+        toggleEl.checked = value;
         return this;
       },
-      onChange: function (cb: unknown) {
-        this._onChange = cb;
+      getValue: function () {
+        return currentValue;
+      },
+      onChange: function (cb: (value: boolean) => void) {
+        changeHandler = cb;
+        // Wire up the actual DOM event
+        toggleEl.addEventListener("change", () => {
+          currentValue = toggleEl.checked;
+          if (changeHandler) {
+            changeHandler(toggleEl.checked);
+          }
+        });
         return this;
       },
-      setDisabled: function (_disabled: boolean) {
+      setDisabled: function (disabled: boolean) {
+        toggleEl.disabled = disabled;
         return this;
       },
       _value: false,
       _onChange: null as unknown,
+      toggleEl, // Expose for testing
     };
     callback(toggle);
     return this;

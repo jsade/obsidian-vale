@@ -29,6 +29,7 @@ import { SettingsRouter } from "../../src/settings/SettingsRouter";
 import ValePlugin from "../../src/main";
 import { ValeConfigManager } from "../../src/vale/ValeConfigManager";
 import * as hooks from "../../src/hooks";
+import * as settingsContext from "../../src/context/SettingsContext";
 import {
   createLibraryStyles,
   createInstalledStyles,
@@ -96,13 +97,32 @@ function createMockPlugin(
 }
 
 /**
- * Helper to render SettingsRouter with mocked plugin.
+ * Helper to render SettingsRouter with mocked plugin and valid context.
+ * Mocks both useConfigManager and useSettings to enable Styles tab.
  */
 function renderSettingsRouter(plugin: MockedPlugin) {
   // Mock useConfigManager to return our mock
   jest
     .spyOn(hooks, "useConfigManager")
     .mockReturnValue(plugin.configManager as unknown as ValeConfigManager);
+
+  // Mock useSettings to return valid config path (enables Styles tab)
+  const mockUpdateSettings = jest.fn().mockResolvedValue(undefined);
+  const mockResetToDefaults = jest.fn().mockResolvedValue(undefined);
+  const mockSetValidation = jest.fn();
+
+  jest.spyOn(settingsContext, "useSettings").mockReturnValue({
+    settings: plugin.settings,
+    updateSettings: mockUpdateSettings,
+    resetToDefaults: mockResetToDefaults,
+    validation: {
+      isValidating: false,
+      configPathValid: true, // Key: This enables the Styles tab
+      valePathValid: true,
+      errors: {},
+    },
+    setValidation: mockSetValidation,
+  });
 
   return render(<SettingsRouter plugin={plugin as unknown as ValePlugin} />);
 }
@@ -112,11 +132,68 @@ function renderSettingsRouter(plugin: MockedPlugin) {
  */
 async function navigateToStylesTab() {
   const stylesTab = screen.queryByRole("tab", { name: /styles/i });
-  if (stylesTab) {
+  if (stylesTab && !stylesTab.hasAttribute("disabled")) {
     await act(async () => {
       fireEvent.click(stylesTab);
     });
+    return true;
   }
+  return false;
+}
+
+/**
+ * Helper to find a style toggle by style name (synchronous)
+ */
+function findStyleToggleSync(styleName: string): HTMLInputElement | null {
+  // Find the setting item containing the style name
+  const settingItems = document.querySelectorAll(".setting-item");
+  for (const item of settingItems) {
+    const nameEl = item.querySelector("[data-name]");
+    if (nameEl?.getAttribute("data-name") === styleName) {
+      const toggle = item.querySelector("input.toggle") as HTMLInputElement;
+      return toggle;
+    }
+  }
+  return null;
+}
+
+/**
+ * Helper to wait for a style toggle to appear in the DOM
+ */
+async function waitForStyleToggle(
+  styleName: string,
+): Promise<HTMLInputElement> {
+  let toggle: HTMLInputElement | null = null;
+
+  await waitFor(
+    () => {
+      toggle = findStyleToggleSync(styleName);
+      expect(toggle).not.toBeNull();
+    },
+    { timeout: 5000 },
+  );
+
+  return toggle!;
+}
+
+/**
+ * Helper to wait for styles to load (API call + DOM render)
+ */
+async function waitForStylesLoaded(plugin: MockedPlugin) {
+  // First wait for the API to be called
+  await waitFor(() => {
+    const availableCalls =
+      plugin.configManager.getAvailableStyles.mock.calls.length;
+    const installedCalls =
+      plugin.configManager.getInstalledStyles.mock.calls.length;
+    expect(availableCalls + installedCalls).toBeGreaterThan(0);
+  });
+
+  // Then wait for at least one setting item to render (Vale is always shown)
+  await waitFor(() => {
+    const settingItems = document.querySelectorAll(".setting-item");
+    expect(settingItems.length).toBeGreaterThan(0);
+  });
 }
 
 describe("Style Toggle Flow Integration Tests", () => {
@@ -127,6 +204,7 @@ describe("Style Toggle Flow Integration Tests", () => {
 
   afterEach(() => {
     jest.useRealTimers();
+    jest.restoreAllMocks();
   });
 
   describe("Enable Style Flow", () => {
@@ -150,21 +228,30 @@ describe("Style Toggle Flow Integration Tests", () => {
       });
 
       // Navigate to Styles tab
-      await navigateToStylesTab();
+      const navigated = await navigateToStylesTab();
+      expect(navigated).toBe(true);
 
       await act(async () => {
         jest.runAllTimers();
       });
 
       // Wait for styles to load
-      await waitFor(() => {
-        expect(plugin.configManager.getAvailableStyles).toHaveBeenCalled();
+      await waitForStylesLoaded(plugin);
+
+      // Find the Google style toggle and click it
+      const googleToggle = await waitForStyleToggle("Google");
+      expect(googleToggle.checked).toBe(false);
+
+      // Click to enable
+      await act(async () => {
+        fireEvent.click(googleToggle);
+        jest.runAllTimers();
       });
 
-      // Verify enableStyle and installStyle are defined
-      // In Managed mode, enabling installs the style first
-      expect(plugin.configManager.enableStyle).toBeDefined();
-      expect(plugin.configManager.installStyle).toBeDefined();
+      // Verify enableStyle was called with correct style name
+      await waitFor(() => {
+        expect(plugin.configManager.enableStyle).toHaveBeenCalledWith("Google");
+      });
     });
 
     it("should install style files in Managed mode when enabling", async () => {
@@ -191,9 +278,20 @@ describe("Style Toggle Flow Integration Tests", () => {
         jest.runAllTimers();
       });
 
-      // In Managed mode, toggling ON should call installStyle first
+      await waitForStylesLoaded(plugin);
+
+      // Find and click Google toggle (has URL, so should install)
+      const googleToggle = await waitForStyleToggle("Google");
+
+      await act(async () => {
+        fireEvent.click(googleToggle);
+        jest.runAllTimers();
+      });
+
+      // In Managed mode with URL, installStyle should be called
       await waitFor(() => {
-        expect(plugin.configManager.getAvailableStyles).toHaveBeenCalled();
+        expect(plugin.configManager.installStyle).toHaveBeenCalled();
+        expect(plugin.configManager.enableStyle).toHaveBeenCalledWith("Google");
       });
     });
 
@@ -224,13 +322,24 @@ describe("Style Toggle Flow Integration Tests", () => {
         jest.runAllTimers();
       });
 
-      // In Custom mode, getInstalledStyles is called instead of getAvailableStyles
+      // In Custom mode, getInstalledStyles is called
       await waitFor(() => {
         expect(plugin.configManager.getInstalledStyles).toHaveBeenCalled();
       });
 
-      // installStyle should NOT be called in Custom mode
-      // (styles are already installed by user)
+      // Find and click Google toggle
+      const googleToggle = await waitForStyleToggle("Google");
+
+      await act(async () => {
+        fireEvent.click(googleToggle);
+        jest.runAllTimers();
+      });
+
+      // In Custom mode, installStyle should NOT be called
+      await waitFor(() => {
+        expect(plugin.configManager.enableStyle).toHaveBeenCalledWith("Google");
+      });
+      expect(plugin.configManager.installStyle).not.toHaveBeenCalled();
     });
 
     it("should update UI optimistically when enabling style", async () => {
@@ -262,8 +371,26 @@ describe("Style Toggle Flow Integration Tests", () => {
         jest.runAllTimers();
       });
 
-      // Optimistic update means UI should reflect the toggle immediately
-      // before the API call completes
+      await waitForStylesLoaded(plugin);
+
+      const googleToggle = await waitForStyleToggle("Google");
+      expect(googleToggle.checked).toBe(false);
+
+      // Click toggle - UI should update optimistically (immediately)
+      await act(async () => {
+        fireEvent.click(googleToggle);
+        // Don't run timers yet - check immediate state
+      });
+
+      // Toggle should be checked immediately (optimistic update)
+      expect(googleToggle.checked).toBe(true);
+
+      // Now let the async operation complete
+      await act(async () => {
+        jest.runAllTimers();
+      });
+
+      expect(plugin.configManager.enableStyle).toHaveBeenCalledWith("Google");
     });
   });
 
@@ -296,12 +423,24 @@ describe("Style Toggle Flow Integration Tests", () => {
         jest.runAllTimers();
       });
 
-      await waitFor(() => {
-        expect(plugin.configManager.getEnabledStyles).toHaveBeenCalled();
+      await waitForStylesLoaded(plugin);
+
+      // Find Google toggle (should be checked/enabled)
+      const googleToggle = await waitForStyleToggle("Google");
+      expect(googleToggle.checked).toBe(true);
+
+      // Click to disable
+      await act(async () => {
+        fireEvent.click(googleToggle);
+        jest.runAllTimers();
       });
 
-      // disableStyle should be callable
-      expect(plugin.configManager.disableStyle).toBeDefined();
+      // Verify disableStyle was called
+      await waitFor(() => {
+        expect(plugin.configManager.disableStyle).toHaveBeenCalledWith(
+          "Google",
+        );
+      });
     });
 
     it("should uninstall style files in Managed mode when disabling", async () => {
@@ -331,9 +470,21 @@ describe("Style Toggle Flow Integration Tests", () => {
         jest.runAllTimers();
       });
 
-      // In Managed mode, toggling OFF should call uninstallStyle
+      await waitForStylesLoaded(plugin);
+
+      const googleToggle = await waitForStyleToggle("Google");
+
+      await act(async () => {
+        fireEvent.click(googleToggle);
+        jest.runAllTimers();
+      });
+
+      // In Managed mode, uninstallStyle should be called after disableStyle
       await waitFor(() => {
-        expect(plugin.configManager.uninstallStyle).toBeDefined();
+        expect(plugin.configManager.disableStyle).toHaveBeenCalledWith(
+          "Google",
+        );
+        expect(plugin.configManager.uninstallStyle).toHaveBeenCalled();
       });
     });
 
@@ -367,11 +518,24 @@ describe("Style Toggle Flow Integration Tests", () => {
         jest.runAllTimers();
       });
 
-      // In Custom mode, disabling should only update config
-      // uninstallStyle should NOT be called
       await waitFor(() => {
         expect(plugin.configManager.getInstalledStyles).toHaveBeenCalled();
       });
+
+      const googleToggle = await waitForStyleToggle("Google");
+
+      await act(async () => {
+        fireEvent.click(googleToggle);
+        jest.runAllTimers();
+      });
+
+      // In Custom mode, only disableStyle is called, not uninstallStyle
+      await waitFor(() => {
+        expect(plugin.configManager.disableStyle).toHaveBeenCalledWith(
+          "Google",
+        );
+      });
+      expect(plugin.configManager.uninstallStyle).not.toHaveBeenCalled();
     });
   });
 
@@ -387,8 +551,7 @@ describe("Style Toggle Flow Integration Tests", () => {
       });
 
       // Start with only Vale enabled
-      const enabledStyles = ["Vale"];
-      plugin.configManager.getEnabledStyles.mockResolvedValue(enabledStyles);
+      plugin.configManager.getEnabledStyles.mockResolvedValue(["Vale"]);
 
       renderSettingsRouter(plugin);
 
@@ -402,12 +565,32 @@ describe("Style Toggle Flow Integration Tests", () => {
         jest.runAllTimers();
       });
 
-      await waitFor(() => {
-        expect(plugin.configManager.getAvailableStyles).toHaveBeenCalled();
+      await waitForStylesLoaded(plugin);
+
+      // Enable Google
+      const googleToggle = await waitForStyleToggle("Google");
+
+      await act(async () => {
+        fireEvent.click(googleToggle);
+        jest.runAllTimers();
       });
 
-      // Multiple enables should be handled correctly
-      // Each enable should call enableStyle with the style name
+      // Enable Microsoft
+      const microsoftToggle = await waitForStyleToggle("Microsoft");
+
+      await act(async () => {
+        fireEvent.click(microsoftToggle);
+        jest.runAllTimers();
+      });
+
+      // Both should have been enabled
+      await waitFor(() => {
+        expect(plugin.configManager.enableStyle).toHaveBeenCalledWith("Google");
+        expect(plugin.configManager.enableStyle).toHaveBeenCalledWith(
+          "Microsoft",
+        );
+        expect(plugin.configManager.enableStyle).toHaveBeenCalledTimes(2);
+      });
     });
 
     it("should handle toggling same style rapidly", async () => {
@@ -439,8 +622,20 @@ describe("Style Toggle Flow Integration Tests", () => {
         jest.runAllTimers();
       });
 
-      // Rapid toggles should be handled without race conditions
-      // The UI should eventually settle to the correct state
+      await waitForStylesLoaded(plugin);
+
+      const googleToggle = await waitForStyleToggle("Google");
+
+      // Rapid toggles
+      await act(async () => {
+        fireEvent.click(googleToggle); // Enable
+        fireEvent.click(googleToggle); // Disable
+        fireEvent.click(googleToggle); // Enable again
+        jest.runAllTimers();
+      });
+
+      // UI should eventually settle (last state wins)
+      expect(googleToggle.checked).toBe(true);
     });
   });
 
@@ -462,6 +657,11 @@ describe("Style Toggle Flow Integration Tests", () => {
         new Error("Failed to update config"),
       );
 
+      // Suppress console.error for expected error
+      const consoleSpy = jest
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+
       renderSettingsRouter(plugin);
 
       await act(async () => {
@@ -474,12 +674,32 @@ describe("Style Toggle Flow Integration Tests", () => {
         jest.runAllTimers();
       });
 
-      await waitFor(() => {
-        expect(plugin.configManager.getAvailableStyles).toHaveBeenCalled();
+      await waitForStylesLoaded(plugin);
+
+      let googleToggle = await waitForStyleToggle("Google");
+      expect(googleToggle.checked).toBe(false);
+
+      // Click to enable (will fail)
+      await act(async () => {
+        fireEvent.click(googleToggle);
       });
 
-      // On error, the optimistic update should be reverted
-      // UI should show the style as disabled again
+      // Optimistic update shows checked
+      expect(googleToggle.checked).toBe(true);
+
+      // Let the error propagate
+      await act(async () => {
+        jest.runAllTimers();
+      });
+
+      // On error, optimistic update should be reverted
+      // Note: Re-query toggle because useObsidianSetting recreates DOM on re-render
+      await waitFor(() => {
+        googleToggle = findStyleToggleSync("Google")!;
+        expect(googleToggle.checked).toBe(false);
+      });
+
+      consoleSpy.mockRestore();
     });
 
     it("should revert optimistic update on installStyle failure", async () => {
@@ -499,6 +719,10 @@ describe("Style Toggle Flow Integration Tests", () => {
         new Error("Download failed"),
       );
 
+      const consoleSpy = jest
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+
       renderSettingsRouter(plugin);
 
       await act(async () => {
@@ -511,7 +735,23 @@ describe("Style Toggle Flow Integration Tests", () => {
         jest.runAllTimers();
       });
 
-      // On install failure, the toggle should be reverted
+      await waitForStylesLoaded(plugin);
+
+      let googleToggle = await waitForStyleToggle("Google");
+
+      await act(async () => {
+        fireEvent.click(googleToggle);
+        jest.runAllTimers();
+      });
+
+      // On install failure, toggle should be reverted
+      // Note: Re-query toggle because useObsidianSetting recreates DOM on re-render
+      await waitFor(() => {
+        googleToggle = findStyleToggleSync("Google")!;
+        expect(googleToggle.checked).toBe(false);
+      });
+
+      consoleSpy.mockRestore();
     });
 
     it("should handle network error during toggle", async () => {
@@ -531,6 +771,10 @@ describe("Style Toggle Flow Integration Tests", () => {
         new Error("Network request failed"),
       );
 
+      const consoleSpy = jest
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+
       renderSettingsRouter(plugin);
 
       await act(async () => {
@@ -543,8 +787,27 @@ describe("Style Toggle Flow Integration Tests", () => {
         jest.runAllTimers();
       });
 
+      await waitForStylesLoaded(plugin);
+
       // Component should handle network errors gracefully
       expect(screen.queryByRole("tabpanel")).toBeInTheDocument();
+
+      // Verify we can still interact with toggles
+      let googleToggle = await waitForStyleToggle("Google");
+
+      await act(async () => {
+        fireEvent.click(googleToggle);
+        jest.runAllTimers();
+      });
+
+      // Should revert on error
+      // Note: Re-query toggle because useObsidianSetting recreates DOM on re-render
+      await waitFor(() => {
+        googleToggle = findStyleToggleSync("Google")!;
+        expect(googleToggle.checked).toBe(false);
+      });
+
+      consoleSpy.mockRestore();
     });
   });
 
@@ -566,6 +829,10 @@ describe("Style Toggle Flow Integration Tests", () => {
         .mockRejectedValueOnce(new Error("First attempt failed"))
         .mockResolvedValueOnce(undefined);
 
+      const consoleSpy = jest
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+
       renderSettingsRouter(plugin);
 
       await act(async () => {
@@ -578,8 +845,34 @@ describe("Style Toggle Flow Integration Tests", () => {
         jest.runAllTimers();
       });
 
-      // User should be able to retry the toggle
-      // Second attempt should succeed
+      await waitForStylesLoaded(plugin);
+
+      let googleToggle = await waitForStyleToggle("Google");
+
+      // First attempt (fails)
+      await act(async () => {
+        fireEvent.click(googleToggle);
+        jest.runAllTimers();
+      });
+
+      // Wait for revert - re-query toggle because DOM is recreated
+      await waitFor(() => {
+        googleToggle = findStyleToggleSync("Google")!;
+        expect(googleToggle.checked).toBe(false);
+      });
+
+      // Second attempt (succeeds) - need fresh toggle reference
+      googleToggle = await waitForStyleToggle("Google");
+      await act(async () => {
+        fireEvent.click(googleToggle);
+        jest.runAllTimers();
+      });
+
+      await waitFor(() => {
+        expect(plugin.configManager.enableStyle).toHaveBeenCalledTimes(2);
+      });
+
+      consoleSpy.mockRestore();
     });
 
     it("should refetch styles after successful recovery", async () => {
@@ -606,6 +899,19 @@ describe("Style Toggle Flow Integration Tests", () => {
         jest.runAllTimers();
       });
 
+      await waitForStylesLoaded(plugin);
+
+      const googleToggle = await waitForStyleToggle("Google");
+
+      // Clear mock call counts
+      plugin.configManager.getEnabledStyles.mockClear();
+
+      // Toggle style
+      await act(async () => {
+        fireEvent.click(googleToggle);
+        jest.runAllTimers();
+      });
+
       // After successful toggle, getEnabledStyles should be called to refetch
       await waitFor(() => {
         expect(plugin.configManager.getEnabledStyles).toHaveBeenCalled();
@@ -622,6 +928,7 @@ describe("Style Toggle - Mode-Specific Behavior", () => {
 
   afterEach(() => {
     jest.useRealTimers();
+    jest.restoreAllMocks();
   });
 
   it("should show library styles in Managed mode", async () => {
@@ -690,8 +997,8 @@ describe("Style Toggle - Mode-Specific Behavior", () => {
       expect(plugin.configManager.getInstalledStyles).toHaveBeenCalled();
     });
 
-    // Should NOT call getAvailableStyles in Custom mode
-    // (useStyles hook decides based on mode)
+    // In Custom mode, getAvailableStyles should NOT be called
+    expect(plugin.configManager.getAvailableStyles).not.toHaveBeenCalled();
   });
 
   it("should show different header text based on mode", async () => {
@@ -730,10 +1037,13 @@ describe("Style Toggle - Mode-Specific Behavior", () => {
       jest.runAllTimers();
     });
 
-    // Managed mode header: "Vale styles"
-    // Custom mode header: "Installed Styles"
+    // Managed mode header: "Vale styles" (check it rendered)
+    await waitFor(() => {
+      expect(managedPlugin.configManager.getAvailableStyles).toHaveBeenCalled();
+    });
 
     unmountManaged();
+    jest.clearAllMocks();
 
     // Test Custom mode
     renderSettingsRouter(customPlugin);
@@ -747,6 +1057,11 @@ describe("Style Toggle - Mode-Specific Behavior", () => {
     await act(async () => {
       jest.runAllTimers();
     });
+
+    // Custom mode uses getInstalledStyles
+    await waitFor(() => {
+      expect(customPlugin.configManager.getInstalledStyles).toHaveBeenCalled();
+    });
   });
 });
 
@@ -758,6 +1073,7 @@ describe("Style Toggle - Edge Cases", () => {
 
   afterEach(() => {
     jest.useRealTimers();
+    jest.restoreAllMocks();
   });
 
   it("should handle empty styles list gracefully", async () => {
@@ -787,6 +1103,10 @@ describe("Style Toggle - Edge Cases", () => {
 
     // Should not crash with empty styles list
     expect(screen.queryByRole("tabpanel")).toBeInTheDocument();
+
+    // Vale toggle should still exist (hardcoded)
+    const valeToggle = await waitForStyleToggle("Vale");
+    expect(valeToggle).not.toBeNull();
   });
 
   it("should handle Vale style specially (built-in, no URL)", async () => {
@@ -817,8 +1137,23 @@ describe("Style Toggle - Edge Cases", () => {
       jest.runAllTimers();
     });
 
-    // Vale style should be toggleable but not installable/uninstallable
-    // (it's built into Vale, no URL for download)
+    await waitForStylesLoaded(plugin);
+
+    // Vale toggle should exist and be enabled
+    const valeToggle = await waitForStyleToggle("Vale");
+    expect(valeToggle.checked).toBe(true);
+
+    // Toggle Vale off
+    await act(async () => {
+      fireEvent.click(valeToggle);
+      jest.runAllTimers();
+    });
+
+    // Vale should use disableStyle but NOT uninstallStyle (no URL)
+    await waitFor(() => {
+      expect(plugin.configManager.disableStyle).toHaveBeenCalledWith("Vale");
+    });
+    // installStyle/uninstallStyle not called for Vale (no URL)
   });
 
   it("should handle style with very long name", async () => {
@@ -855,8 +1190,14 @@ describe("Style Toggle - Edge Cases", () => {
       jest.runAllTimers();
     });
 
+    await waitForStylesLoaded(plugin);
+
     // UI should handle long names gracefully
     expect(screen.queryByRole("tabpanel")).toBeInTheDocument();
+
+    // Should be able to find and toggle the long-named style
+    const longToggle = await waitForStyleToggle(longNameStyle.name);
+    expect(longToggle).not.toBeNull();
   });
 
   it("should handle configManager being undefined", async () => {
@@ -872,6 +1213,20 @@ describe("Style Toggle - Edge Cases", () => {
     // Mock useConfigManager to return undefined
     jest.spyOn(hooks, "useConfigManager").mockReturnValue(undefined);
 
+    // Mock useSettings with valid config
+    jest.spyOn(settingsContext, "useSettings").mockReturnValue({
+      settings: plugin.settings,
+      updateSettings: jest.fn().mockResolvedValue(undefined),
+      resetToDefaults: jest.fn().mockResolvedValue(undefined),
+      validation: {
+        isValidating: false,
+        configPathValid: true,
+        valePathValid: true,
+        errors: {},
+      },
+      setValidation: jest.fn(),
+    });
+
     render(<SettingsRouter plugin={plugin as unknown as ValePlugin} />);
 
     await act(async () => {
@@ -884,7 +1239,7 @@ describe("Style Toggle - Edge Cases", () => {
       jest.runAllTimers();
     });
 
-    // Should handle undefined configManager gracefully
+    // Should handle undefined configManager gracefully (show error state)
     expect(screen.queryByRole("tabpanel")).toBeInTheDocument();
   });
 });

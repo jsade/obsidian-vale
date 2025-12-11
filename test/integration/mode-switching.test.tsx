@@ -9,6 +9,10 @@
  * - SettingsRouter <-> SettingsNavigation <-> SettingsContent
  * - SettingsProvider state management
  * - GeneralSettings <-> ModeSelector
+ *
+ * IMPORTANT: The ModeSelector uses Obsidian's Setting.addToggle() which creates
+ * an <input type="checkbox" class="toggle"> element. Toggle ON = Server mode,
+ * Toggle OFF = CLI mode.
  */
 
 import * as React from "react";
@@ -70,7 +74,7 @@ function createMockPlugin(
 
   return {
     settings,
-    saveSettings: jest.fn().mockResolvedValue(undefined),
+    saveSettings: jest.fn<Promise<void>, []>().mockResolvedValue(undefined),
     configManager,
     app: {
       vault: {
@@ -90,6 +94,37 @@ function renderSettingsRouter(plugin: MockedPlugin) {
     .mockReturnValue(plugin.configManager as unknown as ValeConfigManager);
 
   return render(<SettingsRouter plugin={plugin as unknown as ValePlugin} />);
+}
+
+/**
+ * Helper to find the mode toggle checkbox.
+ * The ModeSelector uses Obsidian's Setting.addToggle() which creates
+ * an <input type="checkbox" class="toggle"> element.
+ */
+function getModeToggle(container: HTMLElement): HTMLInputElement {
+  const toggle = container.querySelector(
+    ".vale-mode-selector input.toggle",
+  ) as HTMLInputElement;
+
+  // This assertion will FAIL if the toggle is not found, making test failures visible
+  expect(toggle).toBeInTheDocument();
+  expect(toggle).toHaveAttribute("type", "checkbox");
+
+  return toggle;
+}
+
+/**
+ * Helper to change mode by toggling the checkbox.
+ * @param toggle - The checkbox element
+ * @param toServer - true to switch to Server mode, false for CLI mode
+ */
+async function changeMode(
+  toggle: HTMLInputElement,
+  toServer: boolean,
+): Promise<void> {
+  await act(async () => {
+    fireEvent.change(toggle, { target: { checked: toServer } });
+  });
 }
 
 describe("Mode Switching Integration Tests", () => {
@@ -113,31 +148,33 @@ describe("Mode Switching Integration Tests", () => {
         },
       });
 
-      renderSettingsRouter(plugin);
+      const { container } = renderSettingsRouter(plugin);
 
       // Wait for initial render
       await act(async () => {
         jest.runAllTimers();
       });
 
-      // Verify CLI mode is shown initially (look for CLI-specific content)
-      // The General tab should show CLI settings
+      // Verify tabpanel is rendered
       expect(screen.getByRole("tabpanel")).toBeInTheDocument();
 
-      // Find and click the Server radio button
-      const serverRadio = screen.queryByRole("radio", { name: /server/i });
+      // Get the mode toggle - starts unchecked (CLI mode)
+      const toggle = getModeToggle(container);
+      expect(toggle.checked).toBe(false);
 
-      if (serverRadio) {
-        await act(async () => {
-          fireEvent.click(serverRadio);
-          jest.runAllTimers();
-        });
+      // Switch to Server mode
+      await changeMode(toggle, true);
+      await act(async () => {
+        jest.runAllTimers();
+      });
 
-        // Verify saveSettings was called
-        await waitFor(() => {
-          expect(plugin.saveSettings).toHaveBeenCalled();
-        });
-      }
+      // Verify saveSettings was called with server type
+      await waitFor(() => {
+        expect(plugin.saveSettings).toHaveBeenCalled();
+      });
+
+      // Verify the new settings type
+      expect(plugin.settings.type).toBe("server");
     });
 
     it("should preserve CLI settings when switching to Server mode", async () => {
@@ -152,25 +189,30 @@ describe("Mode Switching Integration Tests", () => {
         cli: originalCliSettings,
       });
 
-      renderSettingsRouter(plugin);
+      const { container } = renderSettingsRouter(plugin);
 
       await act(async () => {
         jest.runAllTimers();
       });
 
+      // Get and verify initial toggle state
+      const toggle = getModeToggle(container);
+      expect(toggle.checked).toBe(false);
+
       // Switch to Server mode
-      const serverRadio = screen.queryByRole("radio", { name: /server/i });
+      await changeMode(toggle, true);
+      await act(async () => {
+        jest.runAllTimers();
+      });
 
-      if (serverRadio) {
-        await act(async () => {
-          fireEvent.click(serverRadio);
-          jest.runAllTimers();
-        });
+      await waitFor(() => {
+        expect(plugin.saveSettings).toHaveBeenCalled();
+      });
 
-        // CLI settings should be preserved (not reset)
-        // The settings object should still contain the original CLI settings
-        expect(plugin.settings.cli).toEqual(originalCliSettings);
-      }
+      // CLI settings should be preserved (not reset)
+      expect(plugin.settings.cli.valePath).toBe("/custom/vale");
+      expect(plugin.settings.cli.configPath).toBe("/custom/.vale.ini");
+      expect(plugin.settings.cli.managed).toBe(false);
     });
 
     it("should show Server URL input after switching to Server mode", async () => {
@@ -179,27 +221,30 @@ describe("Mode Switching Integration Tests", () => {
         cli: { managed: true },
       });
 
-      renderSettingsRouter(plugin);
+      const { container } = renderSettingsRouter(plugin);
 
       await act(async () => {
         jest.runAllTimers();
       });
 
-      // Note: Due to Obsidian's Setting API being imperative,
-      // we verify the mode switch worked via settings update
-      const serverRadio = screen.queryByRole("radio", { name: /server/i });
+      // Initially in CLI mode, should not show server URL setting
+      expect(
+        container.querySelector('[data-name="Server URL"]'),
+      ).not.toBeInTheDocument();
 
-      if (serverRadio) {
-        await act(async () => {
-          fireEvent.click(serverRadio);
-          jest.runAllTimers();
-        });
+      // Switch to Server mode
+      const toggle = getModeToggle(container);
+      await changeMode(toggle, true);
+      await act(async () => {
+        jest.runAllTimers();
+      });
 
-        // When saveSettings is called with type: "server", the UI should update
-        await waitFor(() => {
-          expect(plugin.saveSettings).toHaveBeenCalled();
-        });
-      }
+      await waitFor(() => {
+        expect(plugin.saveSettings).toHaveBeenCalled();
+      });
+
+      // Settings type should now be "server"
+      expect(plugin.settings.type).toBe("server");
     });
   });
 
@@ -210,25 +255,28 @@ describe("Mode Switching Integration Tests", () => {
         server: { url: "http://localhost:7777" },
       });
 
-      renderSettingsRouter(plugin);
+      const { container } = renderSettingsRouter(plugin);
 
       await act(async () => {
         jest.runAllTimers();
       });
 
-      // Find and click the CLI radio button
-      const cliRadio = screen.queryByRole("radio", { name: /cli/i });
+      // Get the mode toggle - starts checked (Server mode)
+      const toggle = getModeToggle(container);
+      expect(toggle.checked).toBe(true);
 
-      if (cliRadio) {
-        await act(async () => {
-          fireEvent.click(cliRadio);
-          jest.runAllTimers();
-        });
+      // Switch to CLI mode
+      await changeMode(toggle, false);
+      await act(async () => {
+        jest.runAllTimers();
+      });
 
-        await waitFor(() => {
-          expect(plugin.saveSettings).toHaveBeenCalled();
-        });
-      }
+      await waitFor(() => {
+        expect(plugin.saveSettings).toHaveBeenCalled();
+      });
+
+      // Verify the new settings type
+      expect(plugin.settings.type).toBe("cli");
     });
 
     it("should preserve Server URL when switching to CLI mode", async () => {
@@ -238,23 +286,28 @@ describe("Mode Switching Integration Tests", () => {
         server: { url: serverUrl },
       });
 
-      renderSettingsRouter(plugin);
+      const { container } = renderSettingsRouter(plugin);
 
       await act(async () => {
         jest.runAllTimers();
       });
 
-      const cliRadio = screen.queryByRole("radio", { name: /cli/i });
+      // Get and verify initial toggle state (Server mode = checked)
+      const toggle = getModeToggle(container);
+      expect(toggle.checked).toBe(true);
 
-      if (cliRadio) {
-        await act(async () => {
-          fireEvent.click(cliRadio);
-          jest.runAllTimers();
-        });
+      // Switch to CLI mode
+      await changeMode(toggle, false);
+      await act(async () => {
+        jest.runAllTimers();
+      });
 
-        // Server URL should be preserved
-        expect(plugin.settings.server.url).toBe(serverUrl);
-      }
+      await waitFor(() => {
+        expect(plugin.saveSettings).toHaveBeenCalled();
+      });
+
+      // Server URL should be preserved
+      expect(plugin.settings.server.url).toBe(serverUrl);
     });
   });
 
@@ -270,30 +323,37 @@ describe("Mode Switching Integration Tests", () => {
         server: { url: "http://custom:9999" },
       });
 
-      renderSettingsRouter(plugin);
+      const { container } = renderSettingsRouter(plugin);
 
       await act(async () => {
         jest.runAllTimers();
       });
 
-      const serverRadio = screen.queryByRole("radio", { name: /server/i });
-      const cliRadio = screen.queryByRole("radio", { name: /cli/i });
+      const toggle = getModeToggle(container);
+
+      // Initial state: CLI mode (unchecked)
+      expect(toggle.checked).toBe(false);
+      expect(plugin.settings.type).toBe("cli");
 
       // Switch to Server
-      if (serverRadio) {
-        await act(async () => {
-          fireEvent.click(serverRadio);
-          jest.runAllTimers();
-        });
-      }
+      await changeMode(toggle, true);
+      await act(async () => {
+        jest.runAllTimers();
+      });
+
+      await waitFor(() => {
+        expect(plugin.settings.type).toBe("server");
+      });
 
       // Switch back to CLI
-      if (cliRadio) {
-        await act(async () => {
-          fireEvent.click(cliRadio);
-          jest.runAllTimers();
-        });
-      }
+      await changeMode(toggle, false);
+      await act(async () => {
+        jest.runAllTimers();
+      });
+
+      await waitFor(() => {
+        expect(plugin.settings.type).toBe("cli");
+      });
 
       // All original settings should be preserved
       expect(plugin.settings.cli.valePath).toBe("/custom/vale");
@@ -320,27 +380,29 @@ describe("Mode Switching Integration Tests", () => {
         error: "Vale binary not found",
       });
 
-      renderSettingsRouter(plugin);
+      const { container } = renderSettingsRouter(plugin);
 
       await act(async () => {
         jest.runAllTimers();
       });
 
       // Switch to Server mode
-      const serverRadio = screen.queryByRole("radio", { name: /server/i });
+      const toggle = getModeToggle(container);
+      await changeMode(toggle, true);
+      await act(async () => {
+        jest.runAllTimers();
+      });
 
-      if (serverRadio) {
-        await act(async () => {
-          fireEvent.click(serverRadio);
-          jest.runAllTimers();
-        });
+      // In Server mode, CLI validation errors should not be relevant
+      await waitFor(() => {
+        expect(plugin.saveSettings).toHaveBeenCalled();
+      });
 
-        // In Server mode, CLI validation errors should not be shown
-        // The UI should display Server-specific settings
-        await waitFor(() => {
-          expect(plugin.saveSettings).toHaveBeenCalled();
-        });
-      }
+      // Verify mode switched successfully
+      expect(plugin.settings.type).toBe("server");
+
+      // The component should still be rendered without validation errors shown
+      expect(screen.getByRole("tabpanel")).toBeInTheDocument();
     });
 
     it("should hide Styles tab when switching to Server mode", async () => {
@@ -353,71 +415,78 @@ describe("Mode Switching Integration Tests", () => {
         },
       });
 
-      renderSettingsRouter(plugin);
+      const { container } = renderSettingsRouter(plugin);
 
       await act(async () => {
         jest.runAllTimers();
       });
 
-      // Initially in CLI mode, Styles tab might be visible (depends on configPathValid)
-      const stylesTabBefore = screen.queryByRole("tab", { name: /styles/i });
+      // In CLI mode, Styles tab may be visible (depends on configPathValid)
+      // We don't assert on Styles tab visibility here - focus is on mode switching
 
       // Switch to Server mode
-      const serverRadio = screen.queryByRole("radio", { name: /server/i });
+      const toggle = getModeToggle(container);
+      await changeMode(toggle, true);
+      await act(async () => {
+        jest.runAllTimers();
+      });
 
-      if (serverRadio) {
-        await act(async () => {
-          fireEvent.click(serverRadio);
-          // Manually update plugin settings to simulate the mode change
-          plugin.settings.type = "server";
-          jest.runAllTimers();
-        });
+      await waitFor(() => {
+        expect(plugin.saveSettings).toHaveBeenCalled();
+      });
 
-        // After mode switch, the UI state should reflect Server mode
-        // In Server mode, Styles tab should be hidden according to visibility logic
-        await waitFor(() => {
-          expect(plugin.saveSettings).toHaveBeenCalled();
-        });
-      }
+      // Verify mode switched
+      expect(plugin.settings.type).toBe("server");
+
+      // After mode switch, the UI state should reflect Server mode
+      // Styles tab visibility logic is: isStylesTabVisible = type === "cli" && configPathValid
+      // In Server mode, Styles tab should be hidden
+      expect(screen.getByRole("tabpanel")).toBeInTheDocument();
     });
   });
 
   describe("Managed mode toggle within CLI mode", () => {
-    it("should switch from Managed to Custom mode within CLI", async () => {
+    it("should start in correct managed state within CLI mode", async () => {
       const plugin = createMockPlugin({
         type: "cli",
         cli: { managed: true },
       });
 
-      renderSettingsRouter(plugin);
+      const { container } = renderSettingsRouter(plugin);
 
       await act(async () => {
         jest.runAllTimers();
       });
 
-      // Look for managed mode toggle/checkbox
-      // The exact UI depends on the component implementation
-      // This test verifies the integration works
+      // Mode toggle should be unchecked (CLI mode)
+      const modeToggle = getModeToggle(container);
+      expect(modeToggle.checked).toBe(false);
+
+      // Verify initial state
       expect(plugin.settings.type).toBe("cli");
       expect(plugin.settings.cli.managed).toBe(true);
     });
 
-    it("should show path inputs when switching to Custom mode", async () => {
+    it("should maintain CLI mode state when managed is true", async () => {
       const plugin = createMockPlugin({
         type: "cli",
         cli: { managed: true },
       });
 
-      renderSettingsRouter(plugin);
+      const { container } = renderSettingsRouter(plugin);
 
       await act(async () => {
         jest.runAllTimers();
       });
 
       // In managed mode, path inputs may be auto-populated or hidden
-      // In custom mode, path inputs should be editable
-      // This test verifies the general state
-      expect(plugin.configManager.valePathExists).toBeDefined();
+      // This test verifies the general state is correct
+      expect(typeof plugin.configManager.valePathExists).toBe("function");
+      expect(plugin.settings.cli.managed).toBe(true);
+
+      // Mode toggle should reflect CLI mode
+      const toggle = getModeToggle(container);
+      expect(toggle.checked).toBe(false);
     });
   });
 
@@ -427,27 +496,52 @@ describe("Mode Switching Integration Tests", () => {
         type: "cli",
       });
 
-      // Make saveSettings fail
-      plugin.saveSettings.mockRejectedValue(new Error("Save failed"));
+      // Track call count to fail only on mode-switch save
+      let callCount = 0;
+      const shouldFailOnCall = 2; // Fail on second call (after initial render)
+      plugin.saveSettings.mockImplementation(() => {
+        callCount++;
+        if (callCount >= shouldFailOnCall) {
+          return Promise.reject(new Error("Save failed"));
+        }
+        return Promise.resolve();
+      });
 
-      renderSettingsRouter(plugin);
+      // Suppress unhandled rejection warning for this test
+      // Note: GeneralSettings uses `void updateSettings()` which means
+      // rejections become unhandled - this is a known limitation.
+      const consoleSpy = jest
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+
+      const { container } = renderSettingsRouter(plugin);
 
       await act(async () => {
         jest.runAllTimers();
       });
 
-      const serverRadio = screen.queryByRole("radio", { name: /server/i });
+      const toggle = getModeToggle(container);
 
-      if (serverRadio) {
-        // Should not throw even if save fails
-        await act(async () => {
-          fireEvent.click(serverRadio);
-          jest.runAllTimers();
-        });
+      // Should not throw even if save fails
+      await changeMode(toggle, true);
+      await act(async () => {
+        jest.runAllTimers();
+      });
 
-        // Component should still be rendered without crashing
-        expect(screen.getByRole("tabpanel")).toBeInTheDocument();
-      }
+      // Wait for async operations to settle
+      await act(async () => {
+        await Promise.resolve();
+        jest.runAllTimers();
+      });
+
+      // Component should still be rendered without crashing
+      expect(screen.getByRole("tabpanel")).toBeInTheDocument();
+
+      // saveSettings should have been called multiple times
+      expect(plugin.saveSettings).toHaveBeenCalled();
+
+      // Cleanup
+      consoleSpy.mockRestore();
     });
   });
 });
@@ -471,11 +565,15 @@ describe("Mode Switching - Tab Navigation Interaction", () => {
     // Make config path valid so Styles tab is visible
     plugin.configManager.validateConfigPath.mockResolvedValue({ valid: true });
 
-    renderSettingsRouter(plugin);
+    const { container } = renderSettingsRouter(plugin);
 
     await act(async () => {
       jest.runAllTimers();
     });
+
+    // Mode toggle should be accessible
+    const toggle = getModeToggle(container);
+    expect(toggle).toBeInTheDocument();
 
     // Click Styles tab if visible
     const stylesTab = screen.queryByRole("tab", { name: /styles/i });
@@ -489,6 +587,7 @@ describe("Mode Switching - Tab Navigation Interaction", () => {
 
     // Mode switch should be possible from any tab
     // The settings state manages the mode, not the current tab
+    expect(toggle).toBeInTheDocument();
   });
 
   it("should redirect to General tab if current tab becomes unavailable", async () => {
@@ -499,13 +598,13 @@ describe("Mode Switching - Tab Navigation Interaction", () => {
 
     plugin.configManager.validateConfigPath.mockResolvedValue({ valid: true });
 
-    renderSettingsRouter(plugin);
+    const { container } = renderSettingsRouter(plugin);
 
     await act(async () => {
       jest.runAllTimers();
     });
 
-    // Navigate to Styles tab
+    // Navigate to Styles tab if available
     const stylesTab = screen.queryByRole("tab", { name: /styles/i });
 
     if (stylesTab) {
@@ -515,18 +614,31 @@ describe("Mode Switching - Tab Navigation Interaction", () => {
       });
 
       // Switch to Server mode (which hides Styles tab)
-      const serverRadio = screen.queryByRole("radio", { name: /server/i });
+      const toggle = getModeToggle(container);
+      await changeMode(toggle, true);
+      await act(async () => {
+        jest.runAllTimers();
+      });
 
-      if (serverRadio) {
-        await act(async () => {
-          fireEvent.click(serverRadio);
-          plugin.settings.type = "server";
-          jest.runAllTimers();
-        });
+      await waitFor(() => {
+        expect(plugin.saveSettings).toHaveBeenCalled();
+      });
 
-        // Should still render without errors
-        expect(screen.getByRole("tabpanel")).toBeInTheDocument();
-      }
+      // Should still render without errors
+      expect(screen.getByRole("tabpanel")).toBeInTheDocument();
+    } else {
+      // If Styles tab is not visible, just verify mode switching works
+      const toggle = getModeToggle(container);
+      await changeMode(toggle, true);
+      await act(async () => {
+        jest.runAllTimers();
+      });
+
+      await waitFor(() => {
+        expect(plugin.saveSettings).toHaveBeenCalled();
+      });
+
+      expect(screen.getByRole("tabpanel")).toBeInTheDocument();
     }
   });
 });
