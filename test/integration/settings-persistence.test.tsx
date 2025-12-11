@@ -16,13 +16,8 @@
  */
 
 import * as React from "react";
-import {
-  act,
-  render,
-  screen,
-  waitFor,
-  fireEvent,
-} from "@testing-library/react";
+import { act } from "react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { App } from "obsidian";
 import { ValeSettings, DEFAULT_SETTINGS } from "../../src/types";
 import { SettingsRouter } from "../../src/settings/SettingsRouter";
@@ -89,8 +84,10 @@ function createMockPlugin(
 
   return {
     settings,
-    saveSettings: jest.fn().mockResolvedValue(undefined),
-    loadData: jest.fn().mockResolvedValue(settings),
+    saveSettings: jest.fn<Promise<void>, []>().mockResolvedValue(undefined),
+    loadData: jest
+      .fn<Promise<ValeSettings | null>, []>()
+      .mockResolvedValue(settings),
     configManager,
     app: {
       vault: {
@@ -845,7 +842,9 @@ describe("Settings Persistence Integration Tests", () => {
       let savedSettingsSnapshot: ValeSettings | null = null;
       plugin.saveSettings.mockImplementation(async () => {
         // Capture current plugin.settings at save time
-        savedSettingsSnapshot = JSON.parse(JSON.stringify(plugin.settings));
+        savedSettingsSnapshot = JSON.parse(
+          JSON.stringify(plugin.settings),
+        ) as ValeSettings;
       });
 
       const { container } = renderSettingsRouter(plugin);

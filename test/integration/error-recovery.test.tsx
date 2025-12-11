@@ -16,13 +16,8 @@
  */
 
 import * as React from "react";
-import {
-  act,
-  render,
-  screen,
-  waitFor,
-  fireEvent,
-} from "@testing-library/react";
+import { act } from "react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { App } from "obsidian";
 import { ValeSettings, DEFAULT_SETTINGS } from "../../src/types";
 import { SettingsRouter } from "../../src/settings/SettingsRouter";
@@ -89,7 +84,7 @@ function createMockPlugin(
 
   return {
     settings,
-    saveSettings: jest.fn().mockResolvedValue(undefined),
+    saveSettings: jest.fn<Promise<void>, []>().mockResolvedValue(undefined),
     configManager,
     app: {
       vault: {
@@ -206,6 +201,7 @@ describe("Error Handling and Recovery Integration Tests", () => {
 
       // StyleSettings should show error with retry option
       await waitFor(() => {
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(plugin.configManager.getAvailableStyles).toHaveBeenCalled();
       });
 
@@ -253,6 +249,7 @@ describe("Error Handling and Recovery Integration Tests", () => {
 
       // First call should fail
       await waitFor(() => {
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(plugin.configManager.getAvailableStyles).toHaveBeenCalledTimes(
           1,
         );
@@ -270,6 +267,7 @@ describe("Error Handling and Recovery Integration Tests", () => {
 
         // Second call should succeed
         await waitFor(() => {
+          // eslint-disable-next-line @typescript-eslint/unbound-method
           expect(plugin.configManager.getAvailableStyles).toHaveBeenCalledTimes(
             2,
           );
@@ -331,6 +329,7 @@ describe("Error Handling and Recovery Integration Tests", () => {
 
       // Error message should be shown
       await waitFor(() => {
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(plugin.configManager.validateValePath).toHaveBeenCalled();
       });
     });
@@ -358,6 +357,7 @@ describe("Error Handling and Recovery Integration Tests", () => {
       });
 
       await waitFor(() => {
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(plugin.configManager.validateConfigPath).toHaveBeenCalled();
       });
     });
@@ -382,6 +382,7 @@ describe("Error Handling and Recovery Integration Tests", () => {
 
       // getInstalledStyles might fail if StylesPath is undefined
       await waitFor(() => {
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(plugin.configManager.getStylesPath).toBeDefined();
       });
     });
@@ -411,6 +412,7 @@ describe("Error Handling and Recovery Integration Tests", () => {
 
       // Error should suggest chmod +x or similar
       await waitFor(() => {
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(plugin.configManager.validateValePath).toHaveBeenCalled();
       });
     });
@@ -438,6 +440,7 @@ describe("Error Handling and Recovery Integration Tests", () => {
 
       // Error should indicate permission issue
       await waitFor(() => {
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(plugin.configManager.validateConfigPath).toHaveBeenCalled();
       });
     });

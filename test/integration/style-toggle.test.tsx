@@ -15,14 +15,10 @@
  * - Style installation (Managed mode only)
  */
 
+/* eslint-disable @typescript-eslint/unbound-method */
 import * as React from "react";
-import {
-  act,
-  render,
-  screen,
-  waitFor,
-  fireEvent,
-} from "@testing-library/react";
+import { act } from "react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { App } from "obsidian";
 import { ValeSettings, ValeStyle, DEFAULT_SETTINGS } from "../../src/types";
 import { SettingsRouter } from "../../src/settings/SettingsRouter";
@@ -86,7 +82,7 @@ function createMockPlugin(
 
   return {
     settings,
-    saveSettings: jest.fn().mockResolvedValue(undefined),
+    saveSettings: jest.fn<Promise<void>, []>().mockResolvedValue(undefined),
     configManager,
     app: {
       vault: {

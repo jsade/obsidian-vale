@@ -20,14 +20,10 @@
  * - ValeConfigManager.validateValePath / validateConfigPath
  */
 
+/* eslint-disable @typescript-eslint/unbound-method */
 import * as React from "react";
-import {
-  act,
-  render,
-  screen,
-  waitFor,
-  fireEvent,
-} from "@testing-library/react";
+import { act } from "react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { App, Setting } from "obsidian";
 import { ValeSettings, DEFAULT_SETTINGS } from "../../src/types";
 import { SettingsRouter } from "../../src/settings/SettingsRouter";

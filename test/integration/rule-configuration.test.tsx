@@ -17,13 +17,8 @@
  */
 
 import * as React from "react";
-import {
-  act,
-  render,
-  screen,
-  waitFor,
-  fireEvent,
-} from "@testing-library/react";
+import { act } from "react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { App } from "obsidian";
 import { ValeSettings, DEFAULT_SETTINGS, ValeRule } from "../../src/types";
 import { SettingsRouter } from "../../src/settings/SettingsRouter";
@@ -100,7 +95,7 @@ function createMockPlugin(
 
   return {
     settings,
-    saveSettings: jest.fn().mockResolvedValue(undefined),
+    saveSettings: jest.fn<Promise<void>, []>().mockResolvedValue(undefined),
     configManager,
     app: {
       vault: {
@@ -186,8 +181,11 @@ describe("Rule Configuration Flow Integration Tests", () => {
       });
 
       // Rules methods should be defined on configManager
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(plugin.configManager.getRulesForStyle).toBeDefined();
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(plugin.configManager.getConfiguredRules).toBeDefined();
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(plugin.configManager.updateRule).toBeDefined();
     });
 
@@ -263,6 +261,7 @@ describe("Rule Configuration Flow Integration Tests", () => {
 
       // Styles should be loaded
       await waitFor(() => {
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(plugin.configManager.getAvailableStyles).toHaveBeenCalled();
       });
     });
@@ -294,10 +293,12 @@ describe("Rule Configuration Flow Integration Tests", () => {
 
       // Wait for styles to load
       await waitFor(() => {
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(plugin.configManager.getAvailableStyles).toHaveBeenCalled();
       });
 
       // updateRule should be defined and callable
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(plugin.configManager.updateRule).toBeDefined();
     });
 
@@ -327,6 +328,7 @@ describe("Rule Configuration Flow Integration Tests", () => {
       // Simulate what the UI would do when toggling a rule off
       await plugin.configManager.updateRule("Google", ruleToDisable);
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(plugin.configManager.updateRule).toHaveBeenCalledWith(
         "Google",
         ruleToDisable,
@@ -358,6 +360,7 @@ describe("Rule Configuration Flow Integration Tests", () => {
 
       await plugin.configManager.updateRule("Google", ruleToEnable);
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(plugin.configManager.updateRule).toHaveBeenCalledWith(
         "Google",
         ruleToEnable,
@@ -391,6 +394,7 @@ describe("Rule Configuration Flow Integration Tests", () => {
 
       await plugin.configManager.updateRule("Google", ruleWithNewSeverity);
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(plugin.configManager.updateRule).toHaveBeenCalledWith(
         "Google",
         ruleWithNewSeverity,
@@ -425,6 +429,7 @@ describe("Rule Configuration Flow Integration Tests", () => {
 
         await plugin.configManager.updateRule("Google", rule);
 
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(plugin.configManager.updateRule).toHaveBeenCalledWith(
           "Google",
           rule,
@@ -458,6 +463,7 @@ describe("Rule Configuration Flow Integration Tests", () => {
       await plugin.configManager.updateRule("Google", ruleWithDefaultSeverity);
 
       // ValeConfigManager.updateRule deletes the key when severity is "default"
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(plugin.configManager.updateRule).toHaveBeenCalledWith(
         "Google",
         ruleWithDefaultSeverity,
@@ -517,10 +523,12 @@ describe("Rule Configuration Flow Integration Tests", () => {
 
       // Styles should be loaded
       await waitFor(() => {
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(plugin.configManager.getAvailableStyles).toHaveBeenCalled();
       });
 
       // The getAvailableStyles was called when navigating to Styles
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(plugin.configManager.getAvailableStyles).toHaveBeenCalled();
     });
   });
@@ -870,6 +878,7 @@ describe("Rule Configuration - Concurrent Updates", () => {
       }),
     ]);
 
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(plugin.configManager.updateRule).toHaveBeenCalledTimes(2);
   });
 });
@@ -918,7 +927,9 @@ describe("Rule Configuration - Full Navigation Flow", () => {
 
     // Styles should be loaded
     await waitFor(() => {
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(plugin.configManager.getAvailableStyles).toHaveBeenCalled();
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(plugin.configManager.getEnabledStyles).toHaveBeenCalled();
     });
   });
@@ -948,10 +959,12 @@ describe("Rule Configuration - Full Navigation Flow", () => {
 
     // In managed mode, getAvailableStyles should be called
     await waitFor(() => {
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(plugin.configManager.getAvailableStyles).toHaveBeenCalled();
     });
 
     // getInstalledStyles should NOT be called in managed mode
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(plugin.configManager.getInstalledStyles).not.toHaveBeenCalled();
   });
 
@@ -994,6 +1007,7 @@ describe("Rule Configuration - Full Navigation Flow", () => {
 
     // In custom mode, getInstalledStyles should be called
     await waitFor(() => {
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(plugin.configManager.getInstalledStyles).toHaveBeenCalled();
     });
   });
