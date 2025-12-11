@@ -91,7 +91,7 @@ export const StyleSettings = ({
     const isCustomMode = !settings.cli.managed;
     new Setting(ref.current)
       .setHeading()
-      .setName(isCustomMode ? "Installed Styles" : "Vale styles")
+      .setName(isCustomMode ? "Installed styles" : "Vale styles")
       .setDesc(
         isCustomMode
           ? "Enable or disable styles found in your Vale StylesPath."

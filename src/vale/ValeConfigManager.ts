@@ -330,9 +330,10 @@ export class ValeConfigManager {
       const paths = await fs.promises.readdir(stylesPath);
 
       // Filter for directories using Promise.all to properly handle async checks
+      // Exclude "config" - a special Vale directory for vocabularies, dictionaries, and scripts
       const installedChecks = await Promise.all(
         paths
-          .filter((style) => style)
+          .filter((style) => style && style !== "config")
           .map(async (name) => {
             const info = await fs.promises.stat(path.join(stylesPath, name));
             return info.isDirectory() ? name : null;
