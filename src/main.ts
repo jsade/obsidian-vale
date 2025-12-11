@@ -1,5 +1,6 @@
 import { EventBus } from "EventBus";
 import {
+  addIcon,
   Editor,
   FileSystemAdapter,
   MarkdownFileInfo,
@@ -68,6 +69,13 @@ export default class ValePlugin extends Plugin {
 
   // onload runs when plugin becomes enabled.
   async onload(): Promise<void> {
+    // Register custom Vale icon (Material Icons "book_6" - book with A)
+    // Must be registered before using it in ribbon, toolbar, or menus
+    addIcon(
+      "vale-book",
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path fill="currentColor" d="M240-80q-50 0-85-35t-35-85v-560q0-50 35-85t85-35h440v640H240q-17 0-28.5 11.5T200-200q0 17 11.5 28.5T240-160h520v-640h80v720H240Zm0-240h360v-480H240q-17 0-28.5 11.5T200-760v447q10-3 19.5-5t20.5-2Zm30-100h48l26-72h113l25 72h48L425-700h-50L270-420Zm88-112 41-116h2l41 116h-84ZM200-313v-487 487Z"/></svg>`,
+    );
+
     await this.loadSettings();
 
     // Register CM6 extension for Vale decorations and event handling
@@ -76,7 +84,7 @@ export default class ValePlugin extends Plugin {
     this.addSettingTab(new ValeSettingTab(this.app, this));
 
     // Add ribbon icon for quick access to Vale check
-    this.addRibbonIcon("check-small", "Vale: check document", () => {
+    this.addRibbonIcon("vale-book", "Vale: check document", () => {
       void this.activateView();
     });
 
@@ -117,7 +125,7 @@ export default class ValePlugin extends Plugin {
           const isEditable = this.isInEditMode(info);
 
           menu.addItem((item) => {
-            item.setTitle("Vale").setIcon("check-small");
+            item.setTitle("Vale").setIcon("vale-book");
 
             // Guard against future Obsidian versions potentially removing undocumented API
             if (!("setSubmenu" in item)) {
@@ -603,13 +611,9 @@ export default class ValePlugin extends Plugin {
     // Don't add if already exists
     if (this.actionButtonMap.has(view)) return;
 
-    const actionEl = view.addAction(
-      "check-small",
-      "Vale: check document",
-      () => {
-        void this.activateView();
-      },
-    );
+    const actionEl = view.addAction("vale-book", "Vale: check document", () => {
+      void this.activateView();
+    });
 
     this.actionButtonMap.set(view, actionEl);
   }

@@ -124,7 +124,11 @@ function alertToOffsets(
     const charByteEnd = byteCount + charBytes - 1; // Inclusive end of this char's bytes
 
     // Start: find the character that contains the spanStart byte
-    if (charStart === -1 && charByteStart <= spanStart && spanStart <= charByteEnd) {
+    if (
+      charStart === -1 &&
+      charByteStart <= spanStart &&
+      spanStart <= charByteEnd
+    ) {
       charStart = i;
     }
 
