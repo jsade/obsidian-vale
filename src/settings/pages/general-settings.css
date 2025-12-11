@@ -1,0 +1,350 @@
+/**
+ * General Settings Page Styles
+ * Uses only Obsidian CSS variables for theme compatibility
+ */
+
+/* ============================================================================
+   Main Container
+   ============================================================================ */
+
+.vale-general-settings {
+  /* Container uses default spacing */
+}
+
+/* ============================================================================
+   Support Card (Buy Me a Coffee)
+   ============================================================================ */
+
+.vale-support-card {
+  padding: var(--size-4-3);
+  margin-bottom: var(--size-4-4);
+  background: var(--background-secondary);
+  border-radius: var(--radius-s);
+  border: 1px solid var(--background-modifier-border);
+}
+
+.vale-support-card small {
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  line-height: var(--line-height-normal);
+}
+
+.vale-support-card a {
+  color: var(--text-accent);
+  text-decoration: none;
+}
+
+.vale-support-card a:hover {
+  text-decoration: underline;
+}
+
+/* ============================================================================
+   Mode Selector
+   ============================================================================ */
+
+.vale-mode-selector {
+  /* Uses Obsidian Setting API styling - no custom styles needed */
+  margin-bottom: var(--size-4-4);
+}
+
+/* ============================================================================
+   Server Settings
+   ============================================================================ */
+
+.vale-server-settings {
+  /* Uses Obsidian Setting API styling - no custom styles needed */
+}
+
+/* ============================================================================
+   CLI Settings
+   ============================================================================ */
+
+.vale-cli-settings {
+  /* Container for CLI mode settings */
+}
+
+/* ============================================================================
+   Managed Mode Info Card
+   ============================================================================ */
+
+.vale-managed-mode-info {
+  margin-top: var(--size-4-4);
+}
+
+.vale-info-card {
+  padding: var(--size-4-4);
+  background: var(--background-secondary);
+  border-radius: var(--radius-m);
+  border: 1px solid var(--background-modifier-border);
+}
+
+.vale-info-card__title {
+  margin: 0 0 var(--size-4-3) 0;
+  font-size: var(--font-ui-medium);
+  font-weight: var(--font-semibold);
+  color: var(--text-normal);
+}
+
+.vale-info-card__description {
+  margin: 0 0 var(--size-4-3) 0;
+  color: var(--text-normal);
+  font-size: var(--font-ui-small);
+  line-height: var(--line-height-normal);
+}
+
+.vale-info-card__description:last-child {
+  margin-bottom: 0;
+}
+
+.vale-info-card__list {
+  margin: 0 0 var(--size-4-3) 0;
+  padding-left: var(--size-4-4);
+  color: var(--text-normal);
+  font-size: var(--font-ui-small);
+  line-height: var(--line-height-normal);
+}
+
+.vale-info-card__list li {
+  margin-bottom: var(--size-4-2);
+}
+
+.vale-info-card__list li:last-child {
+  margin-bottom: 0;
+}
+
+/* ============================================================================
+   Custom Mode Settings
+   ============================================================================ */
+
+.vale-custom-mode-settings {
+  margin-top: var(--size-4-4);
+}
+
+.vale-custom-mode-help {
+  padding: var(--size-4-3);
+  margin-top: var(--size-4-4);
+  background: var(--background-secondary);
+  border-radius: var(--radius-s);
+  border-left: 3px solid var(--interactive-accent);
+}
+
+.vale-help-text {
+  margin: 0 0 var(--size-4-2) 0;
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  line-height: var(--line-height-normal);
+}
+
+.vale-help-text:last-child {
+  margin-bottom: 0;
+}
+
+.vale-help-text code {
+  padding: var(--size-4-1) var(--size-4-2);
+  background: var(--background-primary-alt);
+  border-radius: var(--radius-s);
+  font-family: var(--font-monospace);
+  font-size: var(--font-ui-smaller);
+  color: var(--text-normal);
+}
+
+/* ============================================================================
+   Onboarding Banner
+   ============================================================================ */
+
+.vale-onboarding-banner {
+  padding: var(--size-4-6);
+  margin-bottom: var(--size-4-6);
+  background: var(--background-secondary);
+  border-radius: var(--radius-m);
+  border: 2px solid var(--interactive-accent);
+  box-shadow: var(--shadow-s);
+}
+
+.vale-onboarding-banner__title {
+  margin: 0 0 var(--size-4-4) 0;
+  font-size: var(--font-ui-large);
+  font-weight: var(--font-semibold);
+  color: var(--text-normal);
+}
+
+.vale-onboarding-banner__description {
+  margin: 0 0 var(--size-4-4) 0;
+  color: var(--text-normal);
+  font-size: var(--font-ui-small);
+  line-height: var(--line-height-normal);
+}
+
+.vale-onboarding-banner__description a {
+  color: var(--text-accent);
+  text-decoration: none;
+}
+
+.vale-onboarding-banner__description a:hover {
+  text-decoration: underline;
+}
+
+.vale-onboarding-banner__section {
+  margin-bottom: var(--size-4-4);
+}
+
+.vale-onboarding-banner__section:last-child {
+  margin-bottom: 0;
+}
+
+.vale-onboarding-banner__section p {
+  margin: 0 0 var(--size-4-3) 0;
+  color: var(--text-normal);
+  font-size: var(--font-ui-small);
+  line-height: var(--line-height-normal);
+}
+
+.vale-onboarding-banner__section p:last-child {
+  margin-bottom: 0;
+}
+
+.vale-onboarding-banner__action {
+  margin-top: var(--size-4-3);
+}
+
+.vale-onboarding-banner__button {
+  /* Inherits Obsidian button styles */
+  /* mod-cta class provides primary button styling */
+}
+
+.vale-onboarding-banner__loading {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-3);
+  padding: var(--size-4-3);
+  background: var(--background-primary);
+  border-radius: var(--radius-s);
+}
+
+.vale-onboarding-banner__loading-text {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+}
+
+.vale-onboarding-banner__success {
+  padding: var(--size-4-3);
+  background: var(--background-primary);
+  border-radius: var(--radius-s);
+  border-left: 3px solid var(--text-success);
+}
+
+.vale-onboarding-banner__success p {
+  margin: 0;
+  color: var(--text-success);
+  font-size: var(--font-ui-small);
+  font-weight: var(--font-medium);
+}
+
+.vale-onboarding-banner__error {
+  padding: var(--size-4-3);
+  margin-top: var(--size-4-3);
+  background: var(--background-primary);
+  border-radius: var(--radius-s);
+  border-left: 3px solid var(--text-error);
+}
+
+.vale-onboarding-banner__error p {
+  margin: 0;
+  color: var(--text-error);
+  font-size: var(--font-ui-small);
+}
+
+/* ============================================================================
+   Loading Spinner (used in onboarding)
+   ============================================================================ */
+
+.vale-loading-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vale-loading-spinner--small {
+  width: var(--size-4-4);
+  height: var(--size-4-4);
+}
+
+.vale-loading-spinner--medium {
+  width: var(--size-4-6);
+  height: var(--size-4-6);
+}
+
+.vale-loading-spinner--large {
+  width: var(--size-4-8);
+  height: var(--size-4-8);
+}
+
+.vale-loading-spinner__icon {
+  width: 100%;
+  height: 100%;
+  animation: vale-spinner-rotate 1s linear infinite;
+}
+
+.vale-loading-spinner__svg {
+  width: 100%;
+  height: 100%;
+}
+
+.vale-loading-spinner__circle {
+  stroke: var(--interactive-accent);
+  stroke-linecap: round;
+  stroke-dasharray: 1, 150;
+  stroke-dashoffset: 0;
+  animation: vale-spinner-dash 1.5s ease-in-out infinite;
+}
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .vale-loading-spinner__icon {
+    animation: none;
+  }
+
+  .vale-loading-spinner__circle {
+    animation: none;
+    stroke-dasharray: 80, 200;
+  }
+}
+
+@keyframes vale-spinner-rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes vale-spinner-dash {
+  0% {
+    stroke-dasharray: 1, 150;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -124;
+  }
+}
+
+/* ============================================================================
+   Utility Classes
+   ============================================================================ */
+
+/* Visually hidden but accessible to screen readers */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

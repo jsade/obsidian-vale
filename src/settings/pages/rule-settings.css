@@ -1,0 +1,153 @@
+/**
+ * Rule Settings Page Styles
+ *
+ * Styles for the Rules settings page using only Obsidian CSS variables.
+ * Supports light/dark themes, high contrast mode, and reduced motion preferences.
+ */
+
+/* ============================================================================
+   Rule Settings Container
+   ========================================================================= */
+
+.vale-rule-settings {
+  /* Container for the entire rules page */
+  padding: 0;
+}
+
+/* ============================================================================
+   Rules Header
+   ========================================================================= */
+
+.vale-rules-header {
+  margin-bottom: var(--size-4-6);
+}
+
+.vale-rules-header__title {
+  /* Style name heading */
+  margin: var(--size-4-4) 0 var(--size-4-2) 0;
+  font-size: var(--font-ui-large);
+  font-weight: var(--font-semibold);
+  color: var(--text-normal);
+  line-height: var(--line-height-tight);
+}
+
+.vale-rules-header__description {
+  /* Descriptive text */
+  margin: 0;
+  font-size: var(--font-ui-small);
+  color: var(--text-muted);
+  line-height: var(--line-height-normal);
+}
+
+/* ============================================================================
+   Rules List
+   ========================================================================= */
+
+.vale-rules-list {
+  /* Container for rule items */
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.vale-rules-list--empty {
+  /* Empty state container */
+  padding: var(--size-4-8) var(--size-4-4);
+  text-align: center;
+}
+
+.vale-rules-list__empty-message {
+  /* Empty state message */
+  margin: 0;
+  font-size: var(--font-ui-medium);
+  color: var(--text-muted);
+  line-height: var(--line-height-normal);
+}
+
+/* ============================================================================
+   Rule Item
+   ========================================================================= */
+
+.vale-rule-item {
+  /* Individual rule container */
+  /* Obsidian Setting API handles the internal styling */
+  /* We only need to ensure proper spacing */
+}
+
+/* ============================================================================
+   Rules Loading Skeleton
+   ========================================================================= */
+
+.vale-rules-loading {
+  /* Loading container */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  padding: var(--size-4-8) var(--size-4-4);
+}
+
+.vale-rules-loading__container {
+  /* Centered loading content */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--size-4-4);
+}
+
+.vale-rules-loading__message {
+  /* Loading message text */
+  margin: 0;
+  font-size: var(--font-ui-medium);
+  color: var(--text-muted);
+  line-height: var(--line-height-normal);
+}
+
+/* ============================================================================
+   Responsive Design
+   ========================================================================= */
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .vale-rules-header__title {
+    font-size: var(--font-ui-medium);
+  }
+
+  .vale-rules-header__description {
+    font-size: var(--font-ui-smaller);
+  }
+
+  .vale-rules-loading {
+    min-height: 200px;
+  }
+}
+
+/* ============================================================================
+   Print Styles
+   ========================================================================= */
+
+@media print {
+  .vale-rules-loading {
+    display: none;
+  }
+}
+
+/* ============================================================================
+   High Contrast Mode Support
+   ========================================================================= */
+
+@media (prefers-contrast: high) {
+  .vale-rules-list--empty {
+    border: 2px solid var(--background-modifier-border);
+    border-radius: var(--radius-s);
+  }
+}
+
+/* ============================================================================
+   Reduced Motion Support
+   ========================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  /* All animations are handled by child components */
+  /* No additional overrides needed here */
+}

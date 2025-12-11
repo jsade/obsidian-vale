@@ -1,0 +1,156 @@
+/**
+ * Vale Settings Layout Styles
+ *
+ * Provides consistent layout structure for settings pages.
+ * Matches Obsidian's settings panel styling using CSS variables.
+ */
+
+/* ============================================
+   Settings Layout Container
+   ============================================ */
+
+.vale-settings-layout {
+  /* Container */
+  width: 100%;
+  max-width: 100%;
+  padding: 0;
+  margin: 0;
+
+  /* Ensure proper stacking context */
+  position: relative;
+  z-index: 0;
+
+  /* Background */
+  background-color: var(--background-primary);
+  color: var(--text-normal);
+}
+
+/* ============================================
+   Settings Error Fallback
+   ============================================ */
+
+.vale-settings-error {
+  /* Layout */
+  padding: var(--size-4-6);
+  margin: var(--size-4-4) 0;
+
+  /* Visual */
+  background-color: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+
+  /* Typography */
+  color: var(--text-normal);
+}
+
+.vale-settings-error h3 {
+  /* Heading */
+  margin-top: 0;
+  margin-bottom: var(--size-4-3);
+  color: var(--text-error);
+  font-size: var(--font-ui-medium);
+  font-weight: var(--font-semibold);
+}
+
+.vale-settings-error p {
+  /* Paragraph */
+  margin: var(--size-4-2) 0;
+  color: var(--text-normal);
+  font-size: var(--font-ui-small);
+  line-height: var(--line-height-normal);
+}
+
+.vale-settings-error button {
+  /* Action button */
+  margin-top: var(--size-4-4);
+  margin-bottom: var(--size-4-2);
+}
+
+.vale-settings-error details {
+  /* Error details */
+  margin-top: var(--size-4-4);
+  padding: var(--size-4-3);
+  background-color: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+}
+
+.vale-settings-error summary {
+  /* Details summary */
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  font-weight: var(--font-medium);
+  user-select: none;
+}
+
+.vale-settings-error summary:hover {
+  color: var(--text-normal);
+}
+
+.vale-settings-error pre {
+  /* Error stack trace */
+  margin-top: var(--size-4-2);
+  padding: var(--size-4-2);
+  background-color: var(--code-background);
+  border-radius: var(--radius-s);
+  color: var(--code-normal);
+  font-family: var(--font-monospace);
+  font-size: var(--code-size);
+  overflow-x: auto;
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .vale-settings-layout {
+    padding: 0;
+  }
+
+  .vale-settings-error {
+    padding: var(--size-4-4);
+    margin: var(--size-4-3) 0;
+  }
+}
+
+/* ============================================
+   Print Styles
+   ============================================ */
+
+@media print {
+  .vale-settings-layout {
+    background-color: transparent;
+  }
+
+  .vale-settings-error {
+    border: 1px solid black;
+    page-break-inside: avoid;
+  }
+}
+
+/* ============================================
+   Accessibility
+   ============================================ */
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .vale-settings-error {
+    border-width: 2px;
+  }
+
+  .vale-settings-error h3 {
+    border-bottom: 2px solid currentColor;
+    padding-bottom: var(--size-4-2);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .vale-settings-layout * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

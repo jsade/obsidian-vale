@@ -29,3 +29,9 @@ export {
 
 // Export Obsidian Setting hook
 export { useObsidianSetting, type SettingConfig } from "./useObsidianSetting";
+
+// Export rules management hook
+export { useRules, type UseRulesState } from "./useRules";
+
+// Export styles management hook
+export { useStyles, type StylesResult } from "./useStyles";

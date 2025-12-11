@@ -1,0 +1,53 @@
+/**
+ * Style Settings Page Styles
+ *
+ * Styles for the Vale styles settings page using only Obsidian CSS variables.
+ * Follows Obsidian's native settings UI patterns for consistency.
+ */
+
+/* ============================================================================
+   Main Container
+   ========================================================================= */
+
+.vale-style-settings {
+  /* Container uses default Obsidian settings styles */
+}
+
+/* ============================================================================
+   Loading State
+   ========================================================================= */
+
+.vale-styles-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  gap: 1rem;
+}
+
+.vale-styles-loading__message {
+  margin: 0;
+  font-size: var(--font-ui-small);
+  color: var(--text-muted);
+}
+
+/* ============================================================================
+   Reduced Motion Support
+   ========================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .vale-styles-loading {
+    /* Reduce spacing changes if needed */
+  }
+}
+
+/* ============================================================================
+   High Contrast Mode Support
+   ========================================================================= */
+
+@media (prefers-contrast: high) {
+  .vale-styles-loading__message {
+    color: var(--text-normal);
+  }
+}
