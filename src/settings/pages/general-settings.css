@@ -230,10 +230,14 @@
   }
 }
 
-/* Rescan button in help text */
+/* Rescan button container */
+.vale-rescan-container {
+  margin-top: var(--size-4-3);
+}
+
+/* Rescan button */
 .vale-rescan-button {
   display: inline-block;
-  margin-top: var(--size-4-2);
   padding: var(--size-4-1) var(--size-4-3);
   background: transparent;
   border: 1px solid var(--background-modifier-border);
@@ -395,15 +399,16 @@
    ============================================================================ */
 
 .vale-advanced-toggle {
-  margin-top: var(--size-4-6);
-  padding-top: var(--size-4-4);
-  border-top: 1px solid var(--background-modifier-border);
+  margin-bottom: var(--size-4-4);
+  padding-bottom: var(--size-4-4);
+  border-bottom: 1px solid var(--background-modifier-border);
 }
 
 /* Style the toggle itself to be less prominent */
 .vale-advanced-toggle .setting-item {
   border: none;
   padding-top: 0;
+  padding-bottom: 0;
 }
 
 .vale-advanced-toggle .setting-item-info .setting-item-name {

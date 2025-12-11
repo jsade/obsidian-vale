@@ -48,6 +48,7 @@ export const GeneralSettings: React.FC = () => {
   const [showOnboarding, setShowOnboarding] = React.useState<boolean>(false);
 
   // Effect: Check if Vale is installed (for onboarding banner)
+  // Only re-run when mode changes, not on every settings change
   React.useEffect(() => {
     let isMounted = true;
 
@@ -74,7 +75,7 @@ export const GeneralSettings: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, [settings, configManager]);
+  }, [settings.type, configManager]);
 
   // Handler: Mode change (CLI ↔ Server)
   const handleModeChange = React.useCallback(
@@ -116,7 +117,10 @@ export const GeneralSettings: React.FC = () => {
       {/* Onboarding banner for first-time users */}
       {showOnboarding && <OnboardingBanner />}
 
-      {/* Support card - shown only in advanced mode */}
+      {/* Advanced options toggle - at top so revealed content appears below */}
+      <div ref={advancedToggleRef} className="vale-advanced-toggle" />
+
+      {/* Support card - shown only in advanced mode, appears near the toggle */}
       {showAdvanced && (
         <div className="vale-support-card vale-advanced-content">
           <small>
@@ -124,7 +128,7 @@ export const GeneralSettings: React.FC = () => {
             <a
               href="https://www.buymeacoffee.com/marcusolsson"
               target="_blank"
-              rel="noopener"
+              rel="noopener noreferrer"
             >
               buy Marcus (the original author) a coffee
               <span className="visually-hidden"> (opens in new tab)</span>
@@ -142,9 +146,6 @@ export const GeneralSettings: React.FC = () => {
 
       {/* CLI settings (shown when in CLI mode) */}
       {settings.type === "cli" && <CliSettings showAdvanced={showAdvanced} />}
-
-      {/* Advanced options toggle - at bottom for progressive disclosure */}
-      <div ref={advancedToggleRef} className="vale-advanced-toggle" />
     </div>
   );
 };

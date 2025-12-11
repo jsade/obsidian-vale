@@ -31,7 +31,8 @@
 
 .vale-button:hover:not(:disabled):not(.vale-button--loading) {
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px hsla(var(--shadow-color), 0.15);
+  /* Use Obsidian's standard shadow variable with fallback */
+  box-shadow: var(--shadow-s, 0 2px 4px rgba(0, 0, 0, 0.15));
 }
 
 .vale-button:active:not(:disabled):not(.vale-button--loading) {
@@ -339,7 +340,8 @@
 
 .vale-validation-feedback--valid {
   color: var(--text-success);
-  background: rgba(var(--color-green-rgb), 0.1);
+  /* Use Obsidian's standard modifier or fallback to subtle green */
+  background: var(--background-modifier-success, rgba(0, 200, 83, 0.1));
 
   /* Checkmark fade-in with slight scale */
   animation: vale-validation-success-enter 250ms ease-out;
@@ -351,7 +353,8 @@
 
 .vale-validation-feedback--error {
   color: var(--text-error);
-  background: rgba(var(--color-red-rgb), 0.1);
+  /* Use Obsidian's standard modifier or fallback to subtle red */
+  background: var(--background-modifier-error, rgba(233, 30, 99, 0.1));
 
   /* Subtle shake animation for error state */
   animation: vale-validation-error-shake 300ms ease-out;
@@ -946,9 +949,11 @@
    ========================================================================= */
 
 body.theme-dark .vale-toast {
-  box-shadow: 0 2px 8px hsla(var(--shadow-color), 0.3);
+  /* Use standard Obsidian shadow variable */
+  box-shadow: var(--shadow-m, 0 2px 8px rgba(0, 0, 0, 0.3));
 }
 
 body.theme-dark .vale-error-message__details-content {
-  background: hsla(var(--shadow-color), 0.2);
+  /* Use standard Obsidian background variable */
+  background: var(--background-primary-alt);
 }

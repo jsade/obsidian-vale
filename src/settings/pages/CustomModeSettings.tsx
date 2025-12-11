@@ -93,8 +93,8 @@ export const CustomModeSettings: React.FC<CustomModeSettingsProps> = ({
    * This prevents stale closure issues by reading both values from DOM.
    */
   const handlePathsUpdate = React.useCallback((): void => {
-    const valePath = valePathInputRef.current?.value || "";
-    const configPath = configPathInputRef.current?.value || "";
+    const valePath = valePathInputRef.current?.value ?? "";
+    const configPath = configPathInputRef.current?.value ?? "";
 
     // Only update if at least one path changed
     if (
@@ -223,7 +223,11 @@ export const CustomModeSettings: React.FC<CustomModeSettingsProps> = ({
 
       {/* Detection in progress indicator */}
       {detection.isDetecting && !settings.cli.valePath && (
-        <div className="vale-detection-scanning" role="status">
+        <div
+          className="vale-detection-scanning"
+          role="status"
+          aria-live="polite"
+        >
           <span className="vale-detection-spinner" aria-hidden="true"></span>
           <span>Scanning for Vale installation...</span>
         </div>
@@ -285,6 +289,19 @@ export const CustomModeSettings: React.FC<CustomModeSettingsProps> = ({
         }}
       </SettingWithValidation>
 
+      {/* Rescan button - always visible (not just in advanced mode) for better discoverability */}
+      {!detection.hasDetected && !detection.isDetecting && (
+        <div className="vale-rescan-container">
+          <button
+            className="vale-rescan-button"
+            onClick={() => void detection.detectVale()}
+            type="button"
+          >
+            Scan for Vale installation
+          </button>
+        </div>
+      )}
+
       {/* Help text with platform-specific examples - shown only in advanced mode */}
       {showAdvanced && (
         <div className="vale-custom-mode-help vale-advanced-content">
@@ -300,15 +317,6 @@ export const CustomModeSettings: React.FC<CustomModeSettingsProps> = ({
             Config: <code>{examplePaths.configPath}</code> or{" "}
             <code>.vale.ini</code>
           </p>
-          {!detection.hasDetected && !detection.isDetecting && (
-            <button
-              className="vale-rescan-button"
-              onClick={() => void detection.detectVale()}
-              type="button"
-            >
-              Scan for Vale installation
-            </button>
-          )}
         </div>
       )}
     </div>

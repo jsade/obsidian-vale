@@ -5,12 +5,17 @@
  * Windows, macOS, and Linux. It handles common installation locations
  * including package managers (Homebrew, Chocolatey, Scoop, Snap).
  *
+ * IMPORTANT: This module uses Node.js fs/path/os modules which only work
+ * on desktop (Electron). All file system operations are guarded with
+ * Platform.isDesktopApp checks. On mobile, detection returns null.
+ *
  * @module utils/platformDefaults
  */
 
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
+import { Platform } from "obsidian";
 
 /**
  * Result of a Vale detection attempt.
@@ -51,47 +56,78 @@ export function getCommonValePaths(): Array<[string, string]> {
     case "win32":
       return [
         // Chocolatey (most common on Windows)
+        // Note: Use "C:\\" not "C:" for proper Windows path construction
         [
-          path.join("C:", "ProgramData", "chocolatey", "bin", binaryName),
+          path.join("C:\\", "ProgramData", "chocolatey", "bin", binaryName),
           "Chocolatey",
         ],
         // Scoop (user-level package manager)
         [path.join(home, "scoop", "shims", binaryName), "Scoop"],
         // Program Files (manual install)
-        [path.join("C:", "Program Files", "Vale", binaryName), "Program Files"],
         [
-          path.join("C:", "Program Files (x86)", "Vale", binaryName),
+          path.join("C:\\", "Program Files", "Vale", binaryName),
+          "Program Files",
+        ],
+        [
+          path.join("C:\\", "Program Files (x86)", "Vale", binaryName),
           "Program Files (x86)",
         ],
         // User local bin
         [path.join(home, ".local", "bin", binaryName), "User local"],
+        // Go install
+        [path.join(home, "go", "bin", binaryName), "Go install"],
       ];
 
     case "darwin":
       return [
         // Homebrew on Apple Silicon (M1/M2/M3) - check first as it's more common now
         [path.join("/opt", "homebrew", "bin", binaryName), "Homebrew (ARM)"],
-        // Homebrew on Intel
-        [path.join("/usr", "local", "bin", binaryName), "Homebrew (Intel)"],
+        // /usr/local/bin is shared by Homebrew on Intel AND manual installs
+        // Use neutral label since we can't distinguish the source
+        [path.join("/usr", "local", "bin", binaryName), "Local (/usr/local)"],
+        // Go install
+        [path.join(home, "go", "bin", binaryName), "Go install"],
         // MacPorts
         [path.join("/opt", "local", "bin", binaryName), "MacPorts"],
         // User local bin
         [path.join(home, ".local", "bin", binaryName), "User local"],
+        // asdf version manager
+        [path.join(home, ".asdf", "shims", binaryName), "asdf"],
+        // mise version manager (successor to asdf)
+        [
+          path.join(home, ".local", "share", "mise", "shims", binaryName),
+          "mise",
+        ],
+        // Nix
+        [path.join(home, ".nix-profile", "bin", binaryName), "Nix"],
         // System (rare)
         [path.join("/usr", "bin", binaryName), "System"],
       ];
 
     case "linux":
       return [
-        // System package manager (apt, dnf, pacman, etc.)
-        [path.join("/usr", "bin", binaryName), "System"],
+        // User local bin - prioritize user installs over system
+        [path.join(home, ".local", "bin", binaryName), "User local"],
+        // Go install
+        [path.join(home, "go", "bin", binaryName), "Go install"],
         // Manual install to /usr/local
         [path.join("/usr", "local", "bin", binaryName), "Local"],
-        // User local bin (common for manual installs)
-        [path.join(home, ".local", "bin", binaryName), "User local"],
+        // System package manager (apt, dnf, pacman, etc.)
+        [path.join("/usr", "bin", binaryName), "System"],
         // Snap package
         [path.join("/snap", "bin", binaryName), "Snap"],
-        // Flatpak (less common but possible)
+        // asdf version manager
+        [path.join(home, ".asdf", "shims", binaryName), "asdf"],
+        // mise version manager (successor to asdf)
+        [
+          path.join(home, ".local", "share", "mise", "shims", binaryName),
+          "mise",
+        ],
+        // Nix (user profile)
+        [path.join(home, ".nix-profile", "bin", binaryName), "Nix"],
+        // Nix (system profile - NixOS)
+        [path.join("/run", "current-system", "sw", "bin", binaryName), "NixOS"],
+        // Flatpak (use binaryName variable instead of hardcoded)
         [
           path.join(
             home,
@@ -100,7 +136,7 @@ export function getCommonValePaths(): Array<[string, string]> {
             "flatpak",
             "exports",
             "bin",
-            "vale",
+            binaryName,
           ),
           "Flatpak",
         ],
@@ -135,12 +171,13 @@ export function getDefaultValePath(): string {
 
   switch (process.platform) {
     case "win32":
-      return path.join("C:", "ProgramData", "chocolatey", "bin", binaryName);
+      return path.join("C:\\", "ProgramData", "chocolatey", "bin", binaryName);
     case "darwin":
       // Prefer Apple Silicon path as it's more common now
       return path.join("/opt", "homebrew", "bin", binaryName);
     case "linux":
-      return path.join("/usr", "bin", binaryName);
+      // Prefer user local as it's where manual installs typically go
+      return path.join(os.homedir(), ".local", "bin", binaryName);
     default:
       return path.join("/usr", "local", "bin", binaryName);
   }
@@ -168,7 +205,8 @@ export function getExamplePaths(): { valePath: string; configPath: string } {
       };
     case "linux":
       return {
-        valePath: "/usr/bin/vale",
+        // Updated to reflect user local preference
+        valePath: path.join(home, ".local", "bin", "vale"),
         configPath: path.join(home, ".vale.ini"),
       };
     default:
@@ -185,10 +223,18 @@ export function getExamplePaths(): { valePath: string; configPath: string } {
  * On Windows, this only checks file existence since executability
  * is determined by extension, not file permissions.
  *
+ * On mobile (non-desktop), always returns false since file system
+ * access is not available.
+ *
  * @param filePath - Absolute path to check
  * @returns Promise resolving to true if executable exists
  */
 export async function isExecutable(filePath: string): Promise<boolean> {
+  // Guard: Only run on desktop where fs module is available
+  if (!Platform.isDesktopApp) {
+    return false;
+  }
+
   try {
     const stat = await fs.promises.stat(filePath);
     if (!stat.isFile()) {

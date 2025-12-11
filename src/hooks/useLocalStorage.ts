@@ -45,6 +45,13 @@ export function useLocalStorage<T>(
   // Prefix key to avoid collisions with other plugins
   const prefixedKey = `vale-${key}`;
 
+  // Ref to track current value for stale closure prevention
+  const valueRef = React.useRef<T | null>(null);
+
+  // Ref to track defaultValue for storage event handling
+  const defaultValueRef = React.useRef(defaultValue);
+  defaultValueRef.current = defaultValue;
+
   /**
    * Initialize state from localStorage or default value.
    * Uses lazy initialization to avoid reading localStorage on every render.
@@ -53,36 +60,50 @@ export function useLocalStorage<T>(
     try {
       // Check if we're in a browser environment
       if (typeof window === "undefined" || !window.localStorage) {
+        valueRef.current = defaultValue;
         return defaultValue;
       }
 
       const item = window.localStorage.getItem(prefixedKey);
       if (item === null) {
+        valueRef.current = defaultValue;
         return defaultValue;
       }
 
       // Parse the stored JSON value
-      return JSON.parse(item) as T;
+      const parsed = JSON.parse(item) as T;
+      valueRef.current = parsed;
+      return parsed;
     } catch (error) {
       // On any error (parse error, security error, etc.), return default
       console.warn(
         `useLocalStorage: Error reading key "${prefixedKey}":`,
         error,
       );
+      valueRef.current = defaultValue;
       return defaultValue;
     }
   });
 
+  // Keep ref in sync with state
+  valueRef.current = storedValue;
+
   /**
    * Update both React state and localStorage.
    * Supports both direct values and updater functions like useState.
+   * Uses ref to prevent stale closure issues with rapid successive updates.
    */
   const setValue: React.Dispatch<React.SetStateAction<T>> = React.useCallback(
     (value: React.SetStateAction<T>) => {
       try {
         // Handle both direct value and updater function
+        // Use ref to get current value, preventing stale closure bugs
+        const currentValue = valueRef.current ?? defaultValueRef.current;
         const valueToStore =
-          value instanceof Function ? value(storedValue) : value;
+          value instanceof Function ? value(currentValue) : value;
+
+        // Update ref immediately for rapid successive calls
+        valueRef.current = valueToStore;
 
         // Update React state
         setStoredValue(valueToStore);
@@ -102,12 +123,13 @@ export function useLocalStorage<T>(
         );
       }
     },
-    [prefixedKey, storedValue],
+    [prefixedKey],
   );
 
   /**
    * Listen for storage events from other tabs/windows.
    * Keeps state in sync if the same key is changed elsewhere.
+   * Uses defaultValueRef to avoid re-running when defaultValue object reference changes.
    */
   React.useEffect(() => {
     if (typeof window === "undefined" || !window.localStorage) {
@@ -121,18 +143,24 @@ export function useLocalStorage<T>(
 
       try {
         if (event.newValue === null) {
-          // Key was removed
-          setStoredValue(defaultValue);
+          // Key was removed - use ref to get current defaultValue
+          const fallback = defaultValueRef.current;
+          valueRef.current = fallback;
+          setStoredValue(fallback);
         } else {
           // Key was updated
-          setStoredValue(JSON.parse(event.newValue) as T);
+          const parsed = JSON.parse(event.newValue) as T;
+          valueRef.current = parsed;
+          setStoredValue(parsed);
         }
       } catch (error) {
         console.warn(
           `useLocalStorage: Error parsing storage event for "${prefixedKey}":`,
           error,
         );
-        setStoredValue(defaultValue);
+        const fallback = defaultValueRef.current;
+        valueRef.current = fallback;
+        setStoredValue(fallback);
       }
     };
 
@@ -140,7 +168,7 @@ export function useLocalStorage<T>(
     return () => {
       window.removeEventListener("storage", handleStorageChange);
     };
-  }, [prefixedKey, defaultValue]);
+  }, [prefixedKey]);
 
   return [storedValue, setValue];
 }

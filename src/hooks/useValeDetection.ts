@@ -7,12 +7,17 @@
  * - Parsing of existing .vale.ini to suggest StylesPath
  * - Non-blocking async detection with proper cleanup
  *
+ * IMPORTANT: Detection only works on desktop (Electron) where Node.js
+ * file system APIs are available. On mobile, the hook returns gracefully
+ * without attempting detection.
+ *
  * @module hooks/useValeDetection
  */
 
 import * as React from "react";
 import * as fs from "fs";
 import * as path from "path";
+import { Platform } from "obsidian";
 import { parse } from "ini";
 import {
   detectVale,
@@ -137,8 +142,20 @@ export function useValeDetection(autoDetect = true): UseValeDetectionReturn {
   /**
    * Run Vale detection.
    * Uses AbortController for proper cancellation.
+   * On mobile, returns early without attempting detection.
    */
   const runDetection = React.useCallback(async (): Promise<void> => {
+    // Guard: Only run on desktop where fs module is available
+    if (!Platform.isDesktopApp) {
+      if (isMountedRef.current) {
+        setDetectedPath(null);
+        setDetectedSource(null);
+        setHasDetected(true);
+        setIsDetecting(false);
+      }
+      return;
+    }
+
     // Abort any in-flight detection
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
@@ -212,11 +229,21 @@ export function useValeDetection(autoDetect = true): UseValeDetectionReturn {
    * Reads the .vale.ini file and extracts:
    * - StylesPath (for suggesting in Custom mode)
    *
+   * On mobile, returns empty suggestions since fs access is unavailable.
+   *
    * @param configPath - Path to the .vale.ini file
    * @returns Config suggestions
    */
   const parseConfigSuggestions = React.useCallback(
     async (configPath: string): Promise<ConfigSuggestions> => {
+      // Guard: Only run on desktop where fs module is available
+      if (!Platform.isDesktopApp) {
+        return {
+          stylesPath: null,
+          parsed: false,
+        };
+      }
+
       try {
         // Read and parse the config file
         const content = await fs.promises.readFile(configPath, "utf-8");
