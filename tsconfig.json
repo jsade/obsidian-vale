@@ -9,7 +9,7 @@
     "jsx": "react",
     "noImplicitAny": true,
     "moduleResolution": "node",
-    "ignoreDeprecations": "5.0",
+    "ignoreDeprecations": "6.0",
     "importHelpers": true,
     "strict": true,
     "allowSyntheticDefaultImports": true,
