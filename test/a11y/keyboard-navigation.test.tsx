@@ -46,6 +46,42 @@ jest.mock("obsidian", () => ({
   }),
 }));
 
+// Mock ResizeObserver which is used by CollapsibleSection for height animation
+// JSDOM doesn't implement ResizeObserver, and the async callback causes act() warnings
+class MockResizeObserver {
+  callback: ResizeObserverCallback;
+  constructor(callback: ResizeObserverCallback) {
+    this.callback = callback;
+  }
+  observe(target: Element): void {
+    // Immediately call the callback synchronously to avoid act() warnings
+    this.callback(
+      [
+        {
+          target,
+          contentRect: target.getBoundingClientRect(),
+          borderBoxSize: [],
+          contentBoxSize: [],
+          devicePixelContentBoxSize: [],
+        },
+      ],
+      this,
+    );
+  }
+  unobserve(): void {
+    /* no-op */
+  }
+  disconnect(): void {
+    /* no-op */
+  }
+}
+
+// Install the mock globally before all tests
+beforeAll(() => {
+  global.ResizeObserver =
+    MockResizeObserver as unknown as typeof ResizeObserver;
+});
+
 describe("Keyboard Navigation", () => {
   describe("Tab order through interactive elements", () => {
     it("should tab through all interactive elements in order", async () => {
@@ -481,14 +517,16 @@ describe("Keyboard Navigation", () => {
     it("should skip collapsed CollapsibleSection content", async () => {
       render(
         <div>
-          <CollapsibleSection title="Section" defaultExpanded={false}>
+          <CollapsibleSection title="Test Section" defaultExpanded={false}>
             <button>Hidden Button</button>
           </CollapsibleSection>
           <button>After Section</button>
         </div>,
       );
 
-      const sectionButton = screen.getByRole("button", { name: /Section/i });
+      const sectionButton = screen.getByRole("button", {
+        name: /Test Section/i,
+      });
       sectionButton.focus();
 
       await userEvent.tab();

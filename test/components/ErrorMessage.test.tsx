@@ -12,7 +12,7 @@
  */
 
 import "@testing-library/jest-dom";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import {
@@ -201,14 +201,18 @@ describe("ErrorMessage Component", () => {
     });
 
     it("should show 'Show technical details' when collapsed", () => {
-      render(
+      const { container } = render(
         <ErrorMessage
           title="Error"
           description="Description"
           details="Details"
         />,
       );
-      expect(screen.getByText(/Show technical details/i)).toBeInTheDocument();
+      // Summary text is split across spans for CSS-based toggle
+      const summary = container.querySelector("summary");
+      expect(summary).toBeInTheDocument();
+      expect(summary).toHaveTextContent(/Show/);
+      expect(summary).toHaveTextContent(/technical details/);
     });
 
     it("should toggle open state on click", async () => {

@@ -361,3 +361,29 @@
 .theme-dark .vale-tooltip {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
+
+/* ============================================
+   ErrorMessage Component - Details Toggle
+   ============================================
+   Uses CSS to toggle Show/Hide text based on the native
+   <details> open state, avoiding React state updates that
+   cause act() warnings in test environments.
+   ============================================ */
+
+/* Default: Show "Show", hide "Hide" */
+.vale-error-message__details .vale-error-message__show-text {
+  display: inline;
+}
+
+.vale-error-message__details .vale-error-message__hide-text {
+  display: none;
+}
+
+/* When open: Hide "Show", show "Hide" */
+.vale-error-message__details[open] .vale-error-message__show-text {
+  display: none;
+}
+
+.vale-error-message__details[open] .vale-error-message__hide-text {
+  display: inline;
+}

@@ -78,7 +78,10 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({
   details,
   actions,
 }) => {
-  const [detailsExpanded, setDetailsExpanded] = React.useState(false);
+  // Note: We intentionally do NOT use React state for the details expanded state.
+  // The native <details> element handles its own open/close state, and we use CSS
+  // to toggle the "Show"/"Hide" text based on the [open] attribute. This avoids
+  // act() warnings in tests caused by JSDOM firing the toggle event asynchronously.
 
   return (
     <div className="vale-error-message" role="alert">
@@ -92,15 +95,11 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({
       <p className="vale-error-message__description">{description}</p>
 
       {details && (
-        <details
-          className="vale-error-message__details"
-          open={detailsExpanded}
-          onToggle={(e) =>
-            setDetailsExpanded((e.target as HTMLDetailsElement).open)
-          }
-        >
+        <details className="vale-error-message__details">
           <summary className="vale-error-message__details-summary">
-            {detailsExpanded ? "Hide" : "Show"} technical details
+            <span className="vale-error-message__show-text">Show</span>
+            <span className="vale-error-message__hide-text">Hide</span>
+            {" technical details"}
           </summary>
           <pre className="vale-error-message__details-content">
             <code>{details}</code>

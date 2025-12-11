@@ -43,43 +43,6 @@ import { BackButton } from "../../src/components/navigation/BackButton";
 import { CollapsibleSection } from "../../src/components/settings/CollapsibleSection";
 import { SettingGroup } from "../../src/components/settings/SettingGroup";
 
-// Mock Obsidian's Setting class for SettingGroup
-const mockSettingClass = jest
-  .fn()
-  .mockImplementation((containerEl: HTMLElement) => {
-    const settingItem = document.createElement("div");
-    settingItem.className = "setting-item";
-
-    const nameEl = document.createElement("div");
-    nameEl.className = "setting-item-name";
-
-    const descEl = document.createElement("div");
-    descEl.className = "setting-item-description";
-
-    settingItem.appendChild(nameEl);
-    settingItem.appendChild(descEl);
-    containerEl.appendChild(settingItem);
-
-    return {
-      nameEl,
-      descEl,
-      setHeading: function () {
-        settingItem.classList.add("setting-item-heading");
-        return this;
-      },
-      setName: function (name: string) {
-        const h3 = document.createElement("h3");
-        h3.textContent = name;
-        nameEl.appendChild(h3);
-        return this;
-      },
-      setDesc: function (desc: string) {
-        descEl.textContent = desc;
-        return this;
-      },
-    };
-  });
-
 // Mock Obsidian module
 jest.mock("obsidian", () => ({
   setIcon: jest.fn((element: HTMLElement, _iconId: string) => {

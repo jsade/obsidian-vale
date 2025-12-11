@@ -12,14 +12,14 @@
  */
 
 import "@testing-library/jest-dom";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
 } from "../../src/components/navigation/Breadcrumb";
-import { assertKeyboardAccessible, assertAriaLabeled } from "../utils/a11y";
+import { assertKeyboardAccessible } from "../utils/a11y";
 import { axe } from "../setup/axe";
 
 describe("Breadcrumb Accessibility", () => {

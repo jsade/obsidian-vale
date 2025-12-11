@@ -15,7 +15,8 @@ import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import React from "react";
 import { ProgressBar } from "../../src/components/feedback/ProgressBar";
-import { assertAriaLabeled } from "../utils/a11y";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- imported for type-based testing utilities available in suite
+import { assertAriaLabeled as _assertAriaLabeled } from "../utils/a11y";
 import { axe } from "../setup/axe";
 
 describe("ProgressBar Accessibility", () => {

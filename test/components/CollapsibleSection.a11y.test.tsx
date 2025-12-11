@@ -15,11 +15,12 @@
  */
 
 import "@testing-library/jest-dom";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import { act } from "react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { CollapsibleSection } from "../../src/components/settings/CollapsibleSection";
-import { assertKeyboardAccessible, assertAriaLabeled } from "../utils/a11y";
+import { assertKeyboardAccessible } from "../utils/a11y";
 import { axe } from "../setup/axe";
 
 describe("CollapsibleSection Accessibility", () => {
@@ -165,6 +166,7 @@ describe("CollapsibleSection Accessibility", () => {
     });
 
     it("should toggle on Enter key", async () => {
+      const user = userEvent.setup();
       render(
         <CollapsibleSection title="Test Section" defaultExpanded={false}>
           <p>Content</p>
@@ -174,13 +176,18 @@ describe("CollapsibleSection Accessibility", () => {
       const button = screen.getByRole("button");
       expect(button).toHaveAttribute("aria-expanded", "false");
 
-      button.focus();
-      await userEvent.keyboard("{Enter}");
+      await act(async () => {
+        button.focus();
+        await user.keyboard("{Enter}");
+      });
 
-      expect(button).toHaveAttribute("aria-expanded", "true");
+      await waitFor(() => {
+        expect(button).toHaveAttribute("aria-expanded", "true");
+      });
     });
 
     it("should toggle on Space key", async () => {
+      const user = userEvent.setup();
       render(
         <CollapsibleSection title="Test Section" defaultExpanded={false}>
           <p>Content</p>
@@ -190,13 +197,18 @@ describe("CollapsibleSection Accessibility", () => {
       const button = screen.getByRole("button");
       expect(button).toHaveAttribute("aria-expanded", "false");
 
-      button.focus();
-      await userEvent.keyboard(" ");
+      await act(async () => {
+        button.focus();
+        await user.keyboard(" ");
+      });
 
-      expect(button).toHaveAttribute("aria-expanded", "true");
+      await waitFor(() => {
+        expect(button).toHaveAttribute("aria-expanded", "true");
+      });
     });
 
     it("should receive focus via Tab navigation", async () => {
+      const user = userEvent.setup();
       render(
         <div>
           <button>Before</button>
@@ -208,9 +220,11 @@ describe("CollapsibleSection Accessibility", () => {
       );
 
       const beforeButton = screen.getByRole("button", { name: "Before" });
-      beforeButton.focus();
 
-      await userEvent.tab();
+      await act(async () => {
+        beforeButton.focus();
+        await user.tab();
+      });
 
       const collapseButton = screen.getByRole("button", {
         name: /Test Section/i,
@@ -221,6 +235,7 @@ describe("CollapsibleSection Accessibility", () => {
 
   describe("click interaction", () => {
     it("should toggle expanded state on click", async () => {
+      const user = userEvent.setup();
       render(
         <CollapsibleSection title="Test Section" defaultExpanded={false}>
           <p>Content</p>
@@ -230,12 +245,17 @@ describe("CollapsibleSection Accessibility", () => {
       const button = screen.getByRole("button");
       expect(button).toHaveAttribute("aria-expanded", "false");
 
-      await userEvent.click(button);
+      await act(async () => {
+        await user.click(button);
+      });
 
-      expect(button).toHaveAttribute("aria-expanded", "true");
+      await waitFor(() => {
+        expect(button).toHaveAttribute("aria-expanded", "true");
+      });
     });
 
     it("should collapse when clicking expanded section", async () => {
+      const user = userEvent.setup();
       render(
         <CollapsibleSection title="Test Section" defaultExpanded={true}>
           <p>Content</p>
@@ -245,9 +265,13 @@ describe("CollapsibleSection Accessibility", () => {
       const button = screen.getByRole("button");
       expect(button).toHaveAttribute("aria-expanded", "true");
 
-      await userEvent.click(button);
+      await act(async () => {
+        await user.click(button);
+      });
 
-      expect(button).toHaveAttribute("aria-expanded", "false");
+      await waitFor(() => {
+        expect(button).toHaveAttribute("aria-expanded", "false");
+      });
     });
   });
 
@@ -268,6 +292,7 @@ describe("CollapsibleSection Accessibility", () => {
     });
 
     it("should call onToggle when clicked in controlled mode", async () => {
+      const user = userEvent.setup();
       const handleToggle = jest.fn();
       render(
         <CollapsibleSection
@@ -280,12 +305,15 @@ describe("CollapsibleSection Accessibility", () => {
       );
 
       const button = screen.getByRole("button");
-      await userEvent.click(button);
+      await act(async () => {
+        await user.click(button);
+      });
 
       expect(handleToggle).toHaveBeenCalledWith(true);
     });
 
     it("should call onToggle with false when collapsing", async () => {
+      const user = userEvent.setup();
       const handleToggle = jest.fn();
       render(
         <CollapsibleSection
@@ -298,7 +326,9 @@ describe("CollapsibleSection Accessibility", () => {
       );
 
       const button = screen.getByRole("button");
-      await userEvent.click(button);
+      await act(async () => {
+        await user.click(button);
+      });
 
       expect(handleToggle).toHaveBeenCalledWith(false);
     });
@@ -365,6 +395,7 @@ describe("CollapsibleSection Accessibility", () => {
     });
 
     it("should announce state change when toggled", async () => {
+      const user = userEvent.setup();
       render(
         <CollapsibleSection title="Test Section" defaultExpanded={false}>
           <p>Content</p>
@@ -375,8 +406,13 @@ describe("CollapsibleSection Accessibility", () => {
       expect(button).toHaveAttribute("aria-expanded", "false");
 
       // After toggle, screen reader will announce new state
-      await userEvent.click(button);
-      expect(button).toHaveAttribute("aria-expanded", "true");
+      await act(async () => {
+        await user.click(button);
+      });
+
+      await waitFor(() => {
+        expect(button).toHaveAttribute("aria-expanded", "true");
+      });
     });
   });
 
@@ -469,6 +505,7 @@ describe("CollapsibleSection Accessibility", () => {
     });
 
     it("should have no violations after toggle interaction", async () => {
+      const user = userEvent.setup();
       const { container } = render(
         <CollapsibleSection title="Interactive Section" defaultExpanded={false}>
           <p>Content revealed after toggle</p>
@@ -477,7 +514,9 @@ describe("CollapsibleSection Accessibility", () => {
 
       // Toggle to expand
       const button = screen.getByRole("button");
-      await userEvent.click(button);
+      await act(async () => {
+        await user.click(button);
+      });
 
       const results = await axe(container);
       expect(results).toHaveNoViolations();

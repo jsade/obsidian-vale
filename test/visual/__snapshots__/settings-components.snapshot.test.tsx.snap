@@ -42,8 +42,9 @@ exports[`Settings Components Snapshots CollapsibleSection renders collapsed stat
       aria-labelledby="collapsible-:r0:"
       class="vale-collapsible__content-wrapper"
       id="collapsible-:r0:-content"
+      inert=""
       role="region"
-      style="height: 0px;"
+      style="height: 0px; visibility: hidden;"
     >
       <div
         class="vale-collapsible__content"
@@ -99,8 +100,9 @@ exports[`Settings Components Snapshots CollapsibleSection renders controlled mod
       aria-labelledby="collapsible-:r6:"
       class="vale-collapsible__content-wrapper"
       id="collapsible-:r6:-content"
+      inert=""
       role="region"
-      style="height: 0px;"
+      style="height: 0px; visibility: hidden;"
     >
       <div
         class="vale-collapsible__content"
@@ -157,7 +159,7 @@ exports[`Settings Components Snapshots CollapsibleSection renders controlled mod
       class="vale-collapsible__content-wrapper"
       id="collapsible-:r5:-content"
       role="region"
-      style="height: auto;"
+      style="height: auto; visibility: visible;"
     >
       <div
         class="vale-collapsible__content"
@@ -214,7 +216,7 @@ exports[`Settings Components Snapshots CollapsibleSection renders expanded state
       class="vale-collapsible__content-wrapper"
       id="collapsible-:r1:-content"
       role="region"
-      style="height: auto;"
+      style="height: auto; visibility: visible;"
     >
       <div
         class="vale-collapsible__content"
@@ -271,7 +273,7 @@ exports[`Settings Components Snapshots CollapsibleSection renders with complex c
       class="vale-collapsible__content-wrapper"
       id="collapsible-:r7:-content"
       role="region"
-      style="height: auto;"
+      style="height: auto; visibility: visible;"
     >
       <div
         class="vale-collapsible__content"
@@ -359,8 +361,9 @@ exports[`Settings Components Snapshots CollapsibleSection renders with custom cl
       aria-labelledby="collapsible-:r3:"
       class="vale-collapsible__content-wrapper"
       id="collapsible-:r3:-content"
+      inert=""
       role="region"
-      style="height: 0px;"
+      style="height: 0px; visibility: hidden;"
     >
       <div
         class="vale-collapsible__content"
@@ -416,8 +419,9 @@ exports[`Settings Components Snapshots CollapsibleSection renders with custom id
       aria-labelledby="my-custom-id"
       class="vale-collapsible__content-wrapper"
       id="my-custom-id-content"
+      inert=""
       role="region"
-      style="height: 0px;"
+      style="height: 0px; visibility: hidden;"
     >
       <div
         class="vale-collapsible__content"
@@ -478,8 +482,9 @@ exports[`Settings Components Snapshots CollapsibleSection renders with descripti
       aria-labelledby="collapsible-:r2:"
       class="vale-collapsible__content-wrapper"
       id="collapsible-:r2:-content"
+      inert=""
       role="region"
-      style="height: 0px;"
+      style="height: 0px; visibility: hidden;"
     >
       <div
         class="vale-collapsible__content"
@@ -535,8 +540,9 @@ exports[`Settings Components Snapshots CollapsibleSection renders with long titl
       aria-labelledby="collapsible-:r8:"
       class="vale-collapsible__content-wrapper"
       id="collapsible-:r8:-content"
+      inert=""
       role="region"
-      style="height: 0px;"
+      style="height: 0px; visibility: hidden;"
     >
       <div
         class="vale-collapsible__content"

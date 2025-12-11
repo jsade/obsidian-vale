@@ -10,7 +10,7 @@
  */
 
 import "@testing-library/jest-dom";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React, { useState } from "react";
 import { CollapsibleSection } from "../../src/components/settings/CollapsibleSection";
@@ -290,8 +290,9 @@ describe("CollapsibleSection Component", () => {
     });
 
     it("should have region role on content", () => {
+      // Must be expanded for region to be visible to accessibility tree
       render(
-        <CollapsibleSection title="Test">
+        <CollapsibleSection title="Test" defaultExpanded={true}>
           <p>Content</p>
         </CollapsibleSection>,
       );
@@ -299,8 +300,13 @@ describe("CollapsibleSection Component", () => {
     });
 
     it("should have aria-labelledby on content region", () => {
+      // Must be expanded for region to be visible to accessibility tree
       render(
-        <CollapsibleSection title="Test" id="test-section">
+        <CollapsibleSection
+          title="Test"
+          id="test-section"
+          defaultExpanded={true}
+        >
           <p>Content</p>
         </CollapsibleSection>,
       );

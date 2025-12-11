@@ -14,7 +14,7 @@
  */
 
 import "@testing-library/jest-dom";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 import React from "react";
 import { SettingWithValidation } from "../../src/components/settings/SettingWithValidation";
 import {
@@ -24,19 +24,19 @@ import {
   createValidValidation,
   createErrorValidation,
 } from "../../src/types/validation";
-import { assertScreenReaderAnnouncement } from "../utils/a11y";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- imported for type-based testing utilities available in suite
+import { assertScreenReaderAnnouncement as _assertScreenReaderAnnouncement } from "../utils/a11y";
 import { axe } from "../setup/axe";
 
 // Mock Obsidian's Setting class to render accessible DOM
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any */
 jest.mock("obsidian", () => {
   /**
    * Helper to add Obsidian-specific DOM methods to an element.
    * Obsidian extends HTMLElement with methods like empty(), createSpan(), etc.
    * We use 'any' here to avoid complex type conflicts with HTMLElement's native methods.
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function addObsidianMethods(el: HTMLElement): any {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const extEl = el as any;
 
     extEl.empty = function (this: HTMLElement) {
@@ -84,9 +84,7 @@ jest.mock("obsidian", () => {
 
   return {
     Setting: class MockSetting {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       public nameEl: any;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       public descEl: any;
       private containerEl: HTMLElement;
 
@@ -166,6 +164,7 @@ jest.mock("obsidian", () => {
     },
   };
 });
+/* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any */
 
 // Import Setting after mock
 import { Setting } from "obsidian";
@@ -184,6 +183,7 @@ function renderSettingWithValidation(
     >
       {(containerEl) => {
         const setting = new Setting(containerEl);
+        // eslint-disable-next-line obsidianmd/ui/sentence-case -- test mock data
         setting.setName("Test Setting").addText((text) => {
           (text as { setValue: (v: string) => unknown }).setValue("test value");
         });

@@ -137,10 +137,16 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
   /**
    * Measure content height for smooth animation.
    * Only needed when expanded to animate from 0 to actual height.
+   *
+   * Uses isMounted flag because ResizeObserver callbacks fire asynchronously
+   * and can trigger after component unmount, causing act() warnings in tests.
    */
   React.useEffect(() => {
+    let isMounted = true;
+
     if (contentRef.current) {
       const resizeObserver = new ResizeObserver((entries) => {
+        if (!isMounted) return;
         for (const entry of entries) {
           setContentHeight(entry.contentRect.height);
         }
@@ -148,9 +154,14 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
 
       resizeObserver.observe(contentRef.current);
       return () => {
+        isMounted = false;
         resizeObserver.disconnect();
       };
     }
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // Compute container class names
@@ -205,7 +216,13 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
         className="vale-collapsible__content-wrapper"
         style={{
           height: expanded ? (contentHeight ?? "auto") : 0,
+          // Use visibility hidden when collapsed to remove from tab order
+          // while preserving height transition capability
+          visibility: expanded ? "visible" : "hidden",
         }}
+        // inert removes descendants from accessibility tree and prevents focus
+        // when collapsed - this is the proper way to hide content from keyboards
+        {...(!expanded && { inert: "" })}
       >
         <div ref={contentRef} className="vale-collapsible__content">
           {children}

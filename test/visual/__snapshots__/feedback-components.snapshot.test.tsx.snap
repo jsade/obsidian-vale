@@ -32,7 +32,16 @@ exports[`Feedback Components Snapshots ErrorMessage renders full error state wit
       <summary
         class="vale-error-message__details-summary"
       >
-        Show
+        <span
+          class="vale-error-message__show-text"
+        >
+          Show
+        </span>
+        <span
+          class="vale-error-message__hide-text"
+        >
+          Hide
+        </span>
          technical details
       </summary>
       <pre
@@ -179,7 +188,16 @@ exports[`Feedback Components Snapshots ErrorMessage renders with technical detai
       <summary
         class="vale-error-message__details-summary"
       >
-        Show
+        <span
+          class="vale-error-message__show-text"
+        >
+          Show
+        </span>
+        <span
+          class="vale-error-message__hide-text"
+        >
+          Hide
+        </span>
          technical details
       </summary>
       <pre

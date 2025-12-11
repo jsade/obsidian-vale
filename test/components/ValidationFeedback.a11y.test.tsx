@@ -191,7 +191,7 @@ describe("ValidationFeedback Accessibility", () => {
 
   describe("state transitions", () => {
     it("should update announcements when state changes", () => {
-      const { rerender, container } = render(
+      const { rerender } = render(
         <ValidationFeedback status="validating" message="Checking..." />,
       );
 

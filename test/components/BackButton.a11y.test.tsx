@@ -88,8 +88,9 @@ describe("BackButton Accessibility", () => {
       expect(iconContainer).toHaveAttribute("aria-hidden", "true");
     });
 
-    it("should use Obsidian's left arrow icon", () => {
-      const { setIcon } = require("obsidian");
+    it("should use Obsidian's left arrow icon", async () => {
+      const obsidian = await import("obsidian");
+      const setIcon = obsidian.setIcon as jest.Mock;
       render(<BackButton label="Back" onClick={jest.fn()} />);
 
       expect(setIcon).toHaveBeenCalledWith(

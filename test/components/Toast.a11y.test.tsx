@@ -16,19 +16,13 @@
  */
 
 import "@testing-library/jest-dom";
-import {
-  render,
-  screen,
-  fireEvent,
-  waitFor,
-  act,
-} from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
+import { act } from "react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { Toast, ToastType } from "../../src/components/feedback/Toast";
 import {
   assertKeyboardAccessible,
-  assertAriaLabeled,
   assertScreenReaderAnnouncement,
 } from "../utils/a11y";
 import { axe } from "../setup/axe";

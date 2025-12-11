@@ -11,7 +11,7 @@
 /**
  * Color contrast calculation utilities
  */
-interface RGB {
+export interface RGB {
   r: number;
   g: number;
   b: number;
@@ -19,8 +19,9 @@ interface RGB {
 
 /**
  * Parse a color string to RGB values
+ * @public Exported for direct color contrast testing
  */
-function parseColor(color: string): RGB | null {
+export function parseColor(color: string): RGB | null {
   // Handle rgb() format
   const rgbMatch = color.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
   if (rgbMatch) {
@@ -56,8 +57,9 @@ function parseColor(color: string): RGB | null {
 /**
  * Calculate relative luminance of a color
  * https://www.w3.org/TR/WCAG21/#dfn-relative-luminance
+ * @public Exported for direct color contrast testing
  */
-function getRelativeLuminance(rgb: RGB): number {
+export function getRelativeLuminance(rgb: RGB): number {
   const [r, g, b] = [rgb.r, rgb.g, rgb.b].map((val) => {
     const sRGB = val / 255;
     return sRGB <= 0.03928
@@ -71,8 +73,9 @@ function getRelativeLuminance(rgb: RGB): number {
 /**
  * Calculate contrast ratio between two colors
  * https://www.w3.org/TR/WCAG21/#dfn-contrast-ratio
+ * @public Exported for direct color contrast testing
  */
-function getContrastRatio(color1: RGB, color2: RGB): number {
+export function getContrastRatio(color1: RGB, color2: RGB): number {
   const lum1 = getRelativeLuminance(color1);
   const lum2 = getRelativeLuminance(color2);
   const lighter = Math.max(lum1, lum2);
@@ -880,14 +883,32 @@ export function getFocusableElements(container: HTMLElement): HTMLElement[] {
     container.querySelectorAll<HTMLElement>(selector),
   );
 
-  // Filter out elements that are not visible
+  // Filter out elements that are not visible or not in tab order
+  // Note: We don't use element.offsetParent because JSDOM doesn't implement layout
+  // and offsetParent is always null in test environments
   return elements.filter((element) => {
+    // Exclude elements explicitly removed from tab order
+    // The CSS selector [tabindex]:not([tabindex="-1"]) doesn't cover native focusable
+    // elements like buttons that have tabindex="-1" added
+    if (element.getAttribute("tabindex") === "-1") {
+      return false;
+    }
+
     const styles = window.getComputedStyle(element);
-    return (
-      styles.display !== "none" &&
-      styles.visibility !== "hidden" &&
-      element.offsetParent !== null
-    );
+    if (styles.display === "none" || styles.visibility === "hidden") {
+      return false;
+    }
+
+    // Check if element or any ancestor has hidden attribute
+    let current: HTMLElement | null = element;
+    while (current) {
+      if (current.hasAttribute("hidden")) {
+        return false;
+      }
+      current = current.parentElement;
+    }
+
+    return true;
   });
 }
 
