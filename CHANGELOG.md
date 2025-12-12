@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- "Check on note open" setting to automatically run Vale when opening or switching notes
+- "Auto-open results pane" setting to control whether the sidebar opens during checks
 - Basic/Advanced mode toggle in General Settings for cleaner interface
 - Auto-detection of Vale binary in common installation locations
 - OS-specific default paths for Vale installation

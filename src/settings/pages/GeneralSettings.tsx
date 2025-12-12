@@ -37,6 +37,12 @@ export const GeneralSettings: React.FC = () => {
   // Ref: Container for the auto-check toggle Setting
   const autoCheckToggleRef = React.useRef<HTMLDivElement>(null);
 
+  // Ref: Container for the check-on-note-open toggle Setting
+  const checkOnNoteOpenRef = React.useRef<HTMLDivElement>(null);
+
+  // Ref: Container for the auto-open-panel toggle Setting
+  const autoOpenPanelRef = React.useRef<HTMLDivElement>(null);
+
   // Effect: Check if Vale is installed (for onboarding banner)
   // Always check for CLI mode (server mode is hidden from UI)
   React.useEffect(() => {
@@ -120,7 +126,7 @@ export const GeneralSettings: React.FC = () => {
     new Setting(el)
       .setName("Auto-check on changes")
       .setDesc(
-        "Automatically run Vale when switching notes or after editing. Uses debouncing to prevent excessive checks.",
+        "Automatically run Vale after editing the document. Uses debouncing to prevent excessive checks.",
       )
       .addToggle((toggle) => {
         return toggle.setValue(autoCheck).onChange((value: boolean) => {
@@ -136,6 +142,76 @@ export const GeneralSettings: React.FC = () => {
     };
   }, [settings.autoCheckOnChange, updateSettings]);
 
+  /**
+   * Effect: Create the check-on-note-open toggle Setting.
+   * Recreates when the setting value changes.
+   */
+  React.useEffect(() => {
+    const el = checkOnNoteOpenRef.current;
+    if (!el) {
+      return;
+    }
+
+    // Clear previous Setting
+    el.empty();
+
+    // Create check-on-note-open toggle Setting using Obsidian's API
+    // Default to true if the setting doesn't exist
+    const checkOnOpen = settings.checkOnNoteOpen !== false;
+
+    new Setting(el)
+      .setName("Check on note open")
+      .setDesc("Automatically run Vale when you open or switch to a note.")
+      .addToggle((toggle) => {
+        return toggle.setValue(checkOnOpen).onChange((value: boolean) => {
+          void updateSettings({
+            checkOnNoteOpen: value,
+          });
+        });
+      });
+
+    // Cleanup: Clear on unmount (uses captured local variable, not ref.current)
+    return () => {
+      el.empty();
+    };
+  }, [settings.checkOnNoteOpen, updateSettings]);
+
+  /**
+   * Effect: Create the auto-open-results-pane toggle Setting.
+   * Recreates when the setting value changes.
+   */
+  React.useEffect(() => {
+    const el = autoOpenPanelRef.current;
+    if (!el) {
+      return;
+    }
+
+    // Clear previous Setting
+    el.empty();
+
+    // Create auto-open-results-pane toggle Setting using Obsidian's API
+    // Default to false if the setting doesn't exist
+    const autoOpenPanel = settings.autoOpenResultsPane === true;
+
+    new Setting(el)
+      .setName("Auto-open results pane")
+      .setDesc(
+        "Automatically open the Vale results pane when running checks. When disabled, checks run silently and you can view results manually.",
+      )
+      .addToggle((toggle) => {
+        return toggle.setValue(autoOpenPanel).onChange((value: boolean) => {
+          void updateSettings({
+            autoOpenResultsPane: value,
+          });
+        });
+      });
+
+    // Cleanup: Clear on unmount (uses captured local variable, not ref.current)
+    return () => {
+      el.empty();
+    };
+  }, [settings.autoOpenResultsPane, updateSettings]);
+
   return (
     <div className="vale-general-settings">
       {/* Onboarding banner for first-time users */}
@@ -146,6 +222,12 @@ export const GeneralSettings: React.FC = () => {
 
       {/* Auto-check toggle */}
       <div ref={autoCheckToggleRef} />
+
+      {/* Check on note open toggle */}
+      <div ref={checkOnNoteOpenRef} />
+
+      {/* Auto-open results pane toggle */}
+      <div ref={autoOpenPanelRef} />
 
       {/* CLI settings - always shown (server mode hidden from UI) */}
       <CliSettings />

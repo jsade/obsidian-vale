@@ -18,6 +18,10 @@ export interface ValeSettings {
   showEditorToolbarButton?: boolean;
   /** Whether to automatically run Vale when switching notes or after editing */
   autoCheckOnChange?: boolean;
+  /** Whether to automatically run Vale when opening/activating a note */
+  checkOnNoteOpen?: boolean;
+  /** Whether to automatically open the results pane when running checks */
+  autoOpenResultsPane?: boolean;
 }
 
 export const DEFAULT_SETTINGS: ValeSettings = {
@@ -33,6 +37,8 @@ export const DEFAULT_SETTINGS: ValeSettings = {
   },
   showEditorToolbarButton: true,
   autoCheckOnChange: false,
+  checkOnNoteOpen: true,
+  autoOpenResultsPane: false,
 };
 
 export interface ValeResponse {

@@ -104,8 +104,9 @@ export default class ValePlugin extends Plugin {
     this.addSettingTab(new ValeSettingTab(this.app, this));
 
     // Add ribbon icon for quick access to Vale check
+    // Force panel open for manual actions (user explicitly clicked ribbon)
     this.addRibbonIcon("vale-book", "Vale: check document", () => {
-      void this.activateView();
+      void this.activateView(true);
     });
 
     // Add editor toolbar button to existing markdown views once layout is ready
@@ -138,9 +139,10 @@ export default class ValePlugin extends Plugin {
     );
 
     // Auto-check on note switch (file-open event)
+    // Uses checkOnNoteOpen setting (separate from autoCheckOnChange for edits)
     this.registerEvent(
       this.app.workspace.on("file-open", (file) => {
-        if (!this.settings.autoCheckOnChange) return;
+        if (!this.settings.checkOnNoteOpen) return;
         if (!file || file.extension !== "md") return;
         if (file.path === this.lastAutoCheckedPath) return;
 
@@ -170,7 +172,8 @@ export default class ValePlugin extends Plugin {
                 .setTitle("Check document")
                 .setIcon("scan")
                 .setDisabled(!isEditable)
-                .onClick(() => void this.activateView());
+                // Force panel open for manual actions (user explicitly used context menu)
+                .onClick(() => void this.activateView(true));
             });
 
             submenu.addItem((subItem) => {
@@ -219,7 +222,8 @@ export default class ValePlugin extends Plugin {
         // a check may take some time to complete, the command only activates
         // the view and then asks the view to run the check. This lets us
         // display a progress bar while the check runs.
-        void this.activateView();
+        // Force panel open for manual commands (user explicitly requested check).
+        void this.activateView(true);
       },
     });
 
@@ -319,38 +323,50 @@ export default class ValePlugin extends Plugin {
     // Note: CM6 extension decorations are automatically cleaned up when the extension is unregistered
   }
 
-  // activateView triggers a check and reveals the Vale view, if isn't already
-  // visible.
-  async activateView(): Promise<void> {
-    // Capture the currently active markdown view BEFORE opening the Vale panel.
-    // This is critical because revealing the panel will shift focus away from the
-    // markdown editor, making getActiveViewOfType() return null.
-    const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
+  /**
+   * Activates the Vale view and triggers a check.
+   *
+   * @param forceOpenPanel - If true, always opens/reveals the panel.
+   *                         If false, respects the autoOpenResultsPane setting.
+   */
+  async activateView(forceOpenPanel = false): Promise<void> {
+    // Determine whether to open/reveal the panel
+    const shouldOpenPanel = forceOpenPanel || this.settings.autoOpenResultsPane;
 
-    // Create the Vale view if it's not already created.
-    if (this.app.workspace.getLeavesOfType(VIEW_TYPE_VALE).length === 0) {
-      const rightLeaf = this.app.workspace.getRightLeaf(false);
-      if (!rightLeaf) {
-        console.error("Could not get right leaf for Vale view");
-        return;
+    if (shouldOpenPanel) {
+      // Capture the currently active markdown view BEFORE opening the Vale panel.
+      // This is critical because revealing the panel will shift focus away from the
+      // markdown editor, making getActiveViewOfType() return null.
+      const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
+
+      // Create the Vale view if it's not already created.
+      if (this.app.workspace.getLeavesOfType(VIEW_TYPE_VALE).length === 0) {
+        const rightLeaf = this.app.workspace.getRightLeaf(false);
+        if (!rightLeaf) {
+          console.error("Could not get right leaf for Vale view");
+          return;
+        }
+        await rightLeaf.setViewState({
+          type: VIEW_TYPE_VALE,
+          active: true,
+        });
       }
-      await rightLeaf.setViewState({
-        type: VIEW_TYPE_VALE,
-        active: true,
+
+      // There should only be one Vale view open.
+      this.app.workspace.getLeavesOfType(VIEW_TYPE_VALE).forEach((leaf) => {
+        void this.app.workspace.revealLeaf(leaf);
+
+        if (leaf.view instanceof ValeView) {
+          // Set the target markdown view so that runValeCheck() uses it
+          // instead of trying to get the active view (which will be the Vale panel).
+          leaf.view.setTargetView(markdownView);
+          leaf.view.runValeCheck();
+        }
       });
+    } else {
+      // Run check without opening/revealing the panel
+      await this.runCheckOnly();
     }
-
-    // There should only be one Vale view open.
-    this.app.workspace.getLeavesOfType(VIEW_TYPE_VALE).forEach((leaf) => {
-      void this.app.workspace.revealLeaf(leaf);
-
-      if (leaf.view instanceof ValeView) {
-        // Set the target markdown view so that runValeCheck() uses it
-        // instead of trying to get the active view (which will be the Vale panel).
-        leaf.view.setTargetView(markdownView);
-        leaf.view.runValeCheck();
-      }
-    });
   }
 
   /**
@@ -373,6 +389,43 @@ export default class ValePlugin extends Plugin {
     void this.app.workspace.revealLeaf(
       this.app.workspace.getLeavesOfType(VIEW_TYPE_VALE)[0],
     );
+  }
+
+  /**
+   * Runs a Vale check without opening/revealing the panel.
+   * Creates the Vale view if needed but keeps it hidden.
+   * Used when autoOpenResultsPane is false.
+   */
+  private async runCheckOnly(): Promise<void> {
+    // Capture the currently active markdown view
+    const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
+    if (!markdownView) {
+      console.warn("[Vale] runCheckOnly: No active markdown view");
+      return;
+    }
+
+    // Create the Vale view if it doesn't exist (needed for the ValeRunner)
+    if (this.app.workspace.getLeavesOfType(VIEW_TYPE_VALE).length === 0) {
+      const rightLeaf = this.app.workspace.getRightLeaf(false);
+      if (!rightLeaf) {
+        console.error("Could not get right leaf for Vale view");
+        return;
+      }
+      await rightLeaf.setViewState({
+        type: VIEW_TYPE_VALE,
+        active: false, // Don't activate the view
+      });
+    }
+
+    // Find the Vale view and run the check (without revealing it)
+    const valeLeaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_VALE);
+    for (const leaf of valeLeaves) {
+      if (leaf.view instanceof ValeView) {
+        leaf.view.setTargetView(markdownView);
+        leaf.view.runValeCheck();
+        break;
+      }
+    }
   }
 
   /**
@@ -399,9 +452,13 @@ export default class ValePlugin extends Plugin {
     this.initializeValeRunner();
     // Refresh toolbar buttons in case the setting changed
     this.refreshToolbarButtons();
-    // Clear auto-check state if feature is disabled
-    if (this.settings.autoCheckOnChange === false) {
+    // Clear auto-check state if both auto-check features are disabled
+    if (!this.settings.autoCheckOnChange && !this.settings.checkOnNoteOpen) {
       this.lastAutoCheckedPath = null;
+      if (this.autoCheckTimer) {
+        clearTimeout(this.autoCheckTimer);
+        this.autoCheckTimer = null;
+      }
     }
     console.debug("[DEBUG:ValePlugin] saveSettings completed");
   }
@@ -652,8 +709,9 @@ export default class ValePlugin extends Plugin {
     // Don't add if already exists
     if (this.actionButtonMap.has(view)) return;
 
+    // Force panel open for manual actions (user explicitly clicked toolbar button)
     const actionEl = view.addAction("vale-book", "Vale: check document", () => {
-      void this.activateView();
+      void this.activateView(true);
     });
 
     this.actionButtonMap.set(view, actionEl);
@@ -738,12 +796,14 @@ export default class ValePlugin extends Plugin {
   /**
    * Runs an auto-check on the current markdown file.
    * Updates lastAutoCheckedPath to prevent redundant checks on the same file.
+   * Respects the autoOpenResultsPane setting (doesn't force panel open).
    */
   private async runAutoCheck(): Promise<void> {
     const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
     if (!markdownView?.file) return;
 
     this.lastAutoCheckedPath = markdownView.file.path;
+    // Don't force panel open - let activateView respect autoOpenResultsPane setting
     await this.activateView();
   }
 

@@ -53,14 +53,14 @@ const valeBaseTheme = EditorView.baseTheme({
   ".vale-underline.vale-warning": {
     textDecorationColor: "var(--vale-color-warning, var(--color-yellow))",
     textDecorationStyle: "dashed",
-    textUnderlineOffset: "2px",
+    textUnderlineOffset: "3px",
     textDecorationThickness: "2px",
   },
   ".vale-underline.vale-suggestion": {
     textDecorationColor: "var(--vale-color-suggestion, var(--color-cyan))",
     textDecorationStyle: "dotted",
-    textUnderlineOffset: "2px",
-    textDecorationThickness: "2px",
+    textUnderlineOffset: "3px",
+    textDecorationThickness: "3px",
   },
   ".vale-selected": {
     backgroundColor: "var(--background-modifier-hover)",

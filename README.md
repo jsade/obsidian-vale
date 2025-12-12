@@ -2,10 +2,11 @@
 
 Obsidian Vale is a [Vale](https://vale.sh/) linter client plugin for [Obsidian](https://obsidian.md). It integrates the Vale prose linter into the Obsidian markdown editor, providing real-time writing feedback through underlines and a results panel.
 
+[![Build Obsidian plugin](https://github.com/jsade/obsidian-vale/actions/workflows/release.yml/badge.svg)](https://github.com/jsade/obsidian-vale/actions/workflows/release.yml)
+
 ![Screenshot](screenshot.png)
 
-
-> **2025-10-22**: This project is a fork from the original [obsidian-vale](https://github.com/marcusolsson/obsidian-vale) which was created by [Marcus Olsson](https://github.com/marcusolsson) and was archived Jun 1, 2023. 
+> **2025-10-22**: This project is a fork from the original [obsidian-vale](https://github.com/marcusolsson/obsidian-vale) which was created by [Marcus Olsson](https://github.com/marcusolsson) and was archived Jun 1, 2023.
 
 ## Features
 
@@ -55,7 +56,9 @@ Use your own Vale installation:
 
 ### Editor settings
 
-- **Auto-check on changes**: Automatically runs Vale when switching notes or after editing (disabled by default)
+- **Check on note open**: Automatically runs Vale when you open or switch to a note (enabled by default)
+- **Auto-check on changes**: Automatically runs Vale after editing (disabled by default)
+- **Auto-open results pane**: Opens the results pane automatically when running checks (disabled by default)
 - **Editor toolbar button**: Show/hide the Vale check button in the editor toolbar
 - **Status bar**: Show/hide check status at the bottom of the window
 
