@@ -320,6 +320,89 @@ export class ValeConfigManager {
       .map((file) => file.name);
   }
 
+  /**
+   * Gets the default severity for a rule from its YAML file.
+   * Returns undefined if the file cannot be read or doesn't have a level field.
+   */
+  async getRuleDefaultSeverity(
+    style: string,
+    ruleName: string,
+  ): Promise<"suggestion" | "warning" | "error" | undefined> {
+    const stylesPath = await this.getStylesPath();
+    if (!stylesPath) {
+      return undefined;
+    }
+
+    try {
+      const rulePath = path.join(stylesPath, style, `${ruleName}.yml`);
+      const content = await fs.promises.readFile(rulePath, "utf-8");
+
+      // Parse the level field from YAML using regex
+      // Vale YAML files have a simple format: level: warning
+      const match = content.match(/^level:\s*(suggestion|warning|error)\s*$/m);
+      if (match && match[1]) {
+        return match[1] as "suggestion" | "warning" | "error";
+      }
+      return undefined;
+    } catch {
+      return undefined;
+    }
+  }
+
+  /**
+   * Gets all rules for a style with their default severities.
+   * Returns an array of ValeRule objects with name and defaultSeverity populated.
+   */
+  async getRulesWithDefaults(style: string): Promise<
+    Array<{
+      name: string;
+      defaultSeverity?: "suggestion" | "warning" | "error";
+    }>
+  > {
+    const ruleNames = await this.getRulesForStyle(style);
+
+    // Fetch default severities in parallel for performance
+    const rulesWithDefaults = await Promise.all(
+      ruleNames.map(async (name) => {
+        const defaultSeverity = await this.getRuleDefaultSeverity(style, name);
+        return { name, defaultSeverity };
+      }),
+    );
+
+    return rulesWithDefaults;
+  }
+
+  /**
+   * Gets the number of rules for a style.
+   * Returns undefined if the style directory doesn't exist or can't be read.
+   */
+  async getRuleCount(style: string): Promise<number | undefined> {
+    try {
+      const rules = await this.getRulesForStyle(style);
+      return rules.length;
+    } catch {
+      return undefined;
+    }
+  }
+
+  /**
+   * Checks if a style exists on the filesystem.
+   * Returns true if the style directory exists, false otherwise.
+   */
+  async styleExists(styleName: string): Promise<boolean> {
+    const stylesPath = await this.getStylesPath();
+    if (!stylesPath) {
+      return false;
+    }
+
+    try {
+      const stat = await fs.promises.stat(path.join(stylesPath, styleName));
+      return stat.isDirectory();
+    } catch {
+      return false;
+    }
+  }
+
   async getInstalled(): Promise<string[]> {
     const stylesPath = await this.getStylesPath();
     if (!stylesPath) {

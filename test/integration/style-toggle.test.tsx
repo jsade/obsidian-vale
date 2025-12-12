@@ -79,6 +79,9 @@ function createMockPlugin(
     getStylesPath: jest.fn().mockResolvedValue("/mock/styles"),
     getValePath: jest.fn().mockReturnValue("/mock/vale"),
     getConfigPath: jest.fn().mockReturnValue("/mock/.vale.ini"),
+    // New methods for rule count and style existence
+    getRuleCount: jest.fn().mockResolvedValue(10),
+    styleExists: jest.fn().mockResolvedValue(true),
   } as unknown as jest.Mocked<ValeConfigManager>;
 
   return {

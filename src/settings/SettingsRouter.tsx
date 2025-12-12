@@ -6,6 +6,7 @@ import { SettingsLayout } from "./SettingsLayout";
 import { SettingsNavigation } from "./SettingsNavigation";
 import { SettingsContent } from "./SettingsContent";
 import { SettingsRoute, createGeneralRoute } from "./navigation";
+import { useValidationInitializer } from "../hooks/index";
 
 // Note: CSS is consolidated in src/styles/index.css and bundled to styles.css by esbuild
 
@@ -55,6 +56,31 @@ const SettingsErrorFallback = ({
 };
 
 /**
+ * Inner settings content that uses hooks requiring SettingsContext.
+ * Separated because useValidationInitializer must be called inside SettingsProvider.
+ */
+interface SettingsInnerProps {
+  route: SettingsRoute;
+  onNavigate: (newRoute: SettingsRoute) => void;
+}
+
+const SettingsInner = ({
+  route,
+  onNavigate,
+}: SettingsInnerProps): React.ReactElement => {
+  // Initialize validation state on mount to ensure Styles tab is correctly enabled/disabled
+  // This runs path validation for custom mode users regardless of which tab they visit first
+  useValidationInitializer();
+
+  return (
+    <SettingsLayout>
+      <SettingsNavigation route={route} onNavigate={onNavigate} />
+      <SettingsContent route={route} onNavigate={onNavigate} />
+    </SettingsLayout>
+  );
+};
+
+/**
  * Main router component for Vale settings.
  *
  * Single responsibility: Compose the settings UI structure.
@@ -62,6 +88,7 @@ const SettingsErrorFallback = ({
  * Architecture:
  * - SettingsProvider: Provides settings state and operations
  * - ErrorBoundary: Catches and displays errors gracefully
+ * - SettingsInner: Initializes validation and renders layout
  * - SettingsLayout: Provides consistent layout structure
  * - SettingsNavigation: Tab navigation (General/Styles)
  * - SettingsContent: Page content rendering
@@ -103,10 +130,7 @@ export const SettingsRouter = ({
   return (
     <SettingsProvider plugin={plugin}>
       <ErrorBoundary fallback={SettingsErrorFallback}>
-        <SettingsLayout>
-          <SettingsNavigation route={route} onNavigate={handleNavigate} />
-          <SettingsContent route={route} onNavigate={handleNavigate} />
-        </SettingsLayout>
+        <SettingsInner route={route} onNavigate={handleNavigate} />
       </ErrorBoundary>
     </SettingsProvider>
   );

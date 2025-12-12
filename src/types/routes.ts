@@ -14,6 +14,7 @@ export const PAGES = {
   GENERAL: "General",
   STYLES: "Styles",
   RULES: "Rules",
+  CONFIGURATION: "Configuration",
 } as const;
 
 /**
@@ -38,7 +39,8 @@ export type PageType = (typeof PAGES)[keyof typeof PAGES];
 export type SettingsRoute =
   | { page: "General" }
   | { page: "Styles" }
-  | { page: "Rules"; style: string };
+  | { page: "Rules"; style: string }
+  | { page: "Configuration" };
 
 /**
  * Type guard to check if a route is a Rules page
@@ -68,6 +70,15 @@ export function isGeneralRoute(
 }
 
 /**
+ * Type guard to check if a route is a Configuration page
+ */
+export function isConfigurationRoute(
+  route: SettingsRoute,
+): route is { page: "Configuration" } {
+  return route.page === "Configuration";
+}
+
+/**
  * Navigation function signature
  *
  * @param page - The page to navigate to
@@ -88,6 +99,10 @@ export function createRoute(page: PageType, context?: string): SettingsRoute {
 
   if (page === PAGES.STYLES) {
     return { page: PAGES.STYLES };
+  }
+
+  if (page === PAGES.CONFIGURATION) {
+    return { page: PAGES.CONFIGURATION };
   }
 
   return { page: PAGES.GENERAL };
@@ -115,4 +130,11 @@ export function navigateToRules(style: string): SettingsRoute {
     throw new Error("Style name is required for Rules page");
   }
   return { page: PAGES.RULES, style };
+}
+
+/**
+ * Helper to navigate to Configuration page
+ */
+export function navigateToConfiguration(): SettingsRoute {
+  return { page: PAGES.CONFIGURATION };
 }

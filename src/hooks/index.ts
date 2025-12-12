@@ -49,3 +49,6 @@ export {
   type ConfigSuggestions,
   type UseValeDetectionReturn,
 } from "./useValeDetection";
+
+// Export validation initializer hook
+export { useValidationInitializer } from "./useValidationInitializer";

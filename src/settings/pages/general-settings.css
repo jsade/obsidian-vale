@@ -451,15 +451,58 @@
    ============================================================================ */
 
 .vale-settings-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--size-4-2);
   margin-top: var(--size-4-6);
   padding-top: var(--size-4-4);
   border-top: 1px solid var(--background-modifier-border);
   text-align: center;
 }
 
+.vale-footer-whale {
+  display: flex;
+  justify-content: center;
+}
+
+.vale-whale-icon {
+  width: 100px;
+  height: auto;
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+.vale-footer-info {
+  margin-top: var(--size-4-1);
+}
+
 .vale-version-info {
   color: var(--text-muted);
   font-size: var(--font-ui-smaller);
+}
+
+.vale-footer-links {
+  margin-top: var(--size-4-1);
+}
+
+.vale-github-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--size-4-2);
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.vale-github-link:hover {
+  color: var(--text-normal);
+}
+
+.vale-github-icon {
+  width: 16px;
+  height: 16px;
 }
 
 /* ============================================================================

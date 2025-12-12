@@ -44,6 +44,23 @@ function createAvailableRules(): string[] {
 }
 
 /**
+ * Factory function to create rules with default severities
+ * (used by getRulesWithDefaults)
+ */
+function createRulesWithDefaults(): Array<{
+  name: string;
+  defaultSeverity?: "suggestion" | "warning" | "error";
+}> {
+  return [
+    { name: "Google.Headings", defaultSeverity: "warning" },
+    { name: "Google.Passive", defaultSeverity: "suggestion" },
+    { name: "Google.Spacing", defaultSeverity: "error" },
+    { name: "Google.Contractions", defaultSeverity: "warning" },
+    { name: "Google.Exclamation", defaultSeverity: "warning" },
+  ];
+}
+
+/**
  * Factory function to create configured rules (overrides)
  */
 function createConfiguredRules(): ValeRule[] {
@@ -69,6 +86,9 @@ function createMockConfigManager(
 ): jest.Mocked<ValeConfigManager> {
   return {
     getRulesForStyle: jest.fn().mockResolvedValue(createAvailableRules()),
+    getRulesWithDefaults: jest
+      .fn()
+      .mockResolvedValue(createRulesWithDefaults()),
     getConfiguredRules: jest.fn().mockResolvedValue(createConfiguredRules()),
     updateRule: jest.fn().mockResolvedValue(undefined),
     configPathExists: jest.fn().mockResolvedValue(true),
@@ -112,7 +132,7 @@ describe("useRules", () => {
       });
 
       // eslint-disable-next-line @typescript-eslint/unbound-method
-      expect(configManager.getRulesForStyle).toHaveBeenCalledWith("Google");
+      expect(configManager.getRulesWithDefaults).toHaveBeenCalledWith("Google");
       // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(configManager.getConfiguredRules).toHaveBeenCalledWith("Google");
     });
@@ -122,10 +142,10 @@ describe("useRules", () => {
       let getConfiguredResolved = false;
 
       const configManager = createMockConfigManager({
-        getRulesForStyle: jest.fn().mockImplementation(async () => {
+        getRulesWithDefaults: jest.fn().mockImplementation(async () => {
           await new Promise((resolve) => setTimeout(resolve, 50));
           getRulesResolved = true;
-          return createAvailableRules();
+          return createRulesWithDefaults();
         }),
         getConfiguredRules: jest.fn().mockImplementation(async () => {
           await new Promise((resolve) => setTimeout(resolve, 50));
@@ -138,7 +158,7 @@ describe("useRules", () => {
 
       // Both should start immediately
       // eslint-disable-next-line @typescript-eslint/unbound-method
-      expect(configManager.getRulesForStyle).toHaveBeenCalled();
+      expect(configManager.getRulesWithDefaults).toHaveBeenCalled();
       // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(configManager.getConfiguredRules).toHaveBeenCalled();
 
@@ -245,7 +265,11 @@ describe("useRules", () => {
     it("should not include configured rules that are not in available rules", async () => {
       // This tests that we only include rules that exist in the style
       const configManager = createMockConfigManager({
-        getRulesForStyle: jest.fn().mockResolvedValue(["Google.Headings"]),
+        getRulesWithDefaults: jest
+          .fn()
+          .mockResolvedValue([
+            { name: "Google.Headings", defaultSeverity: "warning" },
+          ]),
         getConfiguredRules: jest.fn().mockResolvedValue([
           createMockRule({
             name: "Google.NonExistent",
@@ -268,7 +292,7 @@ describe("useRules", () => {
 
     it("should handle empty available rules", async () => {
       const configManager = createMockConfigManager({
-        getRulesForStyle: jest.fn().mockResolvedValue([]),
+        getRulesWithDefaults: jest.fn().mockResolvedValue([]),
         getConfiguredRules: jest
           .fn()
           .mockResolvedValue(createConfiguredRules()),
@@ -285,7 +309,9 @@ describe("useRules", () => {
 
     it("should handle empty configured rules", async () => {
       const configManager = createMockConfigManager({
-        getRulesForStyle: jest.fn().mockResolvedValue(createAvailableRules()),
+        getRulesWithDefaults: jest
+          .fn()
+          .mockResolvedValue(createRulesWithDefaults()),
         getConfiguredRules: jest.fn().mockResolvedValue([]),
       });
 
@@ -322,18 +348,26 @@ describe("useRules", () => {
       const passiveRule = result.current.rules.find(
         (r) => r.name === "Google.Passive",
       );
-      expect(passiveRule).toEqual(configuredRule);
+      // The merged rule should have configured values plus the defaultSeverity from YAML
+      expect(passiveRule).toEqual({
+        ...configuredRule,
+        defaultSeverity: "suggestion", // From createRulesWithDefaults
+      });
     });
   });
 
   describe("loading states", () => {
     it("should set loading true when fetch starts", async () => {
-      let resolveRules: (value: string[]) => void;
+      type RulesWithDefaults = Array<{
+        name: string;
+        defaultSeverity?: "suggestion" | "warning" | "error";
+      }>;
+      let resolveRules: (value: RulesWithDefaults) => void;
 
       const configManager = createMockConfigManager({
-        getRulesForStyle: jest.fn().mockImplementation(
+        getRulesWithDefaults: jest.fn().mockImplementation(
           () =>
-            new Promise<string[]>((resolve) => {
+            new Promise<RulesWithDefaults>((resolve) => {
               resolveRules = resolve;
             }),
         ),
@@ -344,7 +378,7 @@ describe("useRules", () => {
       expect(result.current.loading).toBe(true);
 
       await act(async () => {
-        resolveRules!(createAvailableRules());
+        resolveRules!(createRulesWithDefaults());
       });
 
       await waitFor(() => {
@@ -354,10 +388,10 @@ describe("useRules", () => {
 
     it("should reset error and set loading true on refresh", async () => {
       const configManager = createMockConfigManager({
-        getRulesForStyle: jest
+        getRulesWithDefaults: jest
           .fn()
           .mockRejectedValueOnce(new Error("Network error"))
-          .mockResolvedValueOnce(createAvailableRules()),
+          .mockResolvedValueOnce(createRulesWithDefaults()),
       });
 
       const { result } = renderHook(() => useRules("Google", configManager));
@@ -397,9 +431,9 @@ describe("useRules", () => {
       expect(result.current.rules).toEqual([]);
     });
 
-    it("should set error when getRulesForStyle throws", async () => {
+    it("should set error when getRulesWithDefaults throws", async () => {
       const configManager = createMockConfigManager({
-        getRulesForStyle: jest
+        getRulesWithDefaults: jest
           .fn()
           .mockRejectedValue(new Error("Failed to read style directory")),
       });
@@ -435,7 +469,7 @@ describe("useRules", () => {
 
     it("should convert non-Error rejections to Error", async () => {
       const configManager = createMockConfigManager({
-        getRulesForStyle: jest.fn().mockRejectedValue("string error"),
+        getRulesWithDefaults: jest.fn().mockRejectedValue("string error"),
       });
 
       const { result } = renderHook(() => useRules("Google", configManager));
@@ -450,10 +484,10 @@ describe("useRules", () => {
 
     it("should clear error on successful refresh", async () => {
       const configManager = createMockConfigManager({
-        getRulesForStyle: jest
+        getRulesWithDefaults: jest
           .fn()
           .mockRejectedValueOnce(new Error("Initial error"))
-          .mockResolvedValueOnce(createAvailableRules()),
+          .mockResolvedValueOnce(createRulesWithDefaults()),
       });
 
       const { result } = renderHook(() => useRules("Google", configManager));
@@ -708,22 +742,27 @@ describe("useRules", () => {
       });
 
       // eslint-disable-next-line @typescript-eslint/unbound-method
-      expect(configManager.getRulesForStyle).toHaveBeenCalledTimes(1);
+      expect(configManager.getRulesWithDefaults).toHaveBeenCalledTimes(1);
 
       await act(async () => {
         await result.current.refresh();
       });
 
       // eslint-disable-next-line @typescript-eslint/unbound-method
-      expect(configManager.getRulesForStyle).toHaveBeenCalledTimes(2);
+      expect(configManager.getRulesWithDefaults).toHaveBeenCalledTimes(2);
     });
 
     it("should update rules when data changes on refresh", async () => {
       const configManager = createMockConfigManager({
-        getRulesForStyle: jest
+        getRulesWithDefaults: jest
           .fn()
-          .mockResolvedValueOnce(["Google.Headings"])
-          .mockResolvedValueOnce(["Google.Headings", "Google.NewRule"]),
+          .mockResolvedValueOnce([
+            { name: "Google.Headings", defaultSeverity: "warning" },
+          ])
+          .mockResolvedValueOnce([
+            { name: "Google.Headings", defaultSeverity: "warning" },
+            { name: "Google.NewRule", defaultSeverity: "suggestion" },
+          ]),
       });
 
       const { result } = renderHook(() => useRules("Google", configManager));
@@ -745,12 +784,16 @@ describe("useRules", () => {
   describe("cleanup on unmount", () => {
     it("should not update state after unmount", async () => {
       const consoleError = jest.spyOn(console, "error").mockImplementation();
-      let resolveRules: (value: string[]) => void;
+      type RulesWithDefaults = Array<{
+        name: string;
+        defaultSeverity?: "suggestion" | "warning" | "error";
+      }>;
+      let resolveRules: (value: RulesWithDefaults) => void;
 
       const configManager = createMockConfigManager({
-        getRulesForStyle: jest.fn().mockImplementation(
+        getRulesWithDefaults: jest.fn().mockImplementation(
           () =>
-            new Promise<string[]>((resolve) => {
+            new Promise<RulesWithDefaults>((resolve) => {
               resolveRules = resolve;
             }),
         ),
@@ -763,7 +806,7 @@ describe("useRules", () => {
 
       // Complete the fetch after unmount
       await act(async () => {
-        resolveRules!(createAvailableRules());
+        resolveRules!(createRulesWithDefaults());
       });
 
       expect(consoleError).not.toHaveBeenCalledWith(
@@ -779,10 +822,15 @@ describe("useRules", () => {
       const consoleError = jest.spyOn(console, "error").mockImplementation();
       let rejectRules: (reason: Error) => void;
 
+      type RulesWithDefaults = Array<{
+        name: string;
+        defaultSeverity?: "suggestion" | "warning" | "error";
+      }>;
+
       const configManager = createMockConfigManager({
-        getRulesForStyle: jest.fn().mockImplementation(
+        getRulesWithDefaults: jest.fn().mockImplementation(
           () =>
-            new Promise<string[]>((_, reject) => {
+            new Promise<RulesWithDefaults>((_, reject) => {
               rejectRules = reject;
             }),
         ),
@@ -809,10 +857,19 @@ describe("useRules", () => {
   describe("style name changes", () => {
     it("should refetch when style name changes", async () => {
       const configManager = createMockConfigManager({
-        getRulesForStyle: jest
+        getRulesWithDefaults: jest
           .fn()
           .mockImplementation((styleName: string) =>
-            Promise.resolve([`${styleName}.Rule1`, `${styleName}.Rule2`]),
+            Promise.resolve([
+              {
+                name: `${styleName}.Rule1`,
+                defaultSeverity: "warning" as const,
+              },
+              {
+                name: `${styleName}.Rule2`,
+                defaultSeverity: "suggestion" as const,
+              },
+            ]),
           ),
       });
 
@@ -835,7 +892,9 @@ describe("useRules", () => {
       });
 
       // eslint-disable-next-line @typescript-eslint/unbound-method
-      expect(configManager.getRulesForStyle).toHaveBeenCalledWith("Microsoft");
+      expect(configManager.getRulesWithDefaults).toHaveBeenCalledWith(
+        "Microsoft",
+      );
     });
 
     it("should call both methods with new style name", async () => {
@@ -848,14 +907,16 @@ describe("useRules", () => {
 
       await waitFor(() => {
         // eslint-disable-next-line @typescript-eslint/unbound-method
-        expect(configManager.getRulesForStyle).toHaveBeenCalledWith("Google");
+        expect(configManager.getRulesWithDefaults).toHaveBeenCalledWith(
+          "Google",
+        );
       });
 
       rerender({ styleName: "Microsoft" });
 
       await waitFor(() => {
         // eslint-disable-next-line @typescript-eslint/unbound-method
-        expect(configManager.getRulesForStyle).toHaveBeenCalledWith(
+        expect(configManager.getRulesWithDefaults).toHaveBeenCalledWith(
           "Microsoft",
         );
         // eslint-disable-next-line @typescript-eslint/unbound-method
@@ -869,7 +930,7 @@ describe("useRules", () => {
   describe("edge cases", () => {
     it("should handle style with no rules", async () => {
       const configManager = createMockConfigManager({
-        getRulesForStyle: jest.fn().mockResolvedValue([]),
+        getRulesWithDefaults: jest.fn().mockResolvedValue([]),
         getConfiguredRules: jest.fn().mockResolvedValue([]),
       });
 
@@ -887,13 +948,11 @@ describe("useRules", () => {
 
     it("should handle rules with special characters in names", async () => {
       const configManager = createMockConfigManager({
-        getRulesForStyle: jest
-          .fn()
-          .mockResolvedValue([
-            "Style.Rule-With-Dashes",
-            "Style.Rule_With_Underscores",
-            "Style.RuleWithNumbers123",
-          ]),
+        getRulesWithDefaults: jest.fn().mockResolvedValue([
+          { name: "Style.Rule-With-Dashes", defaultSeverity: "warning" },
+          { name: "Style.Rule_With_Underscores", defaultSeverity: "warning" },
+          { name: "Style.RuleWithNumbers123", defaultSeverity: "warning" },
+        ]),
       });
 
       const { result } = renderHook(() => useRules("Style", configManager));
@@ -907,9 +966,12 @@ describe("useRules", () => {
     });
 
     it("should handle large number of rules", async () => {
-      const manyRules = Array.from({ length: 100 }, (_, i) => `Style.Rule${i}`);
+      const manyRules = Array.from({ length: 100 }, (_, i) => ({
+        name: `Style.Rule${i}`,
+        defaultSeverity: "warning" as const,
+      }));
       const configManager = createMockConfigManager({
-        getRulesForStyle: jest.fn().mockResolvedValue(manyRules),
+        getRulesWithDefaults: jest.fn().mockResolvedValue(manyRules),
       });
 
       const { result } = renderHook(() => useRules("Style", configManager));
@@ -935,9 +997,12 @@ describe("useRules", () => {
       }));
 
       const configManager = createMockConfigManager({
-        getRulesForStyle: jest
-          .fn()
-          .mockResolvedValue(severities.map((_, i) => `Style.Rule${i}`)),
+        getRulesWithDefaults: jest.fn().mockResolvedValue(
+          severities.map((_, i) => ({
+            name: `Style.Rule${i}`,
+            defaultSeverity: "warning" as const,
+          })),
+        ),
         getConfiguredRules: jest.fn().mockResolvedValue(configuredRules),
       });
 
@@ -1010,10 +1075,18 @@ describe("useRules", () => {
   describe("configManager changes", () => {
     it("should refetch when configManager changes", async () => {
       const configManager1 = createMockConfigManager({
-        getRulesForStyle: jest.fn().mockResolvedValue(["Style.Rule1"]),
+        getRulesWithDefaults: jest
+          .fn()
+          .mockResolvedValue([
+            { name: "Style.Rule1", defaultSeverity: "warning" },
+          ]),
       });
       const configManager2 = createMockConfigManager({
-        getRulesForStyle: jest.fn().mockResolvedValue(["Style.Rule2"]),
+        getRulesWithDefaults: jest
+          .fn()
+          .mockResolvedValue([
+            { name: "Style.Rule2", defaultSeverity: "warning" },
+          ]),
       });
 
       const { result, rerender } = renderHook(

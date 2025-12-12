@@ -13,9 +13,11 @@ import {
   isRulesRoute,
   isStylesRoute,
   isGeneralRoute,
+  isConfigurationRoute,
   navigateToGeneral,
   navigateToStyles,
   navigateToRules,
+  navigateToConfiguration,
   createRoute,
 } from "../types/routes";
 
@@ -24,12 +26,13 @@ export type { SettingsRoute, PageType };
 export { PAGES, createRoute };
 
 // Re-export type guards
-export { isRulesRoute, isStylesRoute, isGeneralRoute };
+export { isRulesRoute, isStylesRoute, isGeneralRoute, isConfigurationRoute };
 
 // Re-export navigation helpers with clearer names
 export const createGeneralRoute = navigateToGeneral;
 export const createStylesRoute = navigateToStyles;
 export const createRulesRoute = navigateToRules;
+export const createConfigurationRoute = navigateToConfiguration;
 
 /**
  * Check if a route requires a back button.
@@ -79,6 +82,8 @@ export function tabIdToRoute(tabId: string): SettingsRoute {
       return createGeneralRoute();
     case PAGES.STYLES:
       return createStylesRoute();
+    case PAGES.CONFIGURATION:
+      return createConfigurationRoute();
     default:
       // Default to General if unknown tab
       return createGeneralRoute();

@@ -81,6 +81,8 @@ function createMockPlugin(
     getStylesPath: jest.fn().mockResolvedValue("/mock/styles"),
     getValePath: jest.fn().mockReturnValue("/mock/vale"),
     getConfigPath: jest.fn().mockReturnValue("/mock/.vale.ini"),
+    getRuleCount: jest.fn().mockResolvedValue(10),
+    styleExists: jest.fn().mockResolvedValue(true),
   } as unknown as jest.Mocked<ValeConfigManager>;
 
   return {
@@ -872,6 +874,8 @@ describe("Settings Persistence Integration Tests", () => {
       // Settings should only contain ValeSettings fields
       expect(Object.keys(plugin.settings).sort()).toEqual([
         "autoCheckOnChange",
+        "autoOpenResultsPane",
+        "checkOnNoteOpen",
         "cli",
         "server",
         "showEditorToolbarButton",

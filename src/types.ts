@@ -67,6 +67,10 @@ export interface ValeStyle {
   description?: string;
   homepage?: string;
   url?: string;
+  /** Number of rules in this style (if available) */
+  ruleCount?: number;
+  /** Whether this style is referenced in config but not found on filesystem */
+  isMissing?: boolean;
 }
 
 export interface CheckInput {
@@ -80,6 +84,8 @@ export interface ValeRule {
   name: string;
   severity: ValeRuleSeverity;
   disabled: boolean;
+  /** The actual default severity from the rule's YAML file */
+  defaultSeverity?: "suggestion" | "warning" | "error";
 }
 
 export interface ValeConfig {

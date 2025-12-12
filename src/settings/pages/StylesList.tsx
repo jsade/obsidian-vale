@@ -50,8 +50,12 @@ export const StylesList: React.FC<StylesListProps> = ({
   onToggle,
   onConfigure,
 }) => {
-  // Filter out non-Vale styles
+  // Filter out non-Vale styles and get the Vale style separately for rule count
+  const valeStyle = styles.find((s) => s.name === "Vale");
   const otherStyles = styles.filter((s) => s.name !== "Vale");
+
+  // Filter out missing styles from "other" count for empty state check
+  const installedOtherStyles = otherStyles.filter((s) => !s.isMissing);
 
   return (
     <>
@@ -60,6 +64,7 @@ export const StylesList: React.FC<StylesListProps> = ({
         style={{
           name: "Vale",
           description: "Default style for spelling.",
+          ruleCount: valeStyle?.ruleCount,
         }}
         enabled={enabledStyles.includes("Vale")}
         isCustomMode={isCustomMode}
@@ -67,8 +72,10 @@ export const StylesList: React.FC<StylesListProps> = ({
         onConfigure={onConfigure}
       />
 
-      {/* Empty state for Custom mode when no other styles */}
-      {isCustomMode && otherStyles.length === 0 && <StylesEmptyState />}
+      {/* Empty state for Custom mode when no other installed styles */}
+      {isCustomMode && installedOtherStyles.length === 0 && (
+        <StylesEmptyState />
+      )}
 
       {/* Other styles */}
       {otherStyles.map((style) => (

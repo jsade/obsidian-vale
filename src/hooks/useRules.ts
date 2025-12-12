@@ -95,23 +95,30 @@ export function useRules(
     }
 
     try {
-      // Fetch both available rules and configured overrides in parallel
-      const [availableRules, configuredRules] = await Promise.all([
-        configManager.getRulesForStyle(styleName),
+      // Fetch both available rules (with defaults) and configured overrides in parallel
+      const [rulesWithDefaults, configuredRules] = await Promise.all([
+        configManager.getRulesWithDefaults(styleName),
         configManager.getConfiguredRules(styleName),
       ]);
 
       // Merge: Start with available rules, apply configured overrides
-      const mergedRules = availableRules.map<ValeRule>((ruleName) => {
-        const configured = configuredRules.find((r) => r.name === ruleName);
+      const mergedRules = rulesWithDefaults.map<ValeRule>((ruleInfo) => {
+        const configured = configuredRules.find(
+          (r) => r.name === ruleInfo.name,
+        );
         if (configured) {
-          return configured;
+          // Preserve defaultSeverity from YAML even for configured rules
+          return {
+            ...configured,
+            defaultSeverity: ruleInfo.defaultSeverity,
+          };
         }
         // Default rule state: enabled with default severity
         return {
-          name: ruleName,
+          name: ruleInfo.name,
           disabled: false,
           severity: "default",
+          defaultSeverity: ruleInfo.defaultSeverity,
         };
       });
 

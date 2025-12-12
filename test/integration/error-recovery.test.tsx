@@ -81,6 +81,8 @@ function createMockPlugin(
     getStylesPath: jest.fn().mockResolvedValue("/mock/styles"),
     getValePath: jest.fn().mockReturnValue("/mock/vale"),
     getConfigPath: jest.fn().mockReturnValue("/mock/.vale.ini"),
+    getRuleCount: jest.fn().mockResolvedValue(10),
+    styleExists: jest.fn().mockResolvedValue(true),
   } as unknown as jest.Mocked<ValeConfigManager>;
 
   return {
@@ -152,6 +154,19 @@ async function navigateToStylesTab() {
   if (stylesTab) {
     await act(async () => {
       fireEvent.click(stylesTab);
+    });
+  }
+}
+
+/**
+ * Helper to navigate to Configuration tab.
+ * CLI/Server settings and path validation are now on the Configuration tab.
+ */
+async function navigateToConfigurationTab() {
+  const configTab = screen.queryByRole("tab", { name: /configuration/i });
+  if (configTab) {
+    await act(async () => {
+      fireEvent.click(configTab);
     });
   }
 }
@@ -330,6 +345,13 @@ describe("Error Handling and Recovery Integration Tests", () => {
         jest.runAllTimers();
       });
 
+      // Navigate to Configuration tab where path validation happens
+      await navigateToConfigurationTab();
+
+      await act(async () => {
+        jest.runAllTimers();
+      });
+
       // Error message should be shown
       await waitFor(() => {
         // eslint-disable-next-line @typescript-eslint/unbound-method
@@ -354,6 +376,13 @@ describe("Error Handling and Recovery Integration Tests", () => {
       plugin.configManager.configPathExists.mockResolvedValue(false);
 
       renderSettingsRouter(plugin);
+
+      await act(async () => {
+        jest.runAllTimers();
+      });
+
+      // Navigate to Configuration tab where path validation happens
+      await navigateToConfigurationTab();
 
       await act(async () => {
         jest.runAllTimers();
@@ -413,6 +442,13 @@ describe("Error Handling and Recovery Integration Tests", () => {
         jest.runAllTimers();
       });
 
+      // Navigate to Configuration tab where path validation happens
+      await navigateToConfigurationTab();
+
+      await act(async () => {
+        jest.runAllTimers();
+      });
+
       // Error should suggest chmod +x or similar
       await waitFor(() => {
         // eslint-disable-next-line @typescript-eslint/unbound-method
@@ -436,6 +472,13 @@ describe("Error Handling and Recovery Integration Tests", () => {
       });
 
       renderSettingsRouter(plugin);
+
+      await act(async () => {
+        jest.runAllTimers();
+      });
+
+      // Navigate to Configuration tab where path validation happens
+      await navigateToConfigurationTab();
 
       await act(async () => {
         jest.runAllTimers();

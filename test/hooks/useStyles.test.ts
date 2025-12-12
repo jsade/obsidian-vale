@@ -80,6 +80,9 @@ function createMockConfigManager(
     getRulesForStyle: jest.fn().mockResolvedValue([]),
     getConfiguredRules: jest.fn().mockResolvedValue([]),
     updateRule: jest.fn().mockResolvedValue(undefined),
+    // New methods added for rule count and style existence checking
+    getRuleCount: jest.fn().mockResolvedValue(10),
+    styleExists: jest.fn().mockResolvedValue(true),
     ...overrides,
   } as unknown as jest.Mocked<ValeConfigManager>;
 }
@@ -139,11 +142,15 @@ describe("useStyles", () => {
         expect(result.current.loading).toBe(false);
       });
 
-      expect(result.current.styles).toEqual(libraryStyles);
-      // Verify styles have URLs
-      result.current.styles.forEach((style) => {
+      // Verify same number of styles
+      expect(result.current.styles.length).toBe(libraryStyles.length);
+      // Verify styles have URLs and original properties preserved
+      result.current.styles.forEach((style, idx) => {
+        expect(style.name).toBe(libraryStyles[idx].name);
         expect(style.url).toBeDefined();
         expect(style.url).toContain("github.com");
+        // ruleCount is now added by the hook
+        expect(style.ruleCount).toBe(10);
       });
     });
 
@@ -212,7 +219,13 @@ describe("useStyles", () => {
         expect(result.current.loading).toBe(false);
       });
 
-      expect(result.current.styles).toEqual(installedStyles);
+      // Verify same number of styles
+      expect(result.current.styles.length).toBe(installedStyles.length);
+      // Verify styles have original properties preserved plus ruleCount
+      result.current.styles.forEach((style, idx) => {
+        expect(style.name).toBe(installedStyles[idx].name);
+        expect(style.ruleCount).toBe(10);
+      });
     });
 
     it("should fetch enabled styles in custom mode", async () => {
@@ -234,8 +247,11 @@ describe("useStyles", () => {
     it("should handle custom styles with minimal metadata", async () => {
       const customStyles = createCustomStyles();
       const settings = createCustomSettings();
+      // Provide matching enabled styles so no "missing" styles are added
+      const customEnabledStyles = customStyles.map((s) => s.name);
       const configManager = createMockConfigManager({
         getInstalledStyles: jest.fn().mockResolvedValue(customStyles),
+        getEnabledStyles: jest.fn().mockResolvedValue(customEnabledStyles),
       });
 
       const { result } = renderHook(() => useStyles(settings, configManager));
@@ -244,11 +260,13 @@ describe("useStyles", () => {
         expect(result.current.loading).toBe(false);
       });
 
-      expect(result.current.styles).toEqual(customStyles);
-      // Verify custom styles have minimal metadata
-      result.current.styles.forEach((style) => {
-        expect(style.name).toBeDefined();
+      // Verify same number of styles
+      expect(result.current.styles.length).toBe(customStyles.length);
+      // Verify custom styles have minimal metadata plus ruleCount
+      result.current.styles.forEach((style, idx) => {
+        expect(style.name).toBe(customStyles[idx].name);
         expect(style.url).toBeUndefined();
+        expect(style.ruleCount).toBe(10);
       });
     });
 
@@ -283,16 +301,19 @@ describe("useStyles", () => {
         expect(result.current.loading).toBe(false);
       });
 
-      expect(result.current.styles).toEqual(valeOnly);
       expect(result.current.styles.length).toBe(1);
       expect(result.current.styles[0].name).toBe("Vale");
+      expect(result.current.styles[0].ruleCount).toBe(10);
     });
 
     it("should handle mixed library and custom styles", async () => {
       const mixedStyles = createMixedStyles();
       const settings = createCustomSettings();
+      // Provide matching enabled styles so no "missing" styles are added
+      const mixedEnabledStyles = mixedStyles.map((s) => s.name);
       const configManager = createMockConfigManager({
         getInstalledStyles: jest.fn().mockResolvedValue(mixedStyles),
+        getEnabledStyles: jest.fn().mockResolvedValue(mixedEnabledStyles),
       });
 
       const { result } = renderHook(() => useStyles(settings, configManager));
@@ -301,7 +322,78 @@ describe("useStyles", () => {
         expect(result.current.loading).toBe(false);
       });
 
-      expect(result.current.styles).toEqual(mixedStyles);
+      // Verify same number of styles with ruleCount added
+      expect(result.current.styles.length).toBe(mixedStyles.length);
+      result.current.styles.forEach((style, idx) => {
+        expect(style.name).toBe(mixedStyles[idx].name);
+        expect(style.ruleCount).toBe(10);
+      });
+    });
+
+    it("should detect missing styles in Custom mode", async () => {
+      // Installed styles only has Vale
+      const installedStyles = createValeOnly();
+      const settings = createCustomSettings();
+      // But enabled styles includes Google and Microsoft which aren't installed
+      const enabledWithMissing = ["Vale", "Google", "Microsoft"];
+      const configManager = createMockConfigManager({
+        getInstalledStyles: jest.fn().mockResolvedValue(installedStyles),
+        getEnabledStyles: jest.fn().mockResolvedValue(enabledWithMissing),
+      });
+
+      const { result } = renderHook(() => useStyles(settings, configManager));
+
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
+
+      // Should have 3 styles: Vale (installed) + Google & Microsoft (missing)
+      expect(result.current.styles.length).toBe(3);
+
+      // Vale should be present and not missing
+      const valeStyle = result.current.styles.find((s) => s.name === "Vale");
+      expect(valeStyle).toBeDefined();
+      expect(valeStyle?.isMissing).toBeUndefined();
+      expect(valeStyle?.ruleCount).toBe(10);
+
+      // Google should be marked as missing
+      const googleStyle = result.current.styles.find(
+        (s) => s.name === "Google",
+      );
+      expect(googleStyle).toBeDefined();
+      expect(googleStyle?.isMissing).toBe(true);
+      expect(googleStyle?.ruleCount).toBeUndefined(); // Missing styles don't have rule count
+
+      // Microsoft should be marked as missing
+      const msStyle = result.current.styles.find((s) => s.name === "Microsoft");
+      expect(msStyle).toBeDefined();
+      expect(msStyle?.isMissing).toBe(true);
+    });
+
+    it("should NOT detect missing styles in Managed mode", async () => {
+      // In Managed mode, we use getAvailableStyles which is the library
+      // Missing style detection only applies to Custom mode
+      const libraryStyles = createLibraryStyles();
+      const settings = createManagedSettings();
+      // Even if enabled styles has something not in available, we don't mark as missing
+      const enabledStyles = ["Vale", "SomeRandomStyle"];
+      const configManager = createMockConfigManager({
+        getAvailableStyles: jest.fn().mockResolvedValue(libraryStyles),
+        getEnabledStyles: jest.fn().mockResolvedValue(enabledStyles),
+      });
+
+      const { result } = renderHook(() => useStyles(settings, configManager));
+
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
+
+      // Should only have the library styles (no missing styles added in Managed mode)
+      expect(result.current.styles.length).toBe(libraryStyles.length);
+      // None should be marked as missing
+      result.current.styles.forEach((style) => {
+        expect(style.isMissing).toBeUndefined();
+      });
     });
   });
 
@@ -377,7 +469,12 @@ describe("useStyles", () => {
         expect(result.current.loading).toBe(false);
       });
 
-      expect(result.current.styles).toEqual(slowStyles);
+      // Verify styles with ruleCount added
+      expect(result.current.styles.length).toBe(slowStyles.length);
+      result.current.styles.forEach((style, idx) => {
+        expect(style.name).toBe(slowStyles[idx].name);
+        expect(style.ruleCount).toBe(10);
+      });
     });
   });
 
@@ -558,14 +655,19 @@ describe("useStyles", () => {
         expect(result.current.loading).toBe(false);
       });
 
-      expect(result.current.styles).toEqual(initialStyles);
+      // Verify initial styles (with ruleCount added)
+      expect(result.current.styles.length).toBe(initialStyles.length);
 
       // Refetch with updated data
       await act(async () => {
         await result.current.refetch();
       });
 
-      expect(result.current.styles).toEqual(updatedStyles);
+      // Verify updated styles (with ruleCount added)
+      expect(result.current.styles.length).toBe(updatedStyles.length);
+      expect(result.current.styles[result.current.styles.length - 1].name).toBe(
+        "NewStyle",
+      );
     });
 
     it("should update enabled styles on refetch", async () => {
@@ -835,7 +937,12 @@ describe("useStyles", () => {
         expect(result.current.loading).toBe(false);
       });
 
-      expect(result.current.styles).toEqual(specialStyles);
+      // Verify styles with special characters (ruleCount added)
+      expect(result.current.styles.length).toBe(specialStyles.length);
+      result.current.styles.forEach((style, idx) => {
+        expect(style.name).toBe(specialStyles[idx].name);
+        expect(style.ruleCount).toBe(10);
+      });
     });
 
     it("should handle large number of styles", async () => {
@@ -873,8 +980,11 @@ describe("useStyles", () => {
         expect(result.current.loading).toBe(false);
       });
 
-      expect(result.current.styles).toEqual(minimalStyles);
+      // Verify styles with minimal fields (ruleCount added)
+      expect(result.current.styles.length).toBe(minimalStyles.length);
+      expect(result.current.styles[0].name).toBe("MinimalStyle");
       expect(result.current.styles[0].description).toBeUndefined();
+      expect(result.current.styles[0].ruleCount).toBe(10);
     });
 
     it("should handle concurrent calls to refetch", async () => {

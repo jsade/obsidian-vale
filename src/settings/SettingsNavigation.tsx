@@ -20,12 +20,13 @@ interface SettingsNavigationProps {
 /**
  * Navigation component for settings pages.
  *
- * Renders tab navigation for General and Styles pages.
+ * Renders tab navigation for General, Styles, and Configuration pages.
  * Hides when on Rules page (accessed via gear icon).
  *
  * Tab visibility logic:
  * - General tab: Always visible
  * - Styles tab: Visible when config path is valid AND type is CLI
+ * - Configuration tab: Always visible
  *
  * Uses TabBar component from Phase 1 for consistent WAI-ARIA patterns.
  *
@@ -63,6 +64,11 @@ export const SettingsNavigation = ({
       id: PAGES.STYLES,
       label: "Styles",
       disabled: !showStylesTab,
+    },
+    {
+      id: PAGES.CONFIGURATION,
+      label: "Configuration",
+      disabled: false,
     },
   ];
 

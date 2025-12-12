@@ -121,16 +121,49 @@ export function useStyles(
       const isCustomMode = settings.type === "cli" && !settings.cli.managed;
 
       // Fetch styles based on mode
-      const fetchedStyles = isCustomMode
+      let fetchedStyles = isCustomMode
         ? await configManager.getInstalledStyles()
         : await configManager.getAvailableStyles();
 
       // Fetch enabled styles
       const fetchedEnabledStyles = await configManager.getEnabledStyles();
 
+      // In Custom mode, check for missing styles (referenced in config but not on filesystem)
+      if (isCustomMode) {
+        // Get installed style names
+        const installedNames = new Set(fetchedStyles.map((s) => s.name));
+
+        // Check for enabled styles that aren't installed
+        const missingStyles: ValeStyle[] = [];
+        for (const styleName of fetchedEnabledStyles) {
+          if (!installedNames.has(styleName)) {
+            missingStyles.push({
+              name: styleName,
+              description: "Referenced in .vale.ini but not found",
+              isMissing: true,
+            });
+          }
+        }
+
+        // Add missing styles to the list
+        fetchedStyles = [...fetchedStyles, ...missingStyles];
+      }
+
+      // Fetch rule counts for all styles
+      const stylesWithRuleCounts = await Promise.all(
+        fetchedStyles.map(async (style) => {
+          // Skip rule count for missing styles
+          if (style.isMissing) {
+            return style;
+          }
+          const ruleCount = await configManager.getRuleCount(style.name);
+          return { ...style, ruleCount };
+        }),
+      );
+
       // Update state if still mounted
       if (isMountedRef.current) {
-        setStyles(fetchedStyles);
+        setStyles(stylesWithRuleCounts);
         setEnabledStyles(fetchedEnabledStyles);
         setLoading(false);
       }

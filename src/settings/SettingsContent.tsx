@@ -5,6 +5,7 @@ import {
   isRulesRoute,
   isStylesRoute,
   isGeneralRoute,
+  isConfigurationRoute,
   createRoute,
 } from "./navigation";
 
@@ -13,6 +14,7 @@ import {
 import { GeneralSettings } from "./pages/GeneralSettings";
 import { StyleSettings } from "./pages/StyleSettings";
 import { RuleSettings } from "./pages/RuleSettings";
+import { ConfigurationSettings } from "./pages/ConfigurationSettings";
 
 /**
  * Props for SettingsContent component
@@ -118,6 +120,19 @@ export const SettingsContent = ({
     if (isRulesRoute(route)) {
       // Rules page doesn't use tab pattern (accessed via gear icon)
       return <RuleSettings style={route.style} onNavigate={onNavigate} />;
+    }
+
+    if (isConfigurationRoute(route)) {
+      return (
+        <div
+          role="tabpanel"
+          id="panel-configuration"
+          aria-labelledby="tab-configuration"
+          tabIndex={0}
+        >
+          <ConfigurationSettings />
+        </div>
+      );
     }
 
     // Exhaustive check: TypeScript will error if we add a new route type

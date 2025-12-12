@@ -83,6 +83,8 @@ function createMockPlugin(
     getStylesPath: jest.fn().mockResolvedValue("/mock/styles"),
     getValePath: jest.fn().mockReturnValue("/mock/vale"),
     getConfigPath: jest.fn().mockReturnValue("/mock/.vale.ini"),
+    getRuleCount: jest.fn().mockResolvedValue(10),
+    styleExists: jest.fn().mockResolvedValue(true),
   } as unknown as jest.Mocked<ValeConfigManager>;
 
   return {
@@ -108,6 +110,19 @@ function renderSettingsRouter(plugin: MockedPlugin) {
     .mockReturnValue(plugin.configManager as unknown as ValeConfigManager);
 
   return render(<SettingsRouter plugin={plugin as unknown as ValePlugin} />);
+}
+
+/**
+ * Helper to navigate to Configuration tab.
+ * CLI/Server settings and path validation are now on the Configuration tab.
+ */
+async function navigateToConfigurationTab() {
+  const configTab = screen.queryByRole("tab", { name: /configuration/i });
+  if (configTab) {
+    await act(async () => {
+      fireEvent.click(configTab);
+    });
+  }
 }
 
 /**
@@ -413,6 +428,13 @@ describe("Path Validation Flow Integration Tests", () => {
         jest.runAllTimers();
       });
 
+      // Navigate to Configuration tab where path validation happens
+      await navigateToConfigurationTab();
+
+      await act(async () => {
+        jest.runAllTimers();
+      });
+
       // Validation should have been called
       await waitFor(() => {
         expect(plugin.configManager.validateValePath).toHaveBeenCalled();
@@ -430,6 +452,13 @@ describe("Path Validation Flow Integration Tests", () => {
       });
 
       renderSettingsRouter(plugin);
+
+      await act(async () => {
+        jest.runAllTimers();
+      });
+
+      // Navigate to Configuration tab where path validation happens
+      await navigateToConfigurationTab();
 
       await act(async () => {
         jest.runAllTimers();
@@ -456,6 +485,13 @@ describe("Path Validation Flow Integration Tests", () => {
       });
 
       renderSettingsRouter(plugin);
+
+      await act(async () => {
+        jest.runAllTimers();
+      });
+
+      // Navigate to Configuration tab where path validation happens
+      await navigateToConfigurationTab();
 
       await act(async () => {
         jest.runAllTimers();
@@ -491,6 +527,13 @@ describe("Path Validation Flow Integration Tests", () => {
         jest.runAllTimers();
       });
 
+      // Navigate to Configuration tab where path validation happens
+      await navigateToConfigurationTab();
+
+      await act(async () => {
+        jest.runAllTimers();
+      });
+
       // Both paths should be validated
       await waitFor(() => {
         expect(plugin.configManager.validateValePath).toHaveBeenCalled();
@@ -515,6 +558,13 @@ describe("Path Validation Flow Integration Tests", () => {
       });
 
       renderSettingsRouter(plugin);
+
+      await act(async () => {
+        jest.runAllTimers();
+      });
+
+      // Navigate to Configuration tab where path validation happens
+      await navigateToConfigurationTab();
 
       await act(async () => {
         jest.runAllTimers();
@@ -560,6 +610,13 @@ describe("Path Validation Flow Integration Tests", () => {
         jest.runAllTimers();
       });
 
+      // Navigate to Configuration tab where path validation happens
+      await navigateToConfigurationTab();
+
+      await act(async () => {
+        jest.runAllTimers();
+      });
+
       // After config path is valid, parseConfigSuggestions should be called
       await waitFor(() => {
         expect(mockParseConfigSuggestions).toHaveBeenCalledWith(
@@ -582,6 +639,17 @@ describe("Path Validation Flow Integration Tests", () => {
 
       renderSettingsRouter(plugin);
 
+      await act(async () => {
+        jest.runAllTimers();
+      });
+
+      // Navigate to Configuration tab where path inputs are located
+      await navigateToConfigurationTab();
+
+      await act(async () => {
+        jest.runAllTimers();
+      });
+
       // Find path inputs - there are multiple with vale-related placeholders
       const pathInputs = screen.getAllByPlaceholderText(/vale/i);
       expect(pathInputs.length).toBeGreaterThan(0);
@@ -599,6 +667,17 @@ describe("Path Validation Flow Integration Tests", () => {
       });
 
       renderSettingsRouter(plugin);
+
+      await act(async () => {
+        jest.runAllTimers();
+      });
+
+      // Navigate to Configuration tab where path inputs are located
+      await navigateToConfigurationTab();
+
+      await act(async () => {
+        jest.runAllTimers();
+      });
 
       // Find all text inputs
       const inputs = screen.getAllByRole("textbox");
@@ -618,6 +697,17 @@ describe("Path Validation Flow Integration Tests", () => {
       });
 
       renderSettingsRouter(plugin);
+
+      await act(async () => {
+        jest.runAllTimers();
+      });
+
+      // Navigate to Configuration tab where path inputs are located
+      await navigateToConfigurationTab();
+
+      await act(async () => {
+        jest.runAllTimers();
+      });
 
       // Find both inputs
       const inputs = screen.getAllByRole("textbox");
@@ -659,6 +749,9 @@ describe("Path Validation Flow Integration Tests", () => {
 
       renderSettingsRouter(plugin);
 
+      // Navigate to Configuration tab where path validation happens
+      await navigateToConfigurationTab();
+
       // Advance timers partially (not enough for debounce)
       await act(async () => {
         jest.advanceTimersByTime(100); // Less than 500ms debounce
@@ -694,6 +787,9 @@ describe("Path Validation Flow Integration Tests", () => {
 
       renderSettingsRouter(plugin);
 
+      // Navigate to Configuration tab where path validation happens
+      await navigateToConfigurationTab();
+
       // Advance past debounce
       await act(async () => {
         jest.advanceTimersByTime(500);
@@ -723,6 +819,9 @@ describe("Path Validation Flow Integration Tests", () => {
       );
 
       const { unmount } = renderSettingsRouter(plugin);
+
+      // Navigate to Configuration tab where path validation happens
+      await navigateToConfigurationTab();
 
       await act(async () => {
         jest.advanceTimersByTime(500); // Trigger debounced validation
@@ -755,6 +854,9 @@ describe("Path Validation Flow Integration Tests", () => {
       );
 
       const { unmount } = renderSettingsRouter(plugin);
+
+      // Navigate to Configuration tab where path validation happens
+      await navigateToConfigurationTab();
 
       // Trigger validation
       await act(async () => {
@@ -800,6 +902,9 @@ describe("Path Validation Flow Integration Tests", () => {
 
       renderSettingsRouter(plugin);
 
+      // Navigate to Configuration tab where path validation happens
+      await navigateToConfigurationTab();
+
       // Trigger debounce
       await act(async () => {
         jest.advanceTimersByTime(500);
@@ -842,6 +947,9 @@ describe("Path Validation Flow Integration Tests", () => {
 
       renderSettingsRouter(plugin);
 
+      // Navigate to Configuration tab where path validation happens
+      await navigateToConfigurationTab();
+
       // Trigger debounce
       await act(async () => {
         jest.advanceTimersByTime(500);
@@ -880,6 +988,13 @@ describe("Path Validation Flow Integration Tests", () => {
         jest.runAllTimers();
       });
 
+      // Navigate to Configuration tab where path validation happens
+      await navigateToConfigurationTab();
+
+      await act(async () => {
+        jest.runAllTimers();
+      });
+
       // Both paths should be validated
       await waitFor(() => {
         expect(plugin.configManager.validateValePath).toHaveBeenCalled();
@@ -903,6 +1018,13 @@ describe("Path Validation Flow Integration Tests", () => {
         jest.runAllTimers();
       });
 
+      // Navigate to Configuration tab where path validation happens
+      await navigateToConfigurationTab();
+
+      await act(async () => {
+        jest.runAllTimers();
+      });
+
       // Empty paths should not trigger validation
       // The hook skips validation for empty/whitespace paths
       expect(plugin.configManager.validateValePath).not.toHaveBeenCalled();
@@ -920,6 +1042,13 @@ describe("Path Validation Flow Integration Tests", () => {
       });
 
       renderSettingsRouter(plugin);
+
+      await act(async () => {
+        jest.runAllTimers();
+      });
+
+      // Navigate to Configuration tab where path validation happens
+      await navigateToConfigurationTab();
 
       await act(async () => {
         jest.runAllTimers();
@@ -956,6 +1085,13 @@ describe("Path Validation Flow Integration Tests", () => {
         jest.runAllTimers();
       });
 
+      // Navigate to Configuration tab where path validation happens
+      await navigateToConfigurationTab();
+
+      await act(async () => {
+        jest.runAllTimers();
+      });
+
       // Verify validation was called with the path
       await waitFor(() => {
         expect(plugin.configManager.validateValePath).toHaveBeenCalled();
@@ -979,6 +1115,13 @@ describe("Path Validation Flow Integration Tests", () => {
       });
 
       renderSettingsRouter(plugin);
+
+      await act(async () => {
+        jest.runAllTimers();
+      });
+
+      // Navigate to Configuration tab where path validation happens
+      await navigateToConfigurationTab();
 
       await act(async () => {
         jest.runAllTimers();
@@ -1065,6 +1208,13 @@ describe("Path Validation - Edge Cases", () => {
       jest.runAllTimers();
     });
 
+    // Navigate to Configuration tab where path validation happens
+    await navigateToConfigurationTab();
+
+    await act(async () => {
+      jest.runAllTimers();
+    });
+
     // Whitespace-only paths should be treated as empty
     // and not trigger validation
     expect(plugin.configManager.validateValePath).not.toHaveBeenCalled();
@@ -1090,6 +1240,13 @@ describe("Path Validation - Edge Cases", () => {
     plugin.configManager.validateConfigPath.mockResolvedValue({ valid: true });
 
     renderSettingsRouter(plugin);
+
+    await act(async () => {
+      jest.runAllTimers();
+    });
+
+    // Navigate to Configuration tab where path validation happens
+    await navigateToConfigurationTab();
 
     await act(async () => {
       jest.runAllTimers();
@@ -1121,6 +1278,13 @@ describe("Path Validation - Edge Cases", () => {
       jest.runAllTimers();
     });
 
+    // Navigate to Configuration tab where path validation happens
+    await navigateToConfigurationTab();
+
+    await act(async () => {
+      jest.runAllTimers();
+    });
+
     // Tilde paths should be handled by ValeConfigManager
     await waitFor(() => {
       expect(plugin.configManager.validateValePath).toHaveBeenCalled();
@@ -1143,6 +1307,13 @@ describe("Path Validation - Edge Cases", () => {
     );
 
     renderSettingsRouter(plugin);
+
+    await act(async () => {
+      jest.runAllTimers();
+    });
+
+    // Navigate to Configuration tab where path validation happens
+    await navigateToConfigurationTab();
 
     await act(async () => {
       jest.runAllTimers();
@@ -1195,6 +1366,13 @@ describe("Vale Detection Banner UI", () => {
       jest.runAllTimers();
     });
 
+    // Navigate to Configuration tab where detection banner is shown
+    await navigateToConfigurationTab();
+
+    await act(async () => {
+      jest.runAllTimers();
+    });
+
     // Banner should be visible
     await waitFor(() => {
       expect(screen.getByText(/Vale found/)).toBeInTheDocument();
@@ -1235,6 +1413,13 @@ describe("Vale Detection Banner UI", () => {
       jest.runAllTimers();
     });
 
+    // Navigate to Configuration tab where detection banner is shown
+    await navigateToConfigurationTab();
+
+    await act(async () => {
+      jest.runAllTimers();
+    });
+
     // Scanning indicator should be visible
     await waitFor(() => {
       expect(
@@ -1268,6 +1453,13 @@ describe("Vale Detection Banner UI", () => {
     );
 
     renderSettingsRouter(plugin);
+
+    await act(async () => {
+      jest.runAllTimers();
+    });
+
+    // Navigate to Configuration tab where detection banner is shown
+    await navigateToConfigurationTab();
 
     await act(async () => {
       jest.runAllTimers();
@@ -1314,6 +1506,13 @@ describe("Vale Detection Banner UI", () => {
       jest.runAllTimers();
     });
 
+    // Navigate to Configuration tab where detection banner is shown
+    await navigateToConfigurationTab();
+
+    await act(async () => {
+      jest.runAllTimers();
+    });
+
     // Banner should be visible
     expect(screen.getByText("Dismiss")).toBeInTheDocument();
 
@@ -1341,6 +1540,13 @@ describe("Vale Detection Banner UI", () => {
     );
 
     renderSettingsRouter(plugin);
+
+    await act(async () => {
+      jest.runAllTimers();
+    });
+
+    // Navigate to Configuration tab where detection banner would be shown
+    await navigateToConfigurationTab();
 
     await act(async () => {
       jest.runAllTimers();
@@ -1394,6 +1600,13 @@ describe("StylesPath Auto-population", () => {
       jest.runAllTimers();
     });
 
+    // Navigate to Configuration tab where auto-population happens
+    await navigateToConfigurationTab();
+
+    await act(async () => {
+      jest.runAllTimers();
+    });
+
     // Wait for config validation to complete and trigger auto-population
     await waitFor(() => {
       expect(mockParseConfigSuggestions).toHaveBeenCalledWith(
@@ -1436,6 +1649,13 @@ describe("StylesPath Auto-population", () => {
       jest.runAllTimers();
     });
 
+    // Navigate to Configuration tab where auto-population happens
+    await navigateToConfigurationTab();
+
+    await act(async () => {
+      jest.runAllTimers();
+    });
+
     // Attribution text should appear
     await waitFor(() => {
       expect(screen.getByText(/Populated from .vale.ini/)).toBeInTheDocument();
@@ -1468,6 +1688,13 @@ describe("StylesPath Auto-population", () => {
     );
 
     renderSettingsRouter(plugin);
+
+    await act(async () => {
+      jest.runAllTimers();
+    });
+
+    // Navigate to Configuration tab where auto-population would happen
+    await navigateToConfigurationTab();
 
     await act(async () => {
       jest.runAllTimers();
@@ -1509,6 +1736,13 @@ describe("StylesPath Auto-population", () => {
     );
 
     renderSettingsRouter(plugin);
+
+    await act(async () => {
+      jest.runAllTimers();
+    });
+
+    // Navigate to Configuration tab where auto-population happens
+    await navigateToConfigurationTab();
 
     await act(async () => {
       jest.runAllTimers();

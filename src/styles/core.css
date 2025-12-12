@@ -419,3 +419,43 @@
 .vale-error-message__details[open] .vale-error-message__hide-text {
   display: inline;
 }
+
+/* ============================================
+   Rule Settings - Severity Icons
+   ============================================ */
+
+/* Container for severity icon (next to dropdown) */
+.vale-rule-severity-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+/* SVG icon styling */
+.vale-rule-severity-icon__svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+/* Severity-specific colors using existing CSS variables */
+.vale-rule-severity--error {
+  color: var(--vale-color-error);
+}
+
+.vale-rule-severity--warning {
+  color: var(--vale-color-warning);
+}
+
+.vale-rule-severity--suggestion {
+  color: var(--vale-color-suggestion);
+}
+
+/* Styling for the rule item setting row */
+.vale-rule-item-setting .setting-item-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
