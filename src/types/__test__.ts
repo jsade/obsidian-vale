@@ -41,12 +41,16 @@ function testSettingsTypes() {
     type: "cli",
     server: { url: "http://localhost:7777" },
     cli: { managed: true, valePath: "", configPath: "" },
+    showEditorToolbarButton: true,
+    autoCheckOnChange: false,
   };
 
   const serverSettings: ValeSettings = {
     type: "server",
     server: { url: "http://localhost:7777" },
     cli: { managed: false },
+    showEditorToolbarButton: false,
+    autoCheckOnChange: true,
   };
 
   // Type guards should work

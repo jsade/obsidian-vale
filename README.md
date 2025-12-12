@@ -5,7 +5,7 @@ Obsidian Vale is a [Vale](https://vale.sh/) linter client plugin for [Obsidian](
 ![Screenshot](screenshot.png)
 
 
-> **2025-10-22**: The original [obsidian-vale](https://github.com/marcusolsson/obsidian-vale) project was created by [Marcus Olsson](https://github.com/marcusolsson) and was archived Jun 1, 2023.
+> **2025-10-22**: This project is a fork from the original [obsidian-vale](https://github.com/marcusolsson/obsidian-vale) which was created by [Marcus Olsson](https://github.com/marcusolsson) and was archived Jun 1, 2023. 
 
 ## Features
 
@@ -33,26 +33,37 @@ Obsidian Vale is a [Vale](https://vale.sh/) linter client plugin for [Obsidian](
 3. Reload Obsidian
 4. Enable the plugin in **Settings** → **Community plugins**
 
-## Getting started
+## Configuring Vale
 
-### Installing vale
+### Managed mode
 
-The plugin can automatically download and configure Vale for you:
+The plugin can automatically download and manage Vale for you:
 
 1. Open **Settings** → **Vale**
 2. Select **Managed** mode
-3. Click **Install Vale** (downloads appropriate binary for your OS)
-4. Go to **Style Settings** and toggle ON desired style packages (each style automatically downloads and installs when enabled)
-5. Configure rules in **Rule Configuration** as needed
+3. Click **Install Vale to vault** (downloads appropriate binary for your OS)
+4. Go to **Styles** and toggle ON desired style packages
 
-### Using an existing vale installation
+### Custom mode
 
-If you already have Vale installed:
+Use your own Vale installation:
 
 1. Open **Settings** → **Vale**
 2. Select **Custom** mode
 3. Provide paths to your Vale binary and `.vale.ini` config file
-4. Go to **Styles** to see your installed styles and enable or disable them as needed
+4. Go to **Styles** to see and enable your installed styles
+
+### Editor settings
+
+- **Auto-check on changes**: Automatically runs Vale when switching notes or after editing (disabled by default)
+- **Editor toolbar button**: Show/hide the Vale check button in the editor toolbar
+- **Status bar**: Show/hide check status at the bottom of the window
+
+### Rules
+
+- **Enable/disable styles**: Toggle entire style packages in **Styles**
+- **Configure individual rules**: Set severity or disable specific rules
+- **Manage exceptions**: Add words to dictionary, ignore patterns
 
 ## Usage
 
@@ -79,7 +90,7 @@ Underlined squiggly text indicates issues (click any underline to view details i
 **Method 2: Results Panel**
 - Open the Vale panel from the sidebar:
 	- Use `Vale: Check document` command to run check and open panel
-	- Use `Vale: Open Vale panel` command to just open the panel
+	- Use `Vale: Open panel` command to just open the panel
 - Click an alert to jump to its location in the editor
 - Review all issues in one place
 
@@ -113,34 +124,10 @@ The plugin provides seamless bidirectional navigation between the editor and res
 
 The status bar (bottom of window) shows real-time check status:
 
-- **"Vale: Ready"** - Plugin is ready to check documents
-- **"Vale: Checking..."** - A check is currently running
-- **"Vale: No issues"** - Check complete with no issues found
+- **"Vale: ready"** - Plugin is ready to check documents
+- **"Vale: checking..."** - A check is currently running
+- **"Vale: no issues"** - Check complete with no issues found
 - **"Vale: X issue(s)"** - Check complete with issues found (shows count)
-
-## Configuration
-
-### Vale settings
-
-Configure Vale integration:
-
-- **Mode**: Managed (plugin handles Vale) or Custom (use your Vale)
-- **Vale binary path**: Location of Vale executable (custom mode)
-- **Config path**: Location of `.vale.ini` (custom mode)
-
-### Editor settings
-
-Customize editor behavior:
-
-- **Status bar**: Shows check status and issue count at the bottom of the window
-
-### Rule configuration
-
-Fine-tune Vale rules:
-
-- **Enable/disable styles**: Toggle entire style packages
-- **Configure individual rules**: Set severity or disable specific rules
-- **Manage exceptions**: Add words to dictionary, ignore patterns
 
 ## Troubleshooting
 
