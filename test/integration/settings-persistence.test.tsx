@@ -871,8 +871,10 @@ describe("Settings Persistence Integration Tests", () => {
 
       // Settings should only contain ValeSettings fields
       expect(Object.keys(plugin.settings).sort()).toEqual([
+        "autoCheckOnChange",
         "cli",
         "server",
+        "showEditorToolbarButton",
         "type",
       ]);
     });

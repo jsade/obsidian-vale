@@ -202,20 +202,21 @@ export function createAlertsBySeverity(): {
   warning: ValeAlert;
   suggestion: ValeAlert;
 } {
+  // For document "error warning suggestion" (24 chars)
   return {
     error: createMockValeAlert({
       Severity: "error",
-      Span: [1, 6], // 1-based: positions 1-5 ("error")
+      Span: [1, 5], // 1-based: "error" (0-4, 5 chars)
       Check: "Vale.Error",
     }),
     warning: createMockValeAlert({
       Severity: "warning",
-      Span: [7, 14], // 1-based: positions 7-13 ("warning")
+      Span: [7, 13], // 1-based: "warning" (6-12, 7 chars)
       Check: "Vale.Warning",
     }),
     suggestion: createMockValeAlert({
       Severity: "suggestion",
-      Span: [15, 25], // 1-based: positions 15-24 ("suggestion")
+      Span: [15, 24], // 1-based: "suggestion" (14-23, 10 chars)
       Check: "Vale.Suggestion",
     }),
   };

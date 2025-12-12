@@ -214,7 +214,7 @@ describe("StateField", () => {
         }),
         createMockValeAlert({
           Line: 1,
-          Span: [15, 25], // 1-based: "suggestion"
+          Span: [15, 24], // 1-based: "suggestion" (positions 14-23, inclusive)
           Severity: "suggestion",
           Check: "Vale.S",
         }),
@@ -281,7 +281,7 @@ describe("StateField", () => {
       let state = createTestState(doc);
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [1, 5], // 1-based: entire document "test"
+        Span: [1, 4], // 1-based: entire document "test" (positions 0-3, inclusive)
         Check: "Vale.Boundary",
       });
 
@@ -313,8 +313,8 @@ describe("StateField", () => {
     it("should clear all decorations with clearAllValeMarks", () => {
       let state = createTestState("test document");
       const alerts = [
-        createMockValeAlert({ Line: 1, Span: [1, 5], Check: "Vale.A" }), // "test"
-        createMockValeAlert({ Line: 1, Span: [6, 14], Check: "Vale.B" }), // "document"
+        createMockValeAlert({ Line: 1, Span: [1, 4], Check: "Vale.A" }), // "test" (0-3)
+        createMockValeAlert({ Line: 1, Span: [6, 13], Check: "Vale.B" }), // "document" (5-12)
       ];
 
       state = state.update({
@@ -355,9 +355,9 @@ describe("StateField", () => {
     it("should clear decorations in specific range", () => {
       let state = createTestState("first second third");
       const alerts = [
-        createMockValeAlert({ Line: 1, Span: [1, 6], Check: "Vale.A" }), // "first"
-        createMockValeAlert({ Line: 1, Span: [7, 13], Check: "Vale.B" }), // "second"
-        createMockValeAlert({ Line: 1, Span: [14, 19], Check: "Vale.C" }), // "third"
+        createMockValeAlert({ Line: 1, Span: [1, 5], Check: "Vale.A" }), // "first" (0-4)
+        createMockValeAlert({ Line: 1, Span: [7, 12], Check: "Vale.B" }), // "second" (6-11)
+        createMockValeAlert({ Line: 1, Span: [14, 18], Check: "Vale.C" }), // "third" (13-17)
       ];
 
       state = state.update({
@@ -377,9 +377,9 @@ describe("StateField", () => {
     it("should clear overlapping decorations", () => {
       let state = createTestState("overlapping text here");
       const alerts = [
-        createMockValeAlert({ Line: 1, Span: [1, 12], Check: "Vale.Outer" }), // "overlapping"
-        createMockValeAlert({ Line: 1, Span: [13, 17], Check: "Vale.Clear" }), // "text"
-        createMockValeAlert({ Line: 1, Span: [18, 22], Check: "Vale.Keep" }), // "here"
+        createMockValeAlert({ Line: 1, Span: [1, 11], Check: "Vale.Outer" }), // "overlapping" (0-10)
+        createMockValeAlert({ Line: 1, Span: [13, 16], Check: "Vale.Clear" }), // "text" (12-15)
+        createMockValeAlert({ Line: 1, Span: [18, 21], Check: "Vale.Keep" }), // "here" (17-20)
       ];
 
       state = state.update({
@@ -392,8 +392,8 @@ describe("StateField", () => {
       }).state;
 
       const ids = getDecorationIds(state);
-      expect(ids).toContain("1:18:22:Vale.Keep");
-      expect(ids).not.toContain("1:13:17:Vale.Clear");
+      expect(ids).toContain("1:18:21:Vale.Keep");
+      expect(ids).not.toContain("1:13:16:Vale.Clear");
     });
 
     it("should remove cleared decorations from valeAlertMap", () => {
@@ -592,12 +592,12 @@ describe("StateField", () => {
       let state = createTestState("first second");
       const alert1 = createMockValeAlert({
         Line: 1,
-        Span: [1, 6], // 1-based: "first"
+        Span: [1, 5], // 1-based: "first" (0-4)
         Check: "Vale.A",
       });
       const alert2 = createMockValeAlert({
         Line: 1,
-        Span: [7, 13], // 1-based: "second"
+        Span: [7, 12], // 1-based: "second" (6-11)
         Check: "Vale.B",
       });
       const id1 = generateAlertId(alert1);
@@ -660,7 +660,7 @@ describe("StateField", () => {
       let state = createTestState("test document");
       const alert = createMockValeAlert({
         Line: 1,
-        Span: [6, 14], // 1-based: "document"
+        Span: [6, 13], // 1-based: "document" (5-12)
         Check: "Vale.Test",
       });
 
@@ -760,9 +760,9 @@ describe("StateField", () => {
     it("should handle multiple decorations mapping correctly", () => {
       let state = createTestState("first second third");
       const alerts = [
-        createMockValeAlert({ Line: 1, Span: [1, 6], Check: "Vale.A" }), // "first"
-        createMockValeAlert({ Line: 1, Span: [7, 13], Check: "Vale.B" }), // "second"
-        createMockValeAlert({ Line: 1, Span: [14, 19], Check: "Vale.C" }), // "third"
+        createMockValeAlert({ Line: 1, Span: [1, 5], Check: "Vale.A" }), // "first" (0-4)
+        createMockValeAlert({ Line: 1, Span: [7, 12], Check: "Vale.B" }), // "second" (6-11)
+        createMockValeAlert({ Line: 1, Span: [14, 18], Check: "Vale.C" }), // "third" (13-17)
       ];
 
       state = state.update({

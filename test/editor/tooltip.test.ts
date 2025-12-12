@@ -618,7 +618,7 @@ describe("Tooltip", () => {
       it("should find alert at position within range", () => {
         const alert: ValeAlert = createMockValeAlert({
           Line: 1,
-          Span: [1, 4],
+          Span: [1, 3], // 1-based: "teh" (0-2, 3 chars)
           Match: "teh",
         });
 
@@ -635,13 +635,14 @@ describe("Tooltip", () => {
       it("should return null when no alert at position", () => {
         const alert: ValeAlert = createMockValeAlert({
           Line: 1,
-          Span: [1, 4],
+          Span: [1, 3], // 1-based: "teh" (0-2, 3 chars)
           Match: "teh",
         });
 
         const view = createViewWithAlerts("teh word", [alert]);
 
-        // Position 4+ should not find the alert (outside "teh" range)
+        // Position 4+ should not find the alert (outside "teh" range at 0-2)
+        // Note: Position 3 is at the boundary and may be included by CM6's between()
         expect(getAlertAtPosition(view, 4)).toBeNull();
         expect(getAlertAtPosition(view, 5)).toBeNull();
 
@@ -805,22 +806,22 @@ describe("Tooltip", () => {
       it("should handle alerts on multiple lines", () => {
         const alert1: ValeAlert = createMockValeAlert({
           Line: 1,
-          Span: [1, 5],
+          Span: [1, 4], // 1-based: "test" (0-3, 4 chars)
           Match: "test",
         });
 
         const alert2: ValeAlert = createMockValeAlert({
           Line: 2,
-          Span: [1, 5],
+          Span: [1, 4], // 1-based: "word" (0-3 on line 2, 4 chars)
           Match: "word",
         });
 
         const view = createViewWithAlerts("test\nword", [alert1, alert2]);
 
-        // Alert on first line
+        // Alert on first line (position 1 is within "test")
         expect(getAlertAtPosition(view, 1)).toEqual(alert1);
 
-        // Alert on second line (position 5 is start of second line)
+        // Alert on second line (position 5 is start of "word" after newline)
         expect(getAlertAtPosition(view, 5)).toEqual(alert2);
 
         view.destroy();
