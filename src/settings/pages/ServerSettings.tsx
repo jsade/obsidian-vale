@@ -53,7 +53,6 @@ export const ServerSettings: React.FC = () => {
       .addText((text) => {
         const component = text
           .setValue(settings.server.url)
-          // eslint-disable-next-line obsidianmd/ui/sentence-case -- URL placeholder
           .setPlaceholder("http://localhost:7777");
 
         // Save on blur (not on every keystroke)

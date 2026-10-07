@@ -56,7 +56,7 @@ describe("useObsidianSetting", () => {
         super(containerEl);
         createdSettings.push(this as unknown as TestSetting);
       }
-    } as typeof Setting;
+    };
   });
 
   afterEach(() => {
@@ -343,7 +343,7 @@ describe("useObsidianSetting", () => {
           name: "Toggle Setting",
           configure: (setting) => {
             setting.addToggle((toggle) => {
-              capturedToggle = toggle as { setValue: (v: boolean) => void };
+              capturedToggle = toggle;
               (toggle as { setValue: (v: boolean) => unknown }).setValue(true);
             });
           },

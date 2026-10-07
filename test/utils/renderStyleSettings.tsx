@@ -609,7 +609,7 @@ export function renderStyleSettings(
     app,
     capturedSettings: getCapturedSettings(),
     ...queries,
-  } as RenderStyleSettingsResult;
+  };
 }
 
 /**

@@ -130,10 +130,7 @@ export const RuleItem: React.FC<RuleItemProps> = ({ rule, onUpdate }) => {
    * When severity is "default", use defaultSeverity if available
    */
   const getEffectiveSeverity = React.useCallback(():
-    | "suggestion"
-    | "warning"
-    | "error"
-    | null => {
+    "suggestion" | "warning" | "error" | null => {
     if (internalRule.severity === "default") {
       return internalRule.defaultSeverity || null;
     }

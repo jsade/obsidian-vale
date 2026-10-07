@@ -127,9 +127,7 @@ export function createMockEditor(options?: {
           fromOffset = from;
           toOffset = to as number;
         } else {
-          fromOffset = mockEditor.posToOffset(
-            from as { line: number; ch: number },
-          );
+          fromOffset = mockEditor.posToOffset(from);
           toOffset = mockEditor.posToOffset(to as { line: number; ch: number });
         }
 

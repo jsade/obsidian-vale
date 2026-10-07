@@ -122,9 +122,7 @@ function renderSettingsRouter(
   const { configPathValid = false, valePathValid = false } = options;
 
   // Mock useConfigManager to return our mock
-  jest
-    .spyOn(hooks, "useConfigManager")
-    .mockReturnValue(plugin.configManager as unknown as ValeConfigManager);
+  jest.spyOn(hooks, "useConfigManager").mockReturnValue(plugin.configManager);
 
   // Mock useSettings to return proper validation state
   // This is necessary because SettingsContext's validation state determines

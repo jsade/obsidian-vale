@@ -168,8 +168,7 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
   // The debounced function
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const debounced = function (this: any, ...args: Parameters<T>) {
+  const debounced = function (this: unknown, ...args: Parameters<T>) {
     // Clear any existing timeout
     if (timeoutId !== null) {
       clearTimeout(timeoutId);

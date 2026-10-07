@@ -26,6 +26,7 @@ export default defineConfig(
       "eslint.config.js",
       "esbuild.config.mjs",
       "jest.config.js",
+      "jest.config.cjs",
       "**/*.config.js",
       "**/*.config.mjs",
       "test/__mocks__/**",
@@ -82,6 +83,7 @@ export default defineConfig(
         {
           brands: ["Vale"],
           acronyms: ["CLI", "URL"],
+          ignoreRegex: ["^https?://"],
         },
       ],
       "obsidianmd/validate-manifest": "error",
@@ -123,6 +125,14 @@ export default defineConfig(
       // but this is a false positive - @testing-library/react's act() is the correct approach.
       // See: https://github.com/testing-library/react-testing-library/issues/1061
       "@typescript-eslint/no-deprecated": "off",
+      // Tests lean on `any`, mocks, and unbound jest.fn() methods; the Obsidian
+      // plugin rules about disable comments are aimed at shipped plugin code.
+      "eslint-comments/require-description": "off",
+      "eslint-comments/no-restricted-disable": "off",
+      "eslint-comments/disable-enable-pair": [
+        "error",
+        { allowWholeFile: true },
+      ],
     },
   },
 );
