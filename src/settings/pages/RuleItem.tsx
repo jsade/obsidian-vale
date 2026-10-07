@@ -2,7 +2,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { Setting } from "obsidian";
 import { ValeRule, ValeRuleSeverity } from "../../types";
-import { getSeverityIcon } from "../../components/icons/SeverityIcons";
+import { SeverityIcon } from "../../components/icons/SeverityIcons";
 
 /**
  * Get the CSS class for a severity level
@@ -202,21 +202,14 @@ export const RuleItem: React.FC<RuleItemProps> = ({ rule, onUpdate }) => {
 
   // Determine which icon to show
   const effectiveSeverity = getEffectiveSeverity();
-  const SeverityIconComponent = effectiveSeverity
-    ? getSeverityIcon(effectiveSeverity)
-    : null;
 
   // Render icon via portal after the icon container is created
-  // Check both SeverityIconComponent and effectiveSeverity to satisfy TypeScript
-  // and avoid non-null assertion
   const iconPortal =
-    iconContainerRef.current &&
-    SeverityIconComponent &&
-    effectiveSeverity &&
-    !internalRule.disabled
+    iconContainerRef.current && effectiveSeverity && !internalRule.disabled
       ? ReactDOM.createPortal(
-          <SeverityIconComponent
+          <SeverityIcon
             key={`severity-icon-${effectiveSeverity}`}
+            severity={effectiveSeverity}
             className={`vale-rule-severity-icon__svg ${getSeverityClass(effectiveSeverity)}`}
           />,
           iconContainerRef.current,

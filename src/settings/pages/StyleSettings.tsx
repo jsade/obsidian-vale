@@ -73,7 +73,7 @@ export const StyleSettings: React.FC<StyleSettingsProps> = ({ navigate }) => {
 
   // Effect: Sync local enabled styles when fetched data changes
   React.useEffect(() => {
-    // eslint-disable-next-line @eslint-react/hooks-extra/no-direct-set-state-in-use-effect -- Intentionally syncing state from props
+    // eslint-disable-next-line @eslint-react/set-state-in-effect -- Intentionally syncing state from props
     setLocalEnabledStyles(enabledStyles);
   }, [enabledStyles]);
 
