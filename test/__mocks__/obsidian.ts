@@ -330,6 +330,8 @@ export class Setting {
   }
 }
 
+export const requestUrl = jest.fn();
+
 export function normalizePath(path: string): string {
   return path;
 }

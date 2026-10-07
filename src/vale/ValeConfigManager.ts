@@ -1,7 +1,7 @@
 import * as compressing from "compressing";
-import download from "download";
 import * as fs from "fs";
 import { parse, stringify } from "ini";
+import { requestUrl } from "obsidian";
 import * as os from "os";
 import * as path from "path";
 import { Extract } from "unzipper";
@@ -12,6 +12,13 @@ import {
   ValeRuleSeverity,
   ValeStyle,
 } from "../types";
+
+// downloadFile fetches a URL with Obsidian's requestUrl, which follows
+// redirects (GitHub release assets) and isn't subject to CORS.
+async function downloadFile(url: string): Promise<Buffer> {
+  const response = await requestUrl({ url });
+  return Buffer.from(response.arrayBuffer);
+}
 
 export interface ValidationResult {
   valid: boolean;
@@ -151,17 +158,15 @@ export class ValeConfigManager {
       return;
     }
 
+    await fs.promises.writeFile(zipPath, await downloadFile(styleUrl));
+
     return new Promise((resolve) => {
-      download(styleUrl, { extract: true }).pipe(
-        fs.createWriteStream(zipPath).on("close", () => {
-          fs.createReadStream(zipPath)
-            .pipe(Extract({ path: path.dirname(zipPath) }))
-            .on("close", () => {
-              fs.unlinkSync(zipPath);
-              resolve();
-            });
-        }),
-      );
+      fs.createReadStream(zipPath)
+        .pipe(Extract({ path: path.dirname(zipPath) }))
+        .on("close", () => {
+          fs.unlinkSync(zipPath);
+          resolve();
+        });
     });
   }
 
@@ -499,7 +504,7 @@ export class ValeConfigManager {
     const destinationPath = path.join(path.dirname(zipPath), "bin");
 
     try {
-      const input = await download(url);
+      const input = await downloadFile(url);
       if (process.platform === "win32") {
         await compressing.zip.uncompress(input, destinationPath);
       } else {
