@@ -29,9 +29,6 @@ export interface SettingGroupProps {
   className?: string;
 }
 
-// Counter for generating unique IDs across component instances
-let groupIdCounter = 0;
-
 /**
  * Component for grouping related settings with a heading.
  *
@@ -100,10 +97,7 @@ export const SettingGroup: React.FC<SettingGroupProps> = ({
   const headingRef = React.useRef<HTMLDivElement>(null);
 
   // Generate stable unique ID for this group instance
-  const groupId = React.useMemo(() => {
-    groupIdCounter += 1;
-    return `vale-setting-group-${groupIdCounter}`;
-  }, []);
+  const groupId = `vale-setting-group-${React.useId()}`;
 
   const headingId = `${groupId}-heading`;
 

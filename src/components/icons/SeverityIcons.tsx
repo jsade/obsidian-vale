@@ -63,6 +63,26 @@ export const SuggestionIcon: React.FC<{ className?: string }> = ({
 /**
  * Get the icon component for a severity level
  */
+/**
+ * Renders the icon for a severity level.
+ */
+export function SeverityIcon({
+  severity,
+  className,
+}: {
+  severity: "suggestion" | "warning" | "error";
+  className?: string;
+}): React.ReactElement {
+  switch (severity) {
+    case "error":
+      return <ErrorIcon className={className} />;
+    case "warning":
+      return <WarningIcon className={className} />;
+    case "suggestion":
+      return <SuggestionIcon className={className} />;
+  }
+}
+
 export function getSeverityIcon(
   severity: "suggestion" | "warning" | "error",
 ): React.FC<{ className?: string }> {
