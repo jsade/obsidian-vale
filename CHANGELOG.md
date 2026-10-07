@@ -6,10 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-10-07
+
+### Security
+
+- Updated `compressing` to 2.1.3, which fixes arbitrary file writes via symlinks when extracting downloaded Vale and style archives
+
 ### Changed
 
 - Minimum Obsidian version raised to 1.7.2 (required for `Workspace.revealLeaf`)
-- Updated dependencies (Dependabot minor/patch group)
+- Upgraded to React 19
+- Updated dependencies, including `ini` 7
+
+### Fixed
+
+- Vale config errors now keep the underlying file system error as their cause
+
+## [1.3.0] - 2026-01-19
 
 ### Removed
 
