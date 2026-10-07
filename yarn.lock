@@ -5775,10 +5775,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ini@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "ini@npm:2.0.0"
-  checksum: 10c0/2e0c8f386369139029da87819438b20a1ff3fe58372d93fb1a86e9d9344125ace3a806b8ec4eb160a46e64cbc422fe68251869441676af49b7fc441af2389c25
+"ini@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "ini@npm:7.0.0"
+  checksum: 10c0/7520cae38bd5587e1cbca4637bb5fc0e157f38e0816522756456010ef703772d0018f9f4987cb9977bf3b10c1feccaad7800744dd1f5d85fb435e58a1baa9754
   languageName: node
   linkType: hard
 
@@ -7741,7 +7741,7 @@ __metadata:
     eslint-plugin-obsidianmd: "npm:^0.4.2"
     eslint-plugin-prettier: "npm:^5.5.6"
     globals: "npm:^16.5.0"
-    ini: "npm:^2.0.0"
+    ini: "npm:^7.0.0"
     jest: "npm:^30.5.2"
     jest-axe: "npm:^10.0.0"
     jest-environment-jsdom: "npm:^30.5.2"
