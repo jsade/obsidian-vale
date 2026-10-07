@@ -1051,7 +1051,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/json@npm:0.14.0, @eslint/json@npm:^0.14.0":
+"@eslint/json@npm:0.14.0":
   version: 0.14.0
   resolution: "@eslint/json@npm:0.14.0"
   dependencies:
@@ -1060,6 +1060,18 @@ __metadata:
     "@humanwhocodes/momoa": "npm:^3.3.10"
     natural-compare: "npm:^1.4.0"
   checksum: 10c0/1832b0d07dbf314213e02ba8c391b8f2095e72c8ff091226b0048d8db24900048015e51e2906ae71423174c1524779d94e32140db2d608d4337deb2a208c5fb5
+  languageName: node
+  linkType: hard
+
+"@eslint/json@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@eslint/json@npm:2.1.0"
+  dependencies:
+    "@eslint/core": "npm:^1.2.1"
+    "@eslint/plugin-kit": "npm:^0.7.2"
+    "@humanwhocodes/momoa": "npm:^3.3.10"
+    natural-compare: "npm:^1.4.0"
+  checksum: 10c0/9495e62dbf3ad32e2348963599743e8bedb0561bfcac83fc5d4fbd2acb7eb75ac1940912354e0d22ecc78a1ce0385a39c575a266273c2ad0fa47b89eac1dfbfc
   languageName: node
   linkType: hard
 
@@ -1080,7 +1092,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/plugin-kit@npm:^0.7.3":
+"@eslint/plugin-kit@npm:^0.7.2, @eslint/plugin-kit@npm:^0.7.3":
   version: 0.7.3
   resolution: "@eslint/plugin-kit@npm:0.7.3"
   dependencies:
@@ -7630,7 +7642,7 @@ __metadata:
     "@codemirror/view": "npm:^6.43.13"
     "@eslint-react/eslint-plugin": "npm:^5.24.0"
     "@eslint/js": "npm:^10.0.1"
-    "@eslint/json": "npm:^0.14.0"
+    "@eslint/json": "npm:^2.1.0"
     "@testing-library/dom": "npm:^10.4.2"
     "@testing-library/jest-dom": "npm:^7.0.1"
     "@testing-library/react": "npm:^16.3.3"
