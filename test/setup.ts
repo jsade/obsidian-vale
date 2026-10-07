@@ -7,7 +7,7 @@ import "@testing-library/jest-dom";
 
 // Polyfill TextEncoder/TextDecoder for jsdom environment
 global.TextEncoder = TextEncoder;
-global.TextDecoder = TextDecoder as typeof global.TextDecoder;
+global.TextDecoder = TextDecoder;
 
 // Mock ResizeObserver for JSDOM (used by CollapsibleSection)
 global.ResizeObserver = class ResizeObserver {
