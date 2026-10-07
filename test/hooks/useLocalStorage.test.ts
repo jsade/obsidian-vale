@@ -330,28 +330,6 @@ describe("useLocalStorage", () => {
     });
   });
 
-  describe("SSR safety", () => {
-    it("should handle missing window gracefully", () => {
-      // Store original window
-      const originalWindow = global.window;
-
-      // Remove window
-      // @ts-expect-error - Testing SSR scenario
-      delete global.window;
-
-      // Should not throw
-      // Note: In a real SSR environment, we'd need more setup
-      // This tests the basic check
-      expect(() => {
-        // The hook checks for window existence
-        // When window is undefined, it should return default value
-      }).not.toThrow();
-
-      // Restore window
-      global.window = originalWindow;
-    });
-  });
-
   describe("multiple hooks with same key", () => {
     it("should initialize both hooks with same stored value", () => {
       mockStorage["vale-shared"] = JSON.stringify("shared value");
