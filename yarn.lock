@@ -3049,11 +3049,11 @@ __metadata:
   linkType: hard
 
 "baseline-browser-mapping@npm:^2.8.19":
-  version: 2.8.19
-  resolution: "baseline-browser-mapping@npm:2.8.19"
+  version: 2.11.27
+  resolution: "baseline-browser-mapping@npm:2.11.27"
   bin:
-    baseline-browser-mapping: dist/cli.js
-  checksum: 10c0/bfdc00501d691166a45303d7a83420ac90ae42619fc1625dcb7ef486b4a049237b37314aaa51e265b8c5083eecfd7064d9af9cb57b9f686bb7b306d7de45b0a3
+    baseline-browser-mapping: dist/cli.cjs
+  checksum: 10c0/4a06cfab5ad4f57633c0092340af41388f3fc71e6a91a3309942a23c60b65e9ec6f243edbd2f484d3d0ee40f5f33d974c8a85c9c207e104ea17ba429cfb4d3df
   languageName: node
   linkType: hard
 
