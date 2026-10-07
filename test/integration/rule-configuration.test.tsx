@@ -131,9 +131,7 @@ function createMockUseSettings(plugin: MockedPlugin) {
  */
 function renderSettingsRouter(plugin: MockedPlugin) {
   // Mock useConfigManager to return our mock
-  jest
-    .spyOn(hooks, "useConfigManager")
-    .mockReturnValue(plugin.configManager as unknown as ValeConfigManager);
+  jest.spyOn(hooks, "useConfigManager").mockReturnValue(plugin.configManager);
 
   // Mock useSettings to return valid config path (enables Styles tab)
   jest

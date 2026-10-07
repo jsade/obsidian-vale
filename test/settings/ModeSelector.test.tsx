@@ -318,7 +318,7 @@ describe("ModeSelector Component", () => {
     it("should handle unknown mode value gracefully", async () => {
       // TypeScript would catch this, but testing runtime behavior
       const { container } = render(
-        <ModeSelector mode={"unknown" as "cli"} onModeChange={jest.fn()} />,
+        <ModeSelector mode={"unknown"} onModeChange={jest.fn()} />,
       );
 
       // Should not crash and should render

@@ -106,9 +106,7 @@ function createMockPlugin(
  */
 function renderSettingsRouter(plugin: MockedPlugin) {
   // Mock useConfigManager to return our mock
-  jest
-    .spyOn(hooks, "useConfigManager")
-    .mockReturnValue(plugin.configManager as unknown as ValeConfigManager);
+  jest.spyOn(hooks, "useConfigManager").mockReturnValue(plugin.configManager);
 
   return render(<SettingsRouter plugin={plugin as unknown as ValePlugin} />);
 }
@@ -136,8 +134,7 @@ describe("Settings Persistence Integration Tests", () => {
 
       // Capture the updateSettings function
       let capturedUpdateSettings:
-        | ((updates: Partial<ValeSettings>) => Promise<void>)
-        | null = null;
+        ((updates: Partial<ValeSettings>) => Promise<void>) | null = null;
 
       const SettingsCapture: React.FC = () => {
         const { updateSettings } = useSettings();
@@ -147,7 +144,7 @@ describe("Settings Persistence Integration Tests", () => {
 
       jest
         .spyOn(hooks, "useConfigManager")
-        .mockReturnValue(plugin.configManager as unknown as ValeConfigManager);
+        .mockReturnValue(plugin.configManager);
 
       render(
         <SettingsProvider plugin={plugin as unknown as ValePlugin}>
@@ -187,8 +184,7 @@ describe("Settings Persistence Integration Tests", () => {
 
       // Capture the updateSettings function
       let capturedUpdateSettings:
-        | ((updates: Partial<ValeSettings>) => Promise<void>)
-        | null = null;
+        ((updates: Partial<ValeSettings>) => Promise<void>) | null = null;
 
       const SettingsCapture: React.FC = () => {
         const { updateSettings } = useSettings();
@@ -198,7 +194,7 @@ describe("Settings Persistence Integration Tests", () => {
 
       jest
         .spyOn(hooks, "useConfigManager")
-        .mockReturnValue(plugin.configManager as unknown as ValeConfigManager);
+        .mockReturnValue(plugin.configManager);
 
       render(
         <SettingsProvider plugin={plugin as unknown as ValePlugin}>
@@ -239,8 +235,7 @@ describe("Settings Persistence Integration Tests", () => {
 
       // Capture the updateSettings function
       let capturedUpdateSettings:
-        | ((updates: Partial<ValeSettings>) => Promise<void>)
-        | null = null;
+        ((updates: Partial<ValeSettings>) => Promise<void>) | null = null;
 
       const SettingsCapture: React.FC = () => {
         const { updateSettings } = useSettings();
@@ -250,7 +245,7 @@ describe("Settings Persistence Integration Tests", () => {
 
       jest
         .spyOn(hooks, "useConfigManager")
-        .mockReturnValue(plugin.configManager as unknown as ValeConfigManager);
+        .mockReturnValue(plugin.configManager);
 
       render(
         <SettingsProvider plugin={plugin as unknown as ValePlugin}>
@@ -531,8 +526,7 @@ describe("Settings Persistence Integration Tests", () => {
 
       // Capture the updateSettings function
       let capturedUpdateSettings:
-        | ((updates: Partial<ValeSettings>) => Promise<void>)
-        | null = null;
+        ((updates: Partial<ValeSettings>) => Promise<void>) | null = null;
 
       const SettingsCapture: React.FC = () => {
         const { updateSettings } = useSettings();
@@ -542,7 +536,7 @@ describe("Settings Persistence Integration Tests", () => {
 
       jest
         .spyOn(hooks, "useConfigManager")
-        .mockReturnValue(plugin.configManager as unknown as ValeConfigManager);
+        .mockReturnValue(plugin.configManager);
 
       render(
         <SettingsProvider plugin={plugin as unknown as ValePlugin}>
@@ -615,8 +609,7 @@ describe("Settings Persistence Integration Tests", () => {
 
       // Capture the updateSettings function
       let capturedUpdateSettings:
-        | ((updates: Partial<ValeSettings>) => Promise<void>)
-        | null = null;
+        ((updates: Partial<ValeSettings>) => Promise<void>) | null = null;
 
       const SettingsCapture: React.FC = () => {
         const { updateSettings } = useSettings();
@@ -626,7 +619,7 @@ describe("Settings Persistence Integration Tests", () => {
 
       jest
         .spyOn(hooks, "useConfigManager")
-        .mockReturnValue(plugin.configManager as unknown as ValeConfigManager);
+        .mockReturnValue(plugin.configManager);
 
       render(
         <SettingsProvider plugin={plugin as unknown as ValePlugin}>
@@ -668,8 +661,7 @@ describe("Settings Persistence Integration Tests", () => {
 
       // Capture the updateSettings function
       let capturedUpdateSettings:
-        | ((updates: Partial<ValeSettings>) => Promise<void>)
-        | null = null;
+        ((updates: Partial<ValeSettings>) => Promise<void>) | null = null;
 
       const SettingsCapture: React.FC = () => {
         const { updateSettings } = useSettings();
@@ -679,7 +671,7 @@ describe("Settings Persistence Integration Tests", () => {
 
       jest
         .spyOn(hooks, "useConfigManager")
-        .mockReturnValue(plugin.configManager as unknown as ValeConfigManager);
+        .mockReturnValue(plugin.configManager);
 
       render(
         <SettingsProvider plugin={plugin as unknown as ValePlugin}>
@@ -752,7 +744,7 @@ describe("Settings Persistence Integration Tests", () => {
 
       jest
         .spyOn(hooks, "useConfigManager")
-        .mockReturnValue(plugin.configManager as unknown as ValeConfigManager);
+        .mockReturnValue(plugin.configManager);
 
       render(
         <SettingsProvider plugin={plugin as unknown as ValePlugin}>
@@ -797,7 +789,7 @@ describe("Settings Persistence Integration Tests", () => {
 
       jest
         .spyOn(hooks, "useConfigManager")
-        .mockReturnValue(plugin.configManager as unknown as ValeConfigManager);
+        .mockReturnValue(plugin.configManager);
 
       render(
         <SettingsProvider plugin={plugin as unknown as ValePlugin}>
@@ -904,8 +896,7 @@ describe("Settings Persistence Integration Tests", () => {
 
       // Capture the updateSettings function
       let capturedUpdateSettings:
-        | ((updates: Partial<ValeSettings>) => Promise<void>)
-        | null = null;
+        ((updates: Partial<ValeSettings>) => Promise<void>) | null = null;
 
       const SettingsCapture: React.FC = () => {
         const { updateSettings } = useSettings();
@@ -915,7 +906,7 @@ describe("Settings Persistence Integration Tests", () => {
 
       jest
         .spyOn(hooks, "useConfigManager")
-        .mockReturnValue(plugin.configManager as unknown as ValeConfigManager);
+        .mockReturnValue(plugin.configManager);
 
       render(
         <SettingsProvider plugin={plugin as unknown as ValePlugin}>
@@ -981,8 +972,7 @@ describe("Settings Persistence - Edge Cases", () => {
 
     // Capture the updateSettings function
     let capturedUpdateSettings:
-      | ((updates: Partial<ValeSettings>) => Promise<void>)
-      | null = null;
+      ((updates: Partial<ValeSettings>) => Promise<void>) | null = null;
 
     const SettingsCapture: React.FC = () => {
       const { updateSettings } = useSettings();
@@ -990,9 +980,7 @@ describe("Settings Persistence - Edge Cases", () => {
       return null;
     };
 
-    jest
-      .spyOn(hooks, "useConfigManager")
-      .mockReturnValue(plugin.configManager as unknown as ValeConfigManager);
+    jest.spyOn(hooks, "useConfigManager").mockReturnValue(plugin.configManager);
 
     render(
       <SettingsProvider plugin={plugin as unknown as ValePlugin}>
@@ -1073,8 +1061,7 @@ describe("Settings Persistence - Edge Cases", () => {
 
     // Capture the updateSettings function
     let capturedUpdateSettings:
-      | ((updates: Partial<ValeSettings>) => Promise<void>)
-      | null = null;
+      ((updates: Partial<ValeSettings>) => Promise<void>) | null = null;
 
     const SettingsCapture: React.FC = () => {
       const { updateSettings } = useSettings();
@@ -1082,9 +1069,7 @@ describe("Settings Persistence - Edge Cases", () => {
       return null;
     };
 
-    jest
-      .spyOn(hooks, "useConfigManager")
-      .mockReturnValue(plugin.configManager as unknown as ValeConfigManager);
+    jest.spyOn(hooks, "useConfigManager").mockReturnValue(plugin.configManager);
 
     render(
       <SettingsProvider plugin={plugin as unknown as ValePlugin}>

@@ -49,9 +49,7 @@ export interface ValeAlertClickDetail {
  * by any component that needs to react to Vale-specific interactions.
  */
 export type ValeEventType =
-  | "vale-alert-click"
-  | "vale-alert-hover"
-  | "vale-alert-dismiss";
+  "vale-alert-click" | "vale-alert-hover" | "vale-alert-dismiss";
 
 /**
  * Type guard to check if an event is a Vale custom event
@@ -214,7 +212,7 @@ export function clickHandler(): Extension {
           position: pos,
           from: alertInfo.from,
           to: alertInfo.to,
-        } as ValeAlertClickDetail);
+        });
 
         if (process.env.DEBUG) {
           console.debug(`[Vale] Alert clicked: ${alertInfo.alertId}`);

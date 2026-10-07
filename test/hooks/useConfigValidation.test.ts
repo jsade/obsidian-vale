@@ -729,14 +729,13 @@ describe("useConfigValidation", () => {
       mockConfigManager.validateConfigPath.mockResolvedValue({ valid: true });
       mockConfigManager.loadConfig.mockResolvedValue(validConfig);
 
+      const initialProps: { cm: ValeConfigManager | undefined } = {
+        cm: mockConfigManager,
+      };
       const { result, rerender } = renderHook(
         ({ cm }: { cm: ValeConfigManager | undefined }) =>
           useConfigValidation(cm),
-        {
-          initialProps: {
-            cm: mockConfigManager as ValeConfigManager | undefined,
-          },
-        },
+        { initialProps },
       );
 
       act(() => {
@@ -1210,9 +1209,7 @@ describe("useConfigValidation", () => {
       };
 
       mockConfigManager.validateConfigPath.mockResolvedValue({ valid: true });
-      mockConfigManager.loadConfig.mockResolvedValue(
-        configWithExtras as unknown as ValeConfig,
-      );
+      mockConfigManager.loadConfig.mockResolvedValue(configWithExtras);
 
       const { result } = renderHook(() =>
         useConfigValidation(mockConfigManager),

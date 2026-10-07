@@ -200,7 +200,6 @@ export const GeneralSettings = ({
             .addText((text) => {
               const component = text
                 .setValue(settings.server.url)
-                // eslint-disable-next-line obsidianmd/ui/sentence-case -- URL placeholder
                 .setPlaceholder("http://localhost:7777");
 
               component.inputEl.onblur = async (value: FocusEvent) => {

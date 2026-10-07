@@ -78,8 +78,7 @@ class MockResizeObserver {
 
 // Install the mock globally before all tests
 beforeAll(() => {
-  global.ResizeObserver =
-    MockResizeObserver as unknown as typeof ResizeObserver;
+  global.ResizeObserver = MockResizeObserver;
 });
 
 describe("Keyboard Navigation", () => {

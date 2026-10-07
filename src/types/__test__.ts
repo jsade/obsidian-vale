@@ -74,9 +74,9 @@ function testSettingsTypes() {
 // Test 2: Route type structure
 function testRouteTypes() {
   // Valid route objects
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- compile-time type check only
   const route1: SettingsRoute = { page: "General" };
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- compile-time type check only
   const route2: SettingsRoute = { page: "Styles" };
   const route3: SettingsRoute = { page: "Rules", style: "Google" };
 
@@ -88,11 +88,11 @@ function testRouteTypes() {
   }
 
   // Helper functions should create valid routes
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- compile-time type check only
   const general = navigateToGeneral();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- compile-time type check only
   const styles = navigateToStyles();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- compile-time type check only
   const rules = navigateToRules("Vale");
 
   // Navigate function type
@@ -108,7 +108,7 @@ function testRouteTypes() {
 function testValidationTypes() {
   // Create validation states
   const idle = createIdleValidation();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- compile-time type check only
   const validating = createValidatingValidation();
   const valid = createValidValidation({ valid: true });
   const error = createErrorValidation("Not found", "Check the path");
@@ -144,7 +144,7 @@ function testValidationTypes() {
 function testBackwardCompatibility() {
   // Import old types (if available)
   // This would fail to compile if types are incompatible
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- compile-time type check only
   const oldSettings: ValeSettings = DEFAULT_SETTINGS;
 
   // New settings should work in place of old settings

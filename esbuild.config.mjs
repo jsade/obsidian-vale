@@ -43,6 +43,8 @@ const externalModules = [
 	"@codemirror/search",
 	"@codemirror/state",
 	"@codemirror/view",
+	// Optional require in unzipper's S3 source; never reached by this plugin.
+	"@aws-sdk/client-s3",
 	...builtinModules,
 ];
 

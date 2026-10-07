@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- Minimum Obsidian version raised to 1.7.2 (required for `Workspace.revealLeaf`)
+- Updated dependencies (Dependabot minor/patch group)
+
 ### Removed
 
 - Removed Vale Studio from settings and documentation

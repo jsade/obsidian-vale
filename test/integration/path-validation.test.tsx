@@ -105,9 +105,7 @@ function createMockPlugin(
  */
 function renderSettingsRouter(plugin: MockedPlugin) {
   // Mock useConfigManager to return our mock
-  jest
-    .spyOn(hooks, "useConfigManager")
-    .mockReturnValue(plugin.configManager as unknown as ValeConfigManager);
+  jest.spyOn(hooks, "useConfigManager").mockReturnValue(plugin.configManager);
 
   return render(<SettingsRouter plugin={plugin as unknown as ValePlugin} />);
 }

@@ -80,35 +80,24 @@ export const StyleItem: React.FC<StyleItemProps> = ({
             attr: { "aria-label": "Style not found on filesystem" },
           });
           // Use Obsidian's setIcon API for consistent iconography
-          // eslint-disable-next-line @typescript-eslint/no-require-imports
+          // eslint-disable-next-line @typescript-eslint/no-require-imports -- resolved at call time so tests can swap the obsidian mock
           const { setIcon } = require("obsidian") as {
             setIcon: (el: HTMLElement, icon: string) => void;
           };
           setIcon(warningIcon, "alert-triangle");
-          warningIcon.setCssProps({
-            "vertical-align": "middle",
-            "margin-right": "4px",
-            color: "var(--text-warning)",
-          });
           setting.nameEl.createSpan({ text: style.name });
 
           // Set description to warning message
           setting.setDesc(
-            // eslint-disable-next-line obsidianmd/ui/sentence-case -- Technical message referencing config file
             "Referenced in .vale.ini but not found on filesystem",
           );
         }
 
         // Add rule count text before other controls (if available and not missing)
         if (style.ruleCount !== undefined && !isMissing) {
-          const ruleCountEl = setting.controlEl.createSpan({
+          setting.controlEl.createSpan({
             cls: "vale-style-rule-count",
             text: `${style.ruleCount} ${style.ruleCount === 1 ? "rule" : "rules"}`,
-          });
-          ruleCountEl.setCssProps({
-            color: "var(--text-muted)",
-            "margin-right": "12px",
-            "font-size": "var(--font-ui-small)",
           });
         }
 

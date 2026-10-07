@@ -783,17 +783,16 @@ describe("usePathValidation", () => {
       mockConfigManager.validateValePath.mockResolvedValue({ valid: true });
       mockConfigManager.validateConfigPath.mockResolvedValue({ valid: true });
 
+      const initialProps: { cm: ValeConfigManager | undefined } = {
+        cm: mockConfigManager,
+      };
       const { result, rerender } = renderHook(
         ({ cm }: { cm: ValeConfigManager | undefined }) =>
           usePathValidation(cm, {
             valePath: "/usr/local/bin/vale",
             configPath: "/home/user/.vale.ini",
           }),
-        {
-          initialProps: {
-            cm: mockConfigManager as ValeConfigManager | undefined,
-          },
-        },
+        { initialProps },
       );
 
       act(() => {

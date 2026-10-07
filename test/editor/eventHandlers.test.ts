@@ -271,9 +271,7 @@ describe("Event Handlers", () => {
     it("should return false for regular event", () => {
       const event = new MouseEvent("click");
 
-      expect(isValeEvent(event, "vale-alert-click" as ValeEventType)).toBe(
-        false,
-      );
+      expect(isValeEvent(event, "vale-alert-click")).toBe(false);
     });
 
     it("should return false for custom event with wrong name", () => {
