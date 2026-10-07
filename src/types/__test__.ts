@@ -43,6 +43,8 @@ function testSettingsTypes() {
     cli: { managed: true, valePath: "", configPath: "" },
     showEditorToolbarButton: true,
     autoCheckOnChange: false,
+    checkOnNoteOpen: true,
+    autoOpenResultsPane: false,
   };
 
   const serverSettings: ValeSettings = {
@@ -51,6 +53,8 @@ function testSettingsTypes() {
     cli: { managed: false },
     showEditorToolbarButton: false,
     autoCheckOnChange: true,
+    checkOnNoteOpen: false,
+    autoOpenResultsPane: true,
   };
 
   // Type guards should work
