@@ -7,6 +7,11 @@ updates:
     open-pull-requests-limit: 10
     commit-message:
       prefix: "chore(deps)"
+    ignore:
+      # Node runs inside the user's Obsidian installer (Electron), which doesn't
+      # auto-update. Keep types at the oldest Node the plugin should support.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
     groups:
       npm-minor-patch:
         update-types:
