@@ -17,9 +17,13 @@ jobs:
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
 
-      # Major version bumps are left for manual review.
-      - name: Enable auto-merge for minor and patch updates
-        if: steps.metadata.outputs.update-type != 'version-update:semver-major'
+      # Major version bumps are left for manual review, except security
+      # updates (the *-security groups in dependabot.yml). The required CI
+      # check still gates the merge.
+      - name: Enable auto-merge for security, minor, and patch updates
+        if: >-
+          endsWith(steps.metadata.outputs.dependency-group, '-security') ||
+          steps.metadata.outputs.update-type != 'version-update:semver-major'
         run: gh pr merge --auto --squash "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}

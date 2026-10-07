@@ -17,6 +17,12 @@ updates:
         update-types:
           - "minor"
           - "patch"
+      # Security and malware fixes land in one PR, which auto-merges even when
+      # it contains a major bump (see dependabot-auto-merge.yml).
+      npm-security:
+        applies-to: security-updates
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -31,3 +37,7 @@ updates:
         update-types:
           - "minor"
           - "patch"
+      actions-security:
+        applies-to: security-updates
+        patterns:
+          - "*"

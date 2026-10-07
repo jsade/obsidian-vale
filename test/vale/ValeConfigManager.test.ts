@@ -7,7 +7,6 @@ import * as path from "path";
 import { ValeConfigManager } from "../../src/vale/ValeConfigManager";
 
 // Mock modules
-jest.mock("download");
 jest.mock("compressing");
 jest.mock("unzipper");
 
@@ -48,11 +47,11 @@ describe("ValeConfigManager", () => {
           configurable: true,
         });
 
-        // Mock download and compressing
+        // Mock requestUrl and compressing
         // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment
-        const mockDownload = require("download");
+        const { requestUrl: mockDownload } = require("obsidian");
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        mockDownload.mockResolvedValue(Buffer.from("test"));
+        mockDownload.mockResolvedValue({ arrayBuffer: new ArrayBuffer(4) });
 
         // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment
         const mockCompressing = require("compressing");
@@ -76,11 +75,11 @@ describe("ValeConfigManager", () => {
           configurable: true,
         });
 
-        // Mock download and compressing
+        // Mock requestUrl and compressing
         // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment
-        const mockDownload = require("download");
+        const { requestUrl: mockDownload } = require("obsidian");
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        mockDownload.mockResolvedValue(Buffer.from("test"));
+        mockDownload.mockResolvedValue({ arrayBuffer: new ArrayBuffer(4) });
 
         // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment
         const mockCompressing = require("compressing");
@@ -105,11 +104,11 @@ describe("ValeConfigManager", () => {
           configurable: true,
         });
 
-        // Mock download and compressing
+        // Mock requestUrl and compressing
         // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment
-        const mockDownload = require("download");
+        const { requestUrl: mockDownload } = require("obsidian");
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        mockDownload.mockResolvedValue(Buffer.from("test"));
+        mockDownload.mockResolvedValue({ arrayBuffer: new ArrayBuffer(4) });
 
         // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment
         const mockCompressing = require("compressing");
@@ -134,9 +133,9 @@ describe("ValeConfigManager", () => {
         });
 
         // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment
-        const mockDownload = require("download");
+        const { requestUrl: mockDownload } = require("obsidian");
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        mockDownload.mockResolvedValue(Buffer.from("test"));
+        mockDownload.mockResolvedValue({ arrayBuffer: new ArrayBuffer(4) });
 
         // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment
         const mockCompressing = require("compressing");
@@ -159,9 +158,9 @@ describe("ValeConfigManager", () => {
         });
 
         // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment
-        const mockDownload = require("download");
+        const { requestUrl: mockDownload } = require("obsidian");
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        mockDownload.mockResolvedValue(Buffer.from("test"));
+        mockDownload.mockResolvedValue({ arrayBuffer: new ArrayBuffer(4) });
 
         // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment
         const mockCompressing = require("compressing");
@@ -184,9 +183,9 @@ describe("ValeConfigManager", () => {
         });
 
         // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment
-        const mockDownload = require("download");
+        const { requestUrl: mockDownload } = require("obsidian");
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        mockDownload.mockResolvedValue(Buffer.from("test"));
+        mockDownload.mockResolvedValue({ arrayBuffer: new ArrayBuffer(4) });
 
         // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment
         const mockCompressing = require("compressing");
@@ -234,7 +233,7 @@ describe("ValeConfigManager", () => {
         });
 
         // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment
-        const mockDownload = require("download");
+        const { requestUrl: mockDownload } = require("obsidian");
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
         mockDownload.mockRejectedValue(new Error("Network error"));
 
@@ -261,9 +260,9 @@ describe("ValeConfigManager", () => {
         });
 
         // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment
-        const mockDownload = require("download");
+        const { requestUrl: mockDownload } = require("obsidian");
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        mockDownload.mockResolvedValue(Buffer.from("test"));
+        mockDownload.mockResolvedValue({ arrayBuffer: new ArrayBuffer(4) });
 
         // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment
         const mockCompressing = require("compressing");

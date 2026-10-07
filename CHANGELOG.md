@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Security
+
+- Replaced the unmaintained `download` package with Obsidian's `requestUrl` for Vale and style downloads, removing vulnerable `decompress`, `got`, `http-cache-semantics`, and `decode-uri-component` dependencies
+- Updated transitive dependencies to resolve open Dependabot alerts (`brace-expansion`, `minimatch`, `picomatch`, `glob`, `http-cache-semantics`, `moment`, `sprintf-js`)
+
+### Changed
+
+- Updated `obsidian` to 1.13.1
+
 ## [1.4.0] - 2026-10-07
 
 ### Security
