@@ -142,7 +142,7 @@ export interface SettingConfig {
 export function useObsidianSetting(
   config: SettingConfig,
   deps: React.DependencyList,
-): React.RefObject<HTMLDivElement> {
+): React.RefObject<HTMLDivElement | null> {
   // Ref: Container element where Setting will be rendered
   const containerRef = React.useRef<HTMLDivElement>(null);
 

@@ -222,7 +222,7 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
         }}
         // inert removes descendants from accessibility tree and prevents focus
         // when collapsed - this is the proper way to hide content from keyboards
-        {...(!expanded && { inert: "" })}
+        inert={!expanded}
       >
         <div ref={contentRef} className="vale-collapsible__content">
           {children}
