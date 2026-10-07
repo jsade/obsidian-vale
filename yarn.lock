@@ -591,16 +591,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eggjs/yauzl@npm:^2.11.0":
-  version: 2.11.0
-  resolution: "@eggjs/yauzl@npm:2.11.0"
-  dependencies:
-    buffer-crc32: "npm:~0.2.3"
-    fd-slicer2: "npm:^1.2.0"
-  checksum: 10c0/65cdb6fd29c98c60893d6fac4f52c2c74d4a3f2bd8a0cf6ce291e429a1a64cd31f9daffab71229120b63c1d0348e26607b2e952c92c932f173a90c6ba2945bfa
-  languageName: node
-  linkType: hard
-
 "@emnapi/core@npm:1.10.0":
   version: 1.10.0
   resolution: "@emnapi/core@npm:1.10.0"
@@ -3209,6 +3199,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"buffer-crc32@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "buffer-crc32@npm:1.0.0"
+  checksum: 10c0/8b86e161cee4bb48d5fa622cbae4c18f25e4857e5203b89e23de59e627ab26beb82d9d7999f2b8de02580165f61f83f997beaf02980cdf06affd175b651921ab
+  languageName: node
+  linkType: hard
+
 "buffer-crc32@npm:~0.2.3":
   version: 0.2.13
   resolution: "buffer-crc32@npm:0.2.13"
@@ -3462,20 +3459,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"compressing@npm:^1.10.5":
-  version: 1.10.5
-  resolution: "compressing@npm:1.10.5"
+"compressing@npm:^2.1.3":
+  version: 2.1.3
+  resolution: "compressing@npm:2.1.3"
   dependencies:
-    "@eggjs/yauzl": "npm:^2.11.0"
     flushwritable: "npm:^1.0.0"
     get-ready: "npm:^1.0.0"
-    iconv-lite: "npm:^0.5.0"
-    mkdirp: "npm:^0.5.1"
-    pump: "npm:^3.0.0"
+    iconv-lite: "npm:^0.7.0"
     streamifier: "npm:^0.1.1"
     tar-stream: "npm:^1.5.2"
-    yazl: "npm:^2.4.2"
-  checksum: 10c0/3a2efac4932171dcaa576e445ac907906e26a0e9c5d8e653a3acb105fae63fba49647ebb412a0ceb56b568454a0dac307348522da28a2adc9c072d3c79acbc20
+    yauzl: "npm:^3.4.0"
+    yazl: "npm:^3.3.1"
+  checksum: 10c0/b1e298b2b9636e0bebb19b090fb97e969eb49891df3851fc81023ebf99546570139dbacda480aeb32b82390c8cbf3451e5506eabf1d10d9f5a313eac72cafa46
   languageName: node
   linkType: hard
 
@@ -4920,15 +4915,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fd-slicer2@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "fd-slicer2@npm:1.2.0"
-  dependencies:
-    pend: "npm:^1.2.0"
-  checksum: 10c0/d67c4ea0daa32126ae168059e60e857a96e02a16e0f6236fdb7b0edefb42571aab97da9f1d824ff0821f865d0a65b94271e47b50582c6f24f993d6e5c52e286b
-  languageName: node
-  linkType: hard
-
 "fd-slicer@npm:~1.1.0":
   version: 1.1.0
   resolution: "fd-slicer@npm:1.1.0"
@@ -5661,12 +5647,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"iconv-lite@npm:^0.5.0":
-  version: 0.5.2
-  resolution: "iconv-lite@npm:0.5.2"
+"iconv-lite@npm:^0.7.0":
+  version: 0.7.3
+  resolution: "iconv-lite@npm:0.7.3"
   dependencies:
-    safer-buffer: "npm:>= 2.1.2 < 3"
-  checksum: 10c0/6c51c9996fe360b03f501c0f76f122f007c6a9be924cfdf0b007044cfbcdeeb9c9decb5435465934dbd3804f37e67fdc2fb3ed8c9948464299165776541dff25
+    safer-buffer: "npm:>= 2.1.2 < 3.0.0"
+  checksum: 10c0/be2fd2414f7e94be3a63063fa0ad5919c16bc7b6e00c77eea0765ced6db405739f38dd51016583058fba25cc1d0106ba30b83fbb7a7e32f824d4db76f23d8d33
   languageName: node
   linkType: hard
 
@@ -7285,7 +7271,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimist@npm:^1.2.0, minimist@npm:^1.2.5, minimist@npm:^1.2.6, minimist@npm:^1.2.8":
+"minimist@npm:^1.2.0, minimist@npm:^1.2.6, minimist@npm:^1.2.8":
   version: 1.2.8
   resolution: "minimist@npm:1.2.8"
   checksum: 10c0/19d3fcdca050087b84c2029841a093691a91259a47def2f18222f41e7645a0b7c44ef4b40e88a1e58a40c84d2ef0ee6047c55594d298146d0eb3f6b737c20ce6
@@ -7372,17 +7358,6 @@ __metadata:
   dependencies:
     minipass: "npm:^7.1.2"
   checksum: 10c0/5aad75ab0090b8266069c9aabe582c021ae53eb33c6c691054a13a45db3b4f91a7fb1bd79151e6b4e9e9a86727b522527c0a06ec7d45206b745d54cd3097bcec
-  languageName: node
-  linkType: hard
-
-"mkdirp@npm:^0.5.1":
-  version: 0.5.5
-  resolution: "mkdirp@npm:0.5.5"
-  dependencies:
-    minimist: "npm:^1.2.5"
-  bin:
-    mkdirp: bin/cmd.js
-  checksum: 10c0/4469faeeba703bc46b7cdbe3097d6373747a581eb8b556ce41c8fd25a826eb3254466c6522ba823c2edb0b6f0da7beb91cf71f040bc4e361534a3e67f0994bd0
   languageName: node
   linkType: hard
 
@@ -7655,7 +7630,7 @@ __metadata:
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
     "@types/unzipper": "npm:^0.10.11"
-    compressing: "npm:^1.10.5"
+    compressing: "npm:^2.1.3"
     download: "npm:^8.0.0"
     esbuild: "npm:^0.28.2"
     eslint: "npm:^10.12.0"
@@ -7906,7 +7881,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pend@npm:^1.2.0, pend@npm:~1.2.0":
+"pend@npm:~1.2.0":
   version: 1.2.0
   resolution: "pend@npm:1.2.0"
   checksum: 10c0/8a87e63f7a4afcfb0f9f77b39bb92374afc723418b9cb716ee4257689224171002e07768eeade4ecd0e86f1fa3d8f022994219fb45634f2dbd78c6803e452458
@@ -8449,7 +8424,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"safer-buffer@npm:>= 2.1.2 < 3, safer-buffer@npm:>= 2.1.2 < 3.0.0":
+"safer-buffer@npm:>= 2.1.2 < 3.0.0":
   version: 2.1.2
   resolution: "safer-buffer@npm:2.1.2"
   checksum: 10c0/7e3c8b2e88a1841c9671094bbaeebd94448111dd90a81a1f606f3f67708a6ec57763b3b47f06da09fc6054193e0e6709e77325415dc8422b04497a8070fa02d4
@@ -9946,12 +9921,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yazl@npm:^2.4.2":
-  version: 2.5.1
-  resolution: "yazl@npm:2.5.1"
+"yauzl@npm:^3.4.0":
+  version: 3.4.0
+  resolution: "yauzl@npm:3.4.0"
   dependencies:
-    buffer-crc32: "npm:~0.2.3"
-  checksum: 10c0/61a14fcf47246f1a667509809e1034d9548ef7a57cec94bc0395fa0ba74beaa6a412783b99ae59ee33e26e611929b909734f0aa5d1b32f811b206917f85fe87a
+    pend: "npm:~1.2.0"
+  checksum: 10c0/17a98c42c0065e8af429eb8a61f7a0e4562181ed54080366b838f34f741b6829f167f804787c86b7646bb042707f35871739f053de0548285e405a2eae4da025
+  languageName: node
+  linkType: hard
+
+"yazl@npm:^3.3.1":
+  version: 3.3.1
+  resolution: "yazl@npm:3.3.1"
+  dependencies:
+    buffer-crc32: "npm:^1.0.0"
+  checksum: 10c0/8290dffd8afc4ea32459c0ce5d7e22af250515aa0170f289cbc896530d3cd40c5be4788b5e3e7aa5cd21889778071f424e1824faadbd257dbd5ff80fb60d1fa6
   languageName: node
   linkType: hard
 
