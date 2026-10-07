@@ -6,10 +6,10 @@ exports[`Settings Components Snapshots CollapsibleSection renders collapsed stat
     class="vale-collapsible vale-collapsible--collapsed"
   >
     <button
-      aria-controls="collapsible-:r0:-content"
+      aria-controls="collapsible-_r_0_-content"
       aria-expanded="false"
       class="vale-collapsible__header"
-      id="collapsible-:r0:"
+      id="collapsible-_r_0_"
       type="button"
     >
       <span
@@ -39,9 +39,9 @@ exports[`Settings Components Snapshots CollapsibleSection renders collapsed stat
       </span>
     </button>
     <div
-      aria-labelledby="collapsible-:r0:"
+      aria-labelledby="collapsible-_r_0_"
       class="vale-collapsible__content-wrapper"
-      id="collapsible-:r0:-content"
+      id="collapsible-_r_0_-content"
       inert=""
       role="region"
       style="height: 0px; visibility: hidden;"
@@ -64,10 +64,10 @@ exports[`Settings Components Snapshots CollapsibleSection renders controlled mod
     class="vale-collapsible vale-collapsible--collapsed"
   >
     <button
-      aria-controls="collapsible-:r6:-content"
+      aria-controls="collapsible-_r_6_-content"
       aria-expanded="false"
       class="vale-collapsible__header"
-      id="collapsible-:r6:"
+      id="collapsible-_r_6_"
       type="button"
     >
       <span
@@ -97,9 +97,9 @@ exports[`Settings Components Snapshots CollapsibleSection renders controlled mod
       </span>
     </button>
     <div
-      aria-labelledby="collapsible-:r6:"
+      aria-labelledby="collapsible-_r_6_"
       class="vale-collapsible__content-wrapper"
-      id="collapsible-:r6:-content"
+      id="collapsible-_r_6_-content"
       inert=""
       role="region"
       style="height: 0px; visibility: hidden;"
@@ -122,10 +122,10 @@ exports[`Settings Components Snapshots CollapsibleSection renders controlled mod
     class="vale-collapsible vale-collapsible--expanded"
   >
     <button
-      aria-controls="collapsible-:r5:-content"
+      aria-controls="collapsible-_r_5_-content"
       aria-expanded="true"
       class="vale-collapsible__header"
-      id="collapsible-:r5:"
+      id="collapsible-_r_5_"
       type="button"
     >
       <span
@@ -155,9 +155,9 @@ exports[`Settings Components Snapshots CollapsibleSection renders controlled mod
       </span>
     </button>
     <div
-      aria-labelledby="collapsible-:r5:"
+      aria-labelledby="collapsible-_r_5_"
       class="vale-collapsible__content-wrapper"
-      id="collapsible-:r5:-content"
+      id="collapsible-_r_5_-content"
       role="region"
       style="height: auto; visibility: visible;"
     >
@@ -179,10 +179,10 @@ exports[`Settings Components Snapshots CollapsibleSection renders expanded state
     class="vale-collapsible vale-collapsible--expanded"
   >
     <button
-      aria-controls="collapsible-:r1:-content"
+      aria-controls="collapsible-_r_1_-content"
       aria-expanded="true"
       class="vale-collapsible__header"
-      id="collapsible-:r1:"
+      id="collapsible-_r_1_"
       type="button"
     >
       <span
@@ -212,9 +212,9 @@ exports[`Settings Components Snapshots CollapsibleSection renders expanded state
       </span>
     </button>
     <div
-      aria-labelledby="collapsible-:r1:"
+      aria-labelledby="collapsible-_r_1_"
       class="vale-collapsible__content-wrapper"
-      id="collapsible-:r1:-content"
+      id="collapsible-_r_1_-content"
       role="region"
       style="height: auto; visibility: visible;"
     >
@@ -236,10 +236,10 @@ exports[`Settings Components Snapshots CollapsibleSection renders with complex c
     class="vale-collapsible vale-collapsible--expanded"
   >
     <button
-      aria-controls="collapsible-:r7:-content"
+      aria-controls="collapsible-_r_7_-content"
       aria-expanded="true"
       class="vale-collapsible__header"
-      id="collapsible-:r7:"
+      id="collapsible-_r_7_"
       type="button"
     >
       <span
@@ -269,9 +269,9 @@ exports[`Settings Components Snapshots CollapsibleSection renders with complex c
       </span>
     </button>
     <div
-      aria-labelledby="collapsible-:r7:"
+      aria-labelledby="collapsible-_r_7_"
       class="vale-collapsible__content-wrapper"
-      id="collapsible-:r7:-content"
+      id="collapsible-_r_7_-content"
       role="region"
       style="height: auto; visibility: visible;"
     >
@@ -325,10 +325,10 @@ exports[`Settings Components Snapshots CollapsibleSection renders with custom cl
     class="vale-collapsible vale-collapsible--collapsed my-custom-section"
   >
     <button
-      aria-controls="collapsible-:r3:-content"
+      aria-controls="collapsible-_r_3_-content"
       aria-expanded="false"
       class="vale-collapsible__header"
-      id="collapsible-:r3:"
+      id="collapsible-_r_3_"
       type="button"
     >
       <span
@@ -358,9 +358,9 @@ exports[`Settings Components Snapshots CollapsibleSection renders with custom cl
       </span>
     </button>
     <div
-      aria-labelledby="collapsible-:r3:"
+      aria-labelledby="collapsible-_r_3_"
       class="vale-collapsible__content-wrapper"
-      id="collapsible-:r3:-content"
+      id="collapsible-_r_3_-content"
       inert=""
       role="region"
       style="height: 0px; visibility: hidden;"
@@ -441,10 +441,10 @@ exports[`Settings Components Snapshots CollapsibleSection renders with descripti
     class="vale-collapsible vale-collapsible--collapsed"
   >
     <button
-      aria-controls="collapsible-:r2:-content"
+      aria-controls="collapsible-_r_2_-content"
       aria-expanded="false"
       class="vale-collapsible__header"
-      id="collapsible-:r2:"
+      id="collapsible-_r_2_"
       type="button"
     >
       <span
@@ -479,9 +479,9 @@ exports[`Settings Components Snapshots CollapsibleSection renders with descripti
       </span>
     </button>
     <div
-      aria-labelledby="collapsible-:r2:"
+      aria-labelledby="collapsible-_r_2_"
       class="vale-collapsible__content-wrapper"
-      id="collapsible-:r2:-content"
+      id="collapsible-_r_2_-content"
       inert=""
       role="region"
       style="height: 0px; visibility: hidden;"
@@ -504,10 +504,10 @@ exports[`Settings Components Snapshots CollapsibleSection renders with long titl
     class="vale-collapsible vale-collapsible--collapsed"
   >
     <button
-      aria-controls="collapsible-:r8:-content"
+      aria-controls="collapsible-_r_8_-content"
       aria-expanded="false"
       class="vale-collapsible__header"
-      id="collapsible-:r8:"
+      id="collapsible-_r_8_"
       type="button"
     >
       <span
@@ -537,9 +537,9 @@ exports[`Settings Components Snapshots CollapsibleSection renders with long titl
       </span>
     </button>
     <div
-      aria-labelledby="collapsible-:r8:"
+      aria-labelledby="collapsible-_r_8_"
       class="vale-collapsible__content-wrapper"
-      id="collapsible-:r8:-content"
+      id="collapsible-_r_8_-content"
       inert=""
       role="region"
       style="height: 0px; visibility: hidden;"
@@ -625,7 +625,7 @@ exports[`Settings Components Snapshots SettingDivider renders with zero spacing 
 exports[`Settings Components Snapshots SettingGroup renders nested groups 1`] = `
 <div>
   <div
-    aria-labelledby="vale-setting-group-:rd:-heading"
+    aria-labelledby="vale-setting-group-_r_d_-heading"
     class="vale-setting-group"
     role="group"
   >
@@ -635,7 +635,7 @@ exports[`Settings Components Snapshots SettingGroup renders nested groups 1`] = 
       >
         <div
           class="setting-item-name"
-          id="vale-setting-group-:rd:-heading"
+          id="vale-setting-group-_r_d_-heading"
         >
           Parent Group
         </div>
@@ -648,7 +648,7 @@ exports[`Settings Components Snapshots SettingGroup renders nested groups 1`] = 
         Intro content
       </div>
       <div
-        aria-labelledby="vale-setting-group-:re:-heading"
+        aria-labelledby="vale-setting-group-_r_e_-heading"
         class="vale-setting-group"
         role="group"
       >
@@ -658,7 +658,7 @@ exports[`Settings Components Snapshots SettingGroup renders nested groups 1`] = 
           >
             <div
               class="setting-item-name"
-              id="vale-setting-group-:re:-heading"
+              id="vale-setting-group-_r_e_-heading"
             >
               Nested Group
             </div>
@@ -680,7 +680,7 @@ exports[`Settings Components Snapshots SettingGroup renders nested groups 1`] = 
 exports[`Settings Components Snapshots SettingGroup renders with custom className 1`] = `
 <div>
   <div
-    aria-labelledby="vale-setting-group-:rb:-heading"
+    aria-labelledby="vale-setting-group-_r_b_-heading"
     class="vale-setting-group custom-group"
     role="group"
   >
@@ -690,7 +690,7 @@ exports[`Settings Components Snapshots SettingGroup renders with custom classNam
       >
         <div
           class="setting-item-name"
-          id="vale-setting-group-:rb:-heading"
+          id="vale-setting-group-_r_b_-heading"
         >
           Settings
         </div>
@@ -710,7 +710,7 @@ exports[`Settings Components Snapshots SettingGroup renders with custom classNam
 exports[`Settings Components Snapshots SettingGroup renders with multiple children 1`] = `
 <div>
   <div
-    aria-labelledby="vale-setting-group-:rc:-heading"
+    aria-labelledby="vale-setting-group-_r_c_-heading"
     class="vale-setting-group"
     role="group"
   >
@@ -720,7 +720,7 @@ exports[`Settings Components Snapshots SettingGroup renders with multiple childr
       >
         <div
           class="setting-item-name"
-          id="vale-setting-group-:rc:-heading"
+          id="vale-setting-group-_r_c_-heading"
         >
           Multiple Settings
         </div>
@@ -752,7 +752,7 @@ exports[`Settings Components Snapshots SettingGroup renders with multiple childr
 exports[`Settings Components Snapshots SettingGroup renders with title and description 1`] = `
 <div>
   <div
-    aria-labelledby="vale-setting-group-:ra:-heading"
+    aria-labelledby="vale-setting-group-_r_a_-heading"
     class="vale-setting-group"
     role="group"
   >
@@ -762,7 +762,7 @@ exports[`Settings Components Snapshots SettingGroup renders with title and descr
       >
         <div
           class="setting-item-name"
-          id="vale-setting-group-:ra:-heading"
+          id="vale-setting-group-_r_a_-heading"
         >
           Server Configuration
         </div>
@@ -789,7 +789,7 @@ exports[`Settings Components Snapshots SettingGroup renders with title and descr
 exports[`Settings Components Snapshots SettingGroup renders with title only 1`] = `
 <div>
   <div
-    aria-labelledby="vale-setting-group-:r9:-heading"
+    aria-labelledby="vale-setting-group-_r_9_-heading"
     class="vale-setting-group"
     role="group"
   >
@@ -799,7 +799,7 @@ exports[`Settings Components Snapshots SettingGroup renders with title only 1`] 
       >
         <div
           class="setting-item-name"
-          id="vale-setting-group-:r9:-heading"
+          id="vale-setting-group-_r_9_-heading"
         >
           Basic Settings
         </div>

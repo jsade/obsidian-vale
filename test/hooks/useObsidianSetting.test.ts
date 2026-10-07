@@ -83,8 +83,7 @@ describe("useObsidianSetting", () => {
         const ref = useObsidianSetting(config, deps);
         // Simulate attaching ref to container
         React.useLayoutEffect(() => {
-          (ref as React.MutableRefObject<HTMLDivElement | null>).current =
-            container;
+          ref.current = container;
         }, []);
         return ref;
       },
@@ -670,8 +669,8 @@ describe("useObsidianSetting", () => {
         useObsidianSetting({ name: "Type Check" }, []),
       );
 
-      // The ref should be of type RefObject<HTMLDivElement>
-      const ref: React.RefObject<HTMLDivElement> = result.current;
+      // The ref should be of type RefObject<HTMLDivElement | null>
+      const ref: React.RefObject<HTMLDivElement | null> = result.current;
       expect(ref).toBeDefined();
       expect(ref.current).toBeNull(); // No container attached in this test
     });
@@ -724,8 +723,7 @@ describe("useObsidianSetting", () => {
           const ref = useObsidianSetting({ name: "Cleanup Test" }, [dep]);
           // Attach container on first render only
           React.useLayoutEffect(() => {
-            (ref as React.MutableRefObject<HTMLDivElement | null>).current =
-              container;
+            ref.current = container;
           }, []);
           return ref;
         },
@@ -736,9 +734,7 @@ describe("useObsidianSetting", () => {
       expect(createdSettings).toHaveLength(1);
 
       // Manually set ref to null to simulate edge case
-      (
-        result.current as React.MutableRefObject<HTMLDivElement | null>
-      ).current = null;
+      result.current.current = null;
 
       // Trigger cleanup by changing deps - should not throw
       expect(() => {
