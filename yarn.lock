@@ -532,6 +532,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@eggjs/yauzl@npm:^2.11.0":
+  version: 2.11.0
+  resolution: "@eggjs/yauzl@npm:2.11.0"
+  dependencies:
+    buffer-crc32: "npm:~0.2.3"
+    fd-slicer2: "npm:^1.2.0"
+  checksum: 10c0/65cdb6fd29c98c60893d6fac4f52c2c74d4a3f2bd8a0cf6ce291e429a1a64cd31f9daffab71229120b63c1d0348e26607b2e952c92c932f173a90c6ba2945bfa
+  languageName: node
+  linkType: hard
+
 "@emnapi/core@npm:1.10.0":
   version: 1.10.0
   resolution: "@emnapi/core@npm:1.10.0"
@@ -3384,10 +3394,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"compressing@npm:^1.5.1":
-  version: 1.5.1
-  resolution: "compressing@npm:1.5.1"
+"compressing@npm:^1.10.5":
+  version: 1.10.5
+  resolution: "compressing@npm:1.10.5"
   dependencies:
+    "@eggjs/yauzl": "npm:^2.11.0"
     flushwritable: "npm:^1.0.0"
     get-ready: "npm:^1.0.0"
     iconv-lite: "npm:^0.5.0"
@@ -3395,9 +3406,8 @@ __metadata:
     pump: "npm:^3.0.0"
     streamifier: "npm:^0.1.1"
     tar-stream: "npm:^1.5.2"
-    yauzl: "npm:^2.7.0"
     yazl: "npm:^2.4.2"
-  checksum: 10c0/513c3debcc317da56d91485161297d0761146d1f0bec7871fea3debe06026903f3ada89cbe7f14280733fbd1d811c4d15829d7c73ed2f89c4cd92a7dcce19c93
+  checksum: 10c0/3a2efac4932171dcaa576e445ac907906e26a0e9c5d8e653a3acb105fae63fba49647ebb412a0ceb56b568454a0dac307348522da28a2adc9c072d3c79acbc20
   languageName: node
   linkType: hard
 
@@ -4889,6 +4899,15 @@ __metadata:
   dependencies:
     bser: "npm:2.1.1"
   checksum: 10c0/feae89ac148adb8f6ae8ccd87632e62b13563e6fb114cacb5265c51f585b17e2e268084519fb2edd133872f1d47a18e6bfd7e5e08625c0d41b93149694187581
+  languageName: node
+  linkType: hard
+
+"fd-slicer2@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "fd-slicer2@npm:1.2.0"
+  dependencies:
+    pend: "npm:^1.2.0"
+  checksum: 10c0/d67c4ea0daa32126ae168059e60e857a96e02a16e0f6236fdb7b0edefb42571aab97da9f1d824ff0821f865d0a65b94271e47b50582c6f24f993d6e5c52e286b
   languageName: node
   linkType: hard
 
@@ -7645,7 +7664,7 @@ __metadata:
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
     "@types/unzipper": "npm:^0.10.11"
-    compressing: "npm:^1.5.1"
+    compressing: "npm:^1.10.5"
     download: "npm:^8.0.0"
     esbuild: "npm:^0.28.2"
     eslint: "npm:^10.12.0"
@@ -7896,7 +7915,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pend@npm:~1.2.0":
+"pend@npm:^1.2.0, pend@npm:~1.2.0":
   version: 1.2.0
   resolution: "pend@npm:1.2.0"
   checksum: 10c0/8a87e63f7a4afcfb0f9f77b39bb92374afc723418b9cb716ee4257689224171002e07768eeade4ecd0e86f1fa3d8f022994219fb45634f2dbd78c6803e452458
@@ -9925,7 +9944,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yauzl@npm:^2.4.2, yauzl@npm:^2.7.0":
+"yauzl@npm:^2.4.2":
   version: 2.10.0
   resolution: "yauzl@npm:2.10.0"
   dependencies:
