@@ -625,7 +625,7 @@ exports[`Settings Components Snapshots SettingDivider renders with zero spacing 
 exports[`Settings Components Snapshots SettingGroup renders nested groups 1`] = `
 <div>
   <div
-    aria-labelledby="vale-setting-group-5-heading"
+    aria-labelledby="vale-setting-group-:rd:-heading"
     class="vale-setting-group"
     role="group"
   >
@@ -635,7 +635,7 @@ exports[`Settings Components Snapshots SettingGroup renders nested groups 1`] = 
       >
         <div
           class="setting-item-name"
-          id="vale-setting-group-5-heading"
+          id="vale-setting-group-:rd:-heading"
         >
           Parent Group
         </div>
@@ -648,7 +648,7 @@ exports[`Settings Components Snapshots SettingGroup renders nested groups 1`] = 
         Intro content
       </div>
       <div
-        aria-labelledby="vale-setting-group-6-heading"
+        aria-labelledby="vale-setting-group-:re:-heading"
         class="vale-setting-group"
         role="group"
       >
@@ -658,7 +658,7 @@ exports[`Settings Components Snapshots SettingGroup renders nested groups 1`] = 
           >
             <div
               class="setting-item-name"
-              id="vale-setting-group-6-heading"
+              id="vale-setting-group-:re:-heading"
             >
               Nested Group
             </div>
@@ -680,7 +680,7 @@ exports[`Settings Components Snapshots SettingGroup renders nested groups 1`] = 
 exports[`Settings Components Snapshots SettingGroup renders with custom className 1`] = `
 <div>
   <div
-    aria-labelledby="vale-setting-group-3-heading"
+    aria-labelledby="vale-setting-group-:rb:-heading"
     class="vale-setting-group custom-group"
     role="group"
   >
@@ -690,7 +690,7 @@ exports[`Settings Components Snapshots SettingGroup renders with custom classNam
       >
         <div
           class="setting-item-name"
-          id="vale-setting-group-3-heading"
+          id="vale-setting-group-:rb:-heading"
         >
           Settings
         </div>
@@ -710,7 +710,7 @@ exports[`Settings Components Snapshots SettingGroup renders with custom classNam
 exports[`Settings Components Snapshots SettingGroup renders with multiple children 1`] = `
 <div>
   <div
-    aria-labelledby="vale-setting-group-4-heading"
+    aria-labelledby="vale-setting-group-:rc:-heading"
     class="vale-setting-group"
     role="group"
   >
@@ -720,7 +720,7 @@ exports[`Settings Components Snapshots SettingGroup renders with multiple childr
       >
         <div
           class="setting-item-name"
-          id="vale-setting-group-4-heading"
+          id="vale-setting-group-:rc:-heading"
         >
           Multiple Settings
         </div>
@@ -752,7 +752,7 @@ exports[`Settings Components Snapshots SettingGroup renders with multiple childr
 exports[`Settings Components Snapshots SettingGroup renders with title and description 1`] = `
 <div>
   <div
-    aria-labelledby="vale-setting-group-2-heading"
+    aria-labelledby="vale-setting-group-:ra:-heading"
     class="vale-setting-group"
     role="group"
   >
@@ -762,7 +762,7 @@ exports[`Settings Components Snapshots SettingGroup renders with title and descr
       >
         <div
           class="setting-item-name"
-          id="vale-setting-group-2-heading"
+          id="vale-setting-group-:ra:-heading"
         >
           Server Configuration
         </div>
@@ -789,7 +789,7 @@ exports[`Settings Components Snapshots SettingGroup renders with title and descr
 exports[`Settings Components Snapshots SettingGroup renders with title only 1`] = `
 <div>
   <div
-    aria-labelledby="vale-setting-group-1-heading"
+    aria-labelledby="vale-setting-group-:r9:-heading"
     class="vale-setting-group"
     role="group"
   >
@@ -799,7 +799,7 @@ exports[`Settings Components Snapshots SettingGroup renders with title only 1`] 
       >
         <div
           class="setting-item-name"
-          id="vale-setting-group-1-heading"
+          id="vale-setting-group-:r9:-heading"
         >
           Basic Settings
         </div>

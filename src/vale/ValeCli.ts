@@ -32,6 +32,7 @@ export class ValeCli {
       const message = err instanceof Error ? err.message : String(err);
       throw new Error(
         `Vale config file not accessible at "${configPath}": ${message}`,
+        { cause: err },
       );
     }
 
@@ -51,6 +52,7 @@ export class ValeCli {
       const message = err instanceof Error ? err.message : String(err);
       throw new Error(
         `Vale config directory not accessible at "${configDir}": ${message}`,
+        { cause: err },
       );
     }
 

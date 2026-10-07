@@ -25,11 +25,6 @@ export const SettingsNav = ({
 }: SettingsNavProps): React.ReactElement => {
   const tablistRef = React.useRef<HTMLDivElement>(null);
 
-  // Don't show nav when on Rules page (accessed via gear icon)
-  if (currentPage === "Rules") {
-    return <></>;
-  }
-
   // Available tabs
   const tabs = React.useMemo(() => {
     const tabList = [{ id: "General", label: "General" }];
@@ -109,6 +104,11 @@ export const SettingsNav = ({
       }, 0);
     }
   };
+
+  // Don't show nav when on Rules page (accessed via gear icon)
+  if (currentPage === "Rules") {
+    return <></>;
+  }
 
   return (
     <div

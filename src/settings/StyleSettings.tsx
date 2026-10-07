@@ -22,7 +22,7 @@ export const StyleSettings = ({
 
   React.useEffect(() => {
     // Clear previous error state before loading (prevents stale errors after config fixes)
-    // eslint-disable-next-line @eslint-react/hooks-extra/no-direct-set-state-in-use-effect -- Intentionally setting state at start of effect to clear stale errors
+    // eslint-disable-next-line @eslint-react/set-state-in-effect -- Intentionally setting state at start of effect to clear stale errors
     setLoadError(null);
 
     // Early return if configManager not available yet
